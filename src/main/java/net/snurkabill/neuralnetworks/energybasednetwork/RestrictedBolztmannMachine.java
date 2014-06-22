@@ -4,6 +4,11 @@ import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.WeightsFac
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * NOT FINISHED YET!
+ * @author snurkabill
+ */
+
 public abstract class RestrictedBolztmannMachine extends BoltzmannMachine {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger("RBM");
