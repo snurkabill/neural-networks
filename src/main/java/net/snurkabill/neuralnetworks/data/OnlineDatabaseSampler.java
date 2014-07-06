@@ -23,6 +23,7 @@ public class OnlineDatabaseSampler {
 	private int allVectors = 0;
 	private int classWithLeastVectors;
 	private int classRatio;
+	private final int sizeOfVector;
 	
 	private final String databaseName;
 
@@ -34,6 +35,7 @@ public class OnlineDatabaseSampler {
 		if(trainTestRatio <= 1) {
 			throw new IllegalArgumentException("Invalid train test ratio");
 		}
+		this.sizeOfVector = sizeOfVector;
 		this.classesOfDivision = classesOfDivision;
 		this.classRatio = ratioOfMaxDiffBetweenClasses;
 		this.trainTestRatio = trainTestRatio;
@@ -104,6 +106,10 @@ public class OnlineDatabaseSampler {
 		} else {
 			trainingSet.get(classID).add(new DataItem(inputVector));
 		}
+	}
+	
+	public int sizeOfDatabaseInMegabytes() {
+		return (int)((sizeOfVector * allVectors * 8) / 1_000_000);
 	}
 	
 	public Database getDatabase(String name, long seed) {

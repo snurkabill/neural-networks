@@ -47,6 +47,7 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 		for (int network = 0; network < networks.size(); network++) {
 			long testingStarted = System.currentTimeMillis();
 			double[] targetValues = this.initializeTargetArray(network);
+			int[] successValuesCounter = new int[networks.get(network).getSizeOfOutputVector()];
 			double globalError = 0.0;
 			int success = 0;
 			int fail = 0;
@@ -59,6 +60,7 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 					//TODO : general evaluation 
 					if(networks.get(network).getFirstHighestValueIndex() == i) {
 						success++;
+						successValuesCounter[i]++;
 					} else fail++;
 				}
 			}
@@ -69,7 +71,12 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 			((SupervisedTestResults) results.get(network)).setSuccessPercentage((success * 100.0) / all);
 			results.get(network).setMilliseconds(testingFinished - testingStarted);
 			double sec = ((testingFinished - testingStarted) / 1000.0);
-			LOGGER.info("Testing {}th network: {} samples took {} seconds, {} samples/sec", network, all, sec, all/sec);
+			LOGGER.info("Testing {} network: {} samples took {} seconds, {} samples/sec", 
+					networks.get(network).getName(), all, sec, all/sec);
+			for (int i = 0; i < database.getNumberOfClasses(); i++) {
+				LOGGER.info("{}th class: TOTAL - {}, {}% correct samples", i, database.getSizeOfTestingDataset(i),
+						(1.0 / ((double)database.getSizeOfTestingDataset(i) / (double)successValuesCounter[i])));
+			}
 		}	
 		return results;
 	}
@@ -87,16 +94,22 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 		for (int network = 0; network < networks.size(); network++) {
 			long trainingStarted = System.currentTimeMillis();
 			double[] targetValues = this.initializeTargetArray(network);
+			int[] learnedPatterns = new int[this.sizeOfOutputVector];
 			for (int i = 1; i < numOfIterations + 1; i++) {
 				int newIndex = i % database.getNumberOfClasses();
 				networks.get(network).feedForwardWithPretrainedInputs(database.getTrainingIteratedData(newIndex).data);
 				networks.get(network).backPropagation(targetMaker.get(network).getTargetValues(newIndex, 
 						((i - 1) % database.getNumberOfClasses()), targetValues));
+				learnedPatterns[newIndex]++;
 			}
 			long trainingEnded = System.currentTimeMillis();
 			double sec = ((trainingEnded - trainingStarted) / 1000.0);
 			LOGGER.info("Training: {} samples took {} seconds, {} samples/sec", numOfIterations, sec,
-					numOfIterations/sec);	
+					numOfIterations/sec);
+			LOGGER.info("Learned Patterns: ");
+			for (int i = 0; i < this.sizeOfOutputVector; i++) {
+				LOGGER.info("{} - {}", i, learnedPatterns[i]);
+			}
 		}
 	}
 }

@@ -11,6 +11,10 @@ public class PretrainedWeightsFactory implements WeightsFactory {
 		
 	}
 	
+	public PretrainedWeightsFactory(double[][][] wInput) {
+		setWeights(wInput);
+	}
+	
 	@Override
 	public void setWeights(double[][][] weights) {
 		weights = this.weihgts;

@@ -1,10 +1,19 @@
 package net.snurkabill.neuralnetworks.feedforwardnetwork;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.heuristic.HeuristicParamsFFNN;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.WeightsFactory;
 import net.snurkabill.neuralnetworks.utilities.Utilities;
 import java.util.List;
 import java.util.Random;
+import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.PretrainedWeightsFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -202,6 +211,27 @@ public class FeedForwardNeuralNetwork {
 		}
 		LOGGER.trace("Index: {}, Mean: {}, StDev: {}", index, inputMeans[index], inputStdDev[index]);
 	}
+	
+	public void saveWeights() throws FileNotFoundException, IOException {
+		this.saveWeights(new File(this.name + "_weights"));
+	}
+	
+	public void saveWeights(File baseFile) throws FileNotFoundException, IOException {
+		try(DataOutputStream os = new DataOutputStream(new FileOutputStream(baseFile))) {
+			os.writeInt(topology.size());
+			for (int i = 0; i < topology.size(); i++) {
+				os.writeInt(this.outputValues.length);
+			}
+			for (int i = 0; i < topology.size() - 1; i++) {
+				for (int j = 0; j < outputValues[i].length; j++) {
+					for (int k = 0; k < topology.get(i + 1); k++) {
+						os.writeDouble(weights[i][j][k]);
+					}
+				}
+			}
+		}
+	}
+	
 	// ********************************************************************************
 	// feedForward methods
 	// ********************************************************************************
@@ -355,4 +385,34 @@ public class FeedForwardNeuralNetwork {
 	}
 	
 	//TODO : implements mini-batch training
+	
+	public static FeedForwardNeuralNetwork loadNeuralNetwork(File fWeights, String name, HeuristicParamsFFNN heuristicParams, 
+			TransferFunctionCalculator transferFunction, long seed) throws FileNotFoundException, IOException {
+		try(DataInputStream is = new DataInputStream(new FileInputStream(fWeights))) {
+			int layers = is.readInt();
+			List<Integer> topology = new ArrayList<>();
+			for (int i = 0; i < layers; i++) {
+				topology.add(is.readInt());
+			}
+			
+			double weights[][][];
+			
+			weights = new double[topology.size() - 1][][];
+			for (int i = 0; i < topology.size() - 1; i++) {
+				weights[i] = new double[topology.get(i) + 1][];
+				for (int j = 0; j < topology.get(i) + 1; j++) {
+					weights[i][j] = new double[topology.get(i + 1)];
+				}	
+			}
+			for (int i = 0; i < weights.length; i++) {
+				for (int j = 0; j < weights[i].length; j++) {
+					for (int k = 0; k < weights[i][j].length; k++) {
+						weights[i][j][k] = is.readDouble();
+					}
+				}
+			}
+			WeightsFactory wFactory = new PretrainedWeightsFactory(weights);
+			return new FeedForwardNeuralNetwork(topology, wFactory, name, heuristicParams, transferFunction, seed);
+		}
+	}
 }

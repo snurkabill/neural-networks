@@ -22,7 +22,7 @@ public class BinaryMarketMove {
 		Database database = Database.loadDatabase(new File("TwoSecBinaryMarketMove"));
 		int inputSize = database.getSizeOfVector();
 		int outputSize = database.getNumberOfClasses();
-		int[] hiddenLayers = {2000, 500};
+		int[] hiddenLayers = {20, 5};
 	
 		List<Integer> topology = new ArrayList<>();
 		topology.add(inputSize);
@@ -34,7 +34,7 @@ public class BinaryMarketMove {
 		double weightsScale = 0.001;
 		FeedForwardNeuralNetwork network = new FeedForwardNeuralNetwork(topology, 
 				new GaussianRndWeightsFactory(weightsScale, seed), "BinaryMove", 
-				HeuristicParamsFFNN.createDefaultHeuristic(), new HyperbolicTangens(), seed);
+				HeuristicParamsFFNN.deepProgressive(), new HyperbolicTangens(), seed);
 		
 		FeedForwardNetworkOfflineManager manager = new FeedForwardNetworkOfflineManager(
 				Collections.singletonList(network), database);
@@ -42,7 +42,7 @@ public class BinaryMarketMove {
 		int sizeOfPretrainingBatch = 20;
 		manager.pretrainInputNeurons(sizeOfPretrainingBatch);
 		LOGGER.info("Process started!");
-		int sizeOfTrainingBatch = 10_000;
+		int sizeOfTrainingBatch = 100_000;
 		for (int i = 0; i < 100; i++) {
 			manager.trainNetwork(sizeOfTrainingBatch);
 			SupervisedTestResults results = (SupervisedTestResults) manager.testNetworkOnWholeTestingDataset().get(0);

@@ -114,6 +114,8 @@ public class Database<T extends DataItem> {
 	}
 	
 	public void storeDatabase() throws FileNotFoundException, IOException {
+		LOGGER.info("Storing database: {}", name);
+		long time1 = System.currentTimeMillis();
 		try (DataOutputStream os = new DataOutputStream(new FileOutputStream(new File(name)))) {
 			os.writeInt(numberOfClasses);
 			os.writeInt(trainingSet.get(0).get(0).data.length);
@@ -139,6 +141,8 @@ public class Database<T extends DataItem> {
 			}
 			os.flush();
 		}
+		long time2 = System.currentTimeMillis();
+		LOGGER.info("Storing database done, took: {}", time2 - time1);
 	}
 	
 	public static Database loadDatabase(File baseFile) throws FileNotFoundException, IOException {
@@ -146,6 +150,8 @@ public class Database<T extends DataItem> {
 	}
 	
 	public static Database loadDatabase(File baseFile, long seed) throws FileNotFoundException, IOException {
+		LOGGER.info("Loading database {}", baseFile.getName());
+		long time1 = System.currentTimeMillis();
 		Map<Integer, List<DataItem>> trainingSet;
 		Map<Integer, List<DataItem>> testingSet;
 		try (DataInputStream is = new DataInputStream(new FileInputStream(baseFile))) {
@@ -181,6 +187,8 @@ public class Database<T extends DataItem> {
 				}
 			}
 		}
+		long time2 = System.currentTimeMillis();
+		LOGGER.info("Loading database done, took: {}", time2 - time1);
 		return new Database(seed, trainingSet, testingSet, baseFile.getName());
 	}
 }
