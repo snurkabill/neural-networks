@@ -24,6 +24,7 @@ public class MnistExampleFFNN {
 	public static final int OUTPUT_SIZE = 10;
 	public static final int[] hiddenLayers = {200};
 	
+	
 	public static void startExample() throws IOException {
 		long seed = 0;
 		File labels = new File("target/minst/train-labels-idx1-ubyte.gz");
@@ -50,14 +51,65 @@ public class MnistExampleFFNN {
 		Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST");
 		FeedForwardNetworkOfflineManager manager = new FeedForwardNetworkOfflineManager(Collections.singletonList(network), database);
 		
-		int sizeOfPretrainingBatch = 100;
+		int sizeOfPretrainingBatch = 10;
 		manager.pretrainInputNeurons(sizeOfPretrainingBatch);
 		LOGGER.info("Process started!");
 		int sizeOfTrainingBatch = 10_000;
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 10; i++) {
 			manager.trainNetwork(sizeOfTrainingBatch);
 			SupervisedTestResults results = (SupervisedTestResults) manager.testNetworkOnWholeTestingDataset().get(0);
 			LOGGER.info("Success rate is {} in {} iteration", results.getSuccessPercentage(), i);
 		}
+		
+		/*manager.getNetworkList().get(0).saveNetwork(new File("saveTry"));
+		
+		FeedForwardNeuralNetwork network2 = FeedForwardNeuralNetwork.loadNeuralNetwork(new File("saveTry"), "mana", 
+				HeuristicParamsFFNN.createDefaultHeuristic(), new HyperbolicTangens(), seed);
+		FeedForwardNetworkOfflineManager manager2 = new FeedForwardNetworkOfflineManager(
+				Collections.singletonList(network2), database);
+		
+		SupervisedTestResults results = (SupervisedTestResults) manager2.testNetworkOnWholeTestingDataset().get(0);
+		LOGGER.info("Success rate is {}", results.getSuccessPercentage());*/
     }	
+	
+	public static void startSaveLoadExample() throws IOException {
+		long seed = 0;
+		File labels = new File("target/minst/train-labels-idx1-ubyte.gz");
+		File images = new File("target/minst/train-images-idx3-ubyte.gz");
+		MnistDatasetReader reader;
+		try {
+			reader = new MnistDatasetReader(labels, images);
+		} catch (IOException ex) {
+			throw new IllegalArgumentException(ex);
+		}
+
+		FeedForwardNeuralNetwork network = FeedForwardNeuralNetwork.loadNeuralNetwork(new File("saveTry"), "Clara:)", 
+				HeuristicParamsFFNN.createDefaultHeuristic(), new HyperbolicTangens(), seed);
+		
+		Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST");
+		FeedForwardNetworkOfflineManager manager = new FeedForwardNetworkOfflineManager(Collections.singletonList(network), database);
+		
+		LOGGER.info("Process started!");
+		
+		SupervisedTestResults results = (SupervisedTestResults) manager.testNetworkOnWholeTestingDataset().get(0);
+		LOGGER.info("Success rate is {}", results.getSuccessPercentage());
+		
+		/*
+		List<Integer> topology = new ArrayList<>();
+		topology.add(2);
+		topology.add(2);
+		topology.add(1);
+		double weightsScale = 1;
+		long seed = 1;
+		
+		FeedForwardNeuralNetwork network = new FeedForwardNeuralNetwork(topology, 
+				new GaussianRndWeightsFactory(weightsScale, seed), "Clara:)", 
+				HeuristicParamsFFNN.createDefaultHeuristic(), new HyperbolicTangens(), seed);
+		network.saveNetwork(new File("asdf"));
+		
+		FeedForwardNeuralNetwork network2 = FeedForwardNeuralNetwork.loadNeuralNetwork(new File("asdf"), "Clara:)", 
+				HeuristicParamsFFNN.createDefaultHeuristic(), new HyperbolicTangens(), seed);
+		network2.getName();
+	*/	
+	}
 }

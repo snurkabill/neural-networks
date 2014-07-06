@@ -4,7 +4,7 @@ import java.io.File;
 
 public class PretrainedWeightsFactory implements WeightsFactory {
 
-	private double weihgts[][][];
+	private double weights[][][];
 	
 	public PretrainedWeightsFactory(File file) {
 		//TODO : load weihgts
@@ -12,12 +12,18 @@ public class PretrainedWeightsFactory implements WeightsFactory {
 	}
 	
 	public PretrainedWeightsFactory(double[][][] wInput) {
-		setWeights(wInput);
+		this.weights = wInput;
 	}
 	
 	@Override
 	public void setWeights(double[][][] weights) {
-		weights = this.weihgts;
+		for (int i = 0; i < weights.length; i++) {
+			for (int j = 0; j < weights[i].length; j++) {
+				for (int k = 0; k < weights[i][j].length; k++) {
+					weights[i][j][k] = this.weights[i][j][k];
+				}
+			}
+		}
 	}
 
 	@Override

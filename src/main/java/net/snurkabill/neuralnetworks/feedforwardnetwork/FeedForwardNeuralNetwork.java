@@ -94,6 +94,16 @@ public class FeedForwardNeuralNetwork {
 		LOGGER.info("Created Feed forward neural network {}", topology.toString());
 	}
 	
+	public FeedForwardNeuralNetwork(List<Integer> topology, WeightsFactory wFactory, String name,  
+			HeuristicParamsFFNN heuristicParams, TransferFunctionCalculator transferFunction, long seed, 
+			double[] inputMeans, double[] inputStdDev) {
+		this(topology, wFactory, name, heuristicParams, transferFunction, seed);
+		for (int i = 0; i < inputStdDev.length; i++) {
+			this.inputMeans[i] = inputMeans[i];
+			this.inputStdDev[i] = inputStdDev[i];
+		}
+	}
+	
 	public void setWeights(WeightsFactory wFactory) {
 		wFactory.setWeights(weights);
 	}
@@ -212,23 +222,37 @@ public class FeedForwardNeuralNetwork {
 		LOGGER.trace("Index: {}, Mean: {}, StDev: {}", index, inputMeans[index], inputStdDev[index]);
 	}
 	
-	public void saveWeights() throws FileNotFoundException, IOException {
-		this.saveWeights(new File(this.name + "_weights"));
+	public void saveNetwork() throws FileNotFoundException, IOException {
+		this.saveNetwork(new File(this.name + "_weights"));
 	}
 	
-	public void saveWeights(File baseFile) throws FileNotFoundException, IOException {
+	public void saveNetwork(File baseFile) throws FileNotFoundException, IOException {
 		try(DataOutputStream os = new DataOutputStream(new FileOutputStream(baseFile))) {
-			os.writeInt(topology.size());
-			for (int i = 0; i < topology.size(); i++) {
-				os.writeInt(this.outputValues.length);
-			}
-			for (int i = 0; i < topology.size() - 1; i++) {
-				for (int j = 0; j < outputValues[i].length; j++) {
-					for (int k = 0; k < topology.get(i + 1); k++) {
-						os.writeDouble(weights[i][j][k]);
-					}
+			saveWeights(os);
+			saveInputModdifiers(os);
+		}
+	}
+	
+	private void saveWeights(DataOutputStream os) throws IOException {
+		os.writeInt(topology.size());
+		for (int i = 0; i < topology.size(); i++) {
+			os.writeInt(this.outputValues[i].length);
+		}
+		for (int i = 0; i < topology.size() - 1; i++) {
+			for (int j = 0; j < outputValues[i].length; j++) {
+				for (int k = 0; k < topology.get(i + 1); k++) {
+					os.writeDouble(weights[i][j][k]);
 				}
 			}
+		}
+	}
+	
+	private void saveInputModdifiers(DataOutputStream os) throws IOException {
+		for (int i = 0; i < topology.get(0); i++) {
+			os.writeDouble(this.inputMeans[i]);
+		}
+		for (int i = 0; i < topology.get(0); i++) {
+			os.writeDouble(this.inputStdDev[i]);
 		}
 	}
 	
@@ -237,7 +261,8 @@ public class FeedForwardNeuralNetwork {
 	// ********************************************************************************
 	public void feedForwardWithPretrainedInputs(double[] inputVector) {
 		if(inputVector.length != sizeOfInputVector) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("InputVector has different size than neural network first "
+					+ "layer");
 		}
 		for (int i = 0; i < sizeOfInputVector; i++) {
 			outputValues[0][i] = (inputVector[i] - inputMeans[i]) / inputStdDev[i];
@@ -392,11 +417,9 @@ public class FeedForwardNeuralNetwork {
 			int layers = is.readInt();
 			List<Integer> topology = new ArrayList<>();
 			for (int i = 0; i < layers; i++) {
-				topology.add(is.readInt());
+				topology.add(is.readInt() - 1);
 			}
-			
-			double weights[][][];
-			
+			double[][][] weights;
 			weights = new double[topology.size() - 1][][];
 			for (int i = 0; i < topology.size() - 1; i++) {
 				weights[i] = new double[topology.get(i) + 1][];
@@ -412,7 +435,20 @@ public class FeedForwardNeuralNetwork {
 				}
 			}
 			WeightsFactory wFactory = new PretrainedWeightsFactory(weights);
-			return new FeedForwardNeuralNetwork(topology, wFactory, name, heuristicParams, transferFunction, seed);
+			if(is.available() != 0) {
+				double[] inputMeans = new double[topology.get(0)];
+				double[] inputStdDev = new double[topology.get(0)];
+				for (int i = 0; i < inputMeans.length; i++) {
+					inputMeans[i] = is.readDouble();
+				}
+				for (int i = 0; i < inputStdDev.length; i++) {
+					inputStdDev[i] = is.readDouble();
+				}
+				return new FeedForwardNeuralNetwork(topology, wFactory, name, heuristicParams, transferFunction, seed,
+						inputMeans, inputStdDev);
+			} else {
+				return new FeedForwardNeuralNetwork(topology, wFactory, name, heuristicParams, transferFunction, seed);
+			}
 		}
 	}
 }

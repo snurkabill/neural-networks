@@ -1,7 +1,7 @@
 package net.snurkabill.neuralnetworks;
 
 import java.io.IOException;
-import net.snurkabill.neuralnetworks.examples.binarymarketmove.BinaryMarketMove;
+import net.snurkabill.neuralnetworks.examples.mnist.MnistExampleFFNN;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,9 +12,11 @@ public class App {
 	public static void main(String argv[]) throws IOException {
 
 		
-		BinaryMarketMove.startExample();
+		//BinaryMarketMove.startExample();
 		
-		//MnistExampleFFNN.startExample();
+		
+		MnistExampleFFNN.startExample();
+		//MnistExampleFFNN.startSaveLoadExample();
 		//new RBMTest().test();	
 		
 		// *********************************************************************************
