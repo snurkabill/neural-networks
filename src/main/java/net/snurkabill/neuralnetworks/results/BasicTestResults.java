@@ -4,6 +4,15 @@ public class BasicTestResults {
 	
 	private int numOfTestedItems;
 	private double globalError;
+	private long milliseconds;
+
+	public long getMilliseconds() {
+		return milliseconds;
+	}
+
+	public void setMilliseconds(long milliseconds) {
+		this.milliseconds = milliseconds;
+	}
 
 	public double getGlobalError() {
 		return globalError;

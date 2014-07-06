@@ -9,16 +9,10 @@ public class Tuple {
 	public Tuple(int a, int b) {
 		this.a = a;
 		this.b = b;
-		calcNum();
+		num = 2 * a + b;
 	}
 	
 	public Tuple(double [] results) {
-		this.a = (int) (results[0] + TOLERANCE);
-		this.b = (int) (results[1] + TOLERANCE);
-		calcNum();
-	}
-	
-	private void calcNum() {
-		num = 2 * a + b;
+		this((int)(results[0] + TOLERANCE), (int)(results[1] + TOLERANCE));
 	}
 }

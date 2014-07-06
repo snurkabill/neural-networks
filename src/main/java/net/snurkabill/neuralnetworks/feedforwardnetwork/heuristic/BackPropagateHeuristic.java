@@ -11,5 +11,6 @@ public abstract class BackPropagateHeuristic {
 	public void setHeuristicParams(HeuristicParamsFFNN heuristicParams) {
 		this.heuristicParams = heuristicParams;
 	}
+	//TODO: logic behnd heuristic
 	
 }

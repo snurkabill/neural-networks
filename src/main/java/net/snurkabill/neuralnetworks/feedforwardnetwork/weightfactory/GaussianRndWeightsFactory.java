@@ -11,7 +11,7 @@ public class GaussianRndWeightsFactory implements WeightsFactory {
 		this.weightScale = weightScale;
 		this.random.setSeed(seed);
 	}
-	
+
 	@Override
 	public void setWeights(double[][][] weights) {
 		for (double[][] weight : weights) {
@@ -20,12 +20,22 @@ public class GaussianRndWeightsFactory implements WeightsFactory {
 	}
 	
 	@Override
+	public void setWeights(int layerIndex, double[][] weights) {
+		setWeights(weights);
+	}
+	
+	@Override
+	public void setWeights(int layerIndex, int neuronIndex, double[] weights) {
+		setWeights(weights);
+	}
+
+	@Override
 	public void setWeights(double[][] weights) {
 		for (double[] weight : weights) {
 			setWeights(weight);
 		}
 	}
-	
+
 	@Override
 	public void setWeights(double[] weights) {
 		for (int k = 0; k < weights.length; k++) {

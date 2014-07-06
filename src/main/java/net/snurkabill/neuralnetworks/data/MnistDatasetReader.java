@@ -20,77 +20,61 @@ public class MnistDatasetReader implements Enumeration<MnistItem>
 
     SecureRandom r = new SecureRandom();
 
-    final Map<String, List<MnistItem>> trainingSet = new HashMap<String, List<MnistItem>>();
-    final Map<String, List<MnistItem>> testSet = new HashMap<String, List<MnistItem>>();
+    final Map<String, List<MnistItem>> trainingSet = new HashMap<>();
+    final Map<String, List<MnistItem>> testSet = new HashMap<>();
+	
+	final Map<Integer, List<DataItem>> trainingSet2 = new HashMap<>();
+	final Map<Integer, List<DataItem>> testSet2 = new HashMap<>();
+	
 
     int rows = 0;
     int cols = 0;
     int count = 0;
     int current = 0;
 
-    public MnistDatasetReader(File labelsFile, File imagesFile)
-    {
-        try
-        {
-            labelsBuf = new DataInputStream(new GZIPInputStream(new FileInputStream(labelsFile)));
-            imagesBuf = new DataInputStream(new GZIPInputStream(new FileInputStream(imagesFile)));
+    public MnistDatasetReader(File labelsFile, File imagesFile) throws IOException, FileNotFoundException {
+		try(DataInputStream alabelsBuff = new DataInputStream(new GZIPInputStream(new FileInputStream(labelsFile))); 
+			DataInputStream aimagesBuf = new DataInputStream(new GZIPInputStream(new FileInputStream(imagesFile)))) {
+		
+			labelsBuf = alabelsBuff;
+			imagesBuf = aimagesBuf;
+			
+			verify();
 
-            verify();
-
-            createTrainingSet();
-        }
-        catch (FileNotFoundException e)
-        {
-            throw new IOError(e);
-        }
-        catch (IOException e)
-        {
-            throw new IOError(e);
-        }
-        finally
-        {
-
-
-        }
-
-
-
+			createTrainingSet();
+			
+			for (int i = 0; i < testSet.size(); i++) {
+				System.out.println(testSet.get(String.valueOf(i)).size());
+			}
+			
+		} finally {
+			
+		}
     }
 
     public void createTrainingSet() {
-        boolean done = false;
-
-        while (!done || !hasMoreElements()) {
+        
+		int asdf = 0;
+        while (hasMoreElements() /*&& current < 500*/) {
             MnistItem i = nextElement();
 
-            if (r.nextDouble() > 0.3) {
-                List<MnistItem> l = testSet.get(i.label);
+            if (asdf % 10 == 0) {
+                List<DataItem> l = testSet2.get(Integer.parseInt(i.label));
                 if (l == null)
-                    l = new ArrayList<MnistItem>();
-                testSet.put(i.label, l);
+                    l = new ArrayList<DataItem>();
+                testSet2.put(Integer.parseInt(i.label), l);
 
-                l.add(i);
+                l.add(new DataItem(i.data));
             } else {
-                List<MnistItem> l = trainingSet.get(i.label);
+                List<DataItem> l = trainingSet2.get(Integer.parseInt(i.label));
                 if (l == null)
-                    l = new ArrayList<MnistItem>();
-                trainingSet.put(i.label, l);
+                    l = new ArrayList<DataItem>();
+                trainingSet2.put(Integer.parseInt(i.label), l);
 
-                l.add(i);
+                l.add(new DataItem(i.data));
             }
-
-            if (trainingSet.isEmpty())
-                continue;
-
-            boolean isDone = true;
-            for (Map.Entry<String, List<MnistItem>> entry : trainingSet.entrySet()) {
-                if (entry.getValue().size() < 100) {
-                    isDone = false;
-                    break;
-                }
-            }
-
-            done = isDone;
+			
+			asdf++;
         }
     }
 
@@ -170,7 +154,7 @@ public class MnistDatasetReader implements Enumeration<MnistItem>
 	
 	public Map<Integer, List<DataItem>> getTrainingData() {
 		
-		Map<Integer, List<DataItem>> tmp = new HashMap<>();
+		/*Map<Integer, List<DataItem>> tmp = new HashMap<>();
 		
 		for (int i = 0; i < trainingSet.size(); i++) {
 			tmp.put(i, new ArrayList<DataItem>());
@@ -178,13 +162,13 @@ public class MnistDatasetReader implements Enumeration<MnistItem>
 				MnistItem item = trainingSet.get(String.valueOf(i)).get(j);
 				tmp.get(i).add(new DataItem(item.data));
 			}
-		}
-		return tmp;
+		}*/
+		return trainingSet2;
 	}
 	
 	public Map<Integer, List<DataItem>> getTestingData() {
 		
-		Map<Integer, List<DataItem>> tmp = new HashMap<>();
+		/*Map<Integer, List<DataItem>> tmp = new HashMap<>();
 		
 		for (int i = 0; i < testSet.size(); i++) {
 			tmp.put(i, new ArrayList<DataItem>());
@@ -192,7 +176,7 @@ public class MnistDatasetReader implements Enumeration<MnistItem>
 				MnistItem item = testSet.get(String.valueOf(i)).get(j);
 				tmp.get(i).add(new DataItem(item.data));
 			}
-		}
-		return tmp;
+		}*/
+		return testSet2;
 	}
 }

@@ -19,7 +19,7 @@ public class RBMTest {
 		int numOfHidden = 10;
 
 		BinaryRestrictedBolzmannMachine rbm = new BinaryRestrictedBolzmannMachine(numOfVisible, numOfHidden, 
-				new GaussianRndWeightsFactory(0.0001, 0), HeuristicParamsRBM.createBasicHeuristicParams(), 0);
+				new GaussianRndWeightsFactory(0.001, 0), HeuristicParamsRBM.createBasicHeuristicParams(), 0);
 		
 		List<Tuple> asdf = new ArrayList<>();
 		
@@ -40,7 +40,7 @@ public class RBMTest {
 		}
 		
 		
-		int numOfIterations = 10000;
+		int numOfIterations = 100;
 		for (int i = 0; i < numOfIterations; i++) {
 			Collections.shuffle(asdf);
 			
@@ -49,6 +49,7 @@ public class RBMTest {
 				trainValues[0] = asdf.get(j).a;
 				trainValues[1] = asdf.get(j).b;
 				rbm.trainMachine(trainValues);
+				LOGGER.info("Energy = {}", rbm.calcEnergy());
 			}
 		}
 		
@@ -56,9 +57,12 @@ public class RBMTest {
 		
 		int numOfTestingIterations = 100000;
 		for (int i = 0; i < numOfTestingIterations; i++) {
-			Tuple tuple = new Tuple(rbm.reconstructNext());
 			
-			counter[tuple.num]++;
+			LOGGER.info("{}", rbm.reconstructNext());
+			//Tuple tuple = new Tuple(rbm.reconstructNext());
+			
+			
+			//counter[tuple.num]++;
 		}
 		LOGGER.info("RESULTS: {}", counter);
 		

@@ -2,7 +2,7 @@ package net.snurkabill.neuralnetworks.energybasednetwork;
 
 import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.WeightsFactory;
 
-public class BinaryRestrictedBolzmannMachine extends RestrictedBolztmannMachine {
+public class BinaryRestrictedBolzmannMachine extends RestrictedBoltzmannMachine {
 
 	public BinaryRestrictedBolzmannMachine(int numOfVisible, int numOfHidden, WeightsFactory wFactory, 
 			HeuristicParamsRBM heuristicParams, long seed) {
@@ -43,6 +43,7 @@ public class BinaryRestrictedBolzmannMachine extends RestrictedBolztmannMachine 
 			for (int j = 0; j < sizeOfHiddenVector; j++) {
 				helpEnergy += visibleNeurons[i] * hiddenNeurons[j] * weights[i][j];
 			}
+			helpEnergy += visibleNeurons[i] * visibleBias[i];
 		}
 		super.energy -= helpEnergy;
 		return super.getEnergy();
