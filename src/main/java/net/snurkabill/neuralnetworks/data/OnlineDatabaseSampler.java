@@ -99,6 +99,12 @@ public class OnlineDatabaseSampler {
 	}
 	
 	private void addVector(int classID, double[] inputVector) {
+		if(allVectors % 10_000 == 0) {
+			LOGGER.info("NumofVectors: {}", allVectors);
+			for (int i = 0; i < this.sumsOfVectors.size(); i++) {
+				LOGGER.info("Size of {}th hashMap: {}", i, sumsOfVectors.get(i));
+			}
+		}
 		allVectors++;
 		sumsOfVectors.set(classID, sumsOfVectors.get(classID) + 1);
 		if(sumsOfVectors.get(classID) % trainTestRatio == 0) {
