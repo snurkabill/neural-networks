@@ -40,4 +40,16 @@ public class HeuristicParamsFFNN {
 		heuristic.dynamicKillingWeights = true;
 		return heuristic;
 	}
+	
+	public static HeuristicParamsFFNN littleStepsWithBigMoment() {
+		HeuristicParamsFFNN heuristic = new HeuristicParamsFFNN();
+		heuristic.eta = 0.0001;
+		heuristic.alpha = 0.5;
+		heuristic.BOOSTING_ETA_COEFF = 1.0000001;
+		heuristic.KILLING_ETA_COEFF = 0.99999999;
+		heuristic.WEIGHT_DECAY = 0.999999;
+		heuristic.dynamicBoostingEtas = true;
+		heuristic.dynamicKillingWeights = false;
+		return heuristic;
+	}
 }
