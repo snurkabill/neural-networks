@@ -227,6 +227,7 @@ public class FeedForwardNeuralNetwork {
 	}
 	
 	public void saveNetwork(File baseFile) throws FileNotFoundException, IOException {
+            LOGGER.info("Saving network");
 		try(DataOutputStream os = new DataOutputStream(new FileOutputStream(baseFile))) {
 			saveWeights(os);
 			saveInputModdifiers(os);
