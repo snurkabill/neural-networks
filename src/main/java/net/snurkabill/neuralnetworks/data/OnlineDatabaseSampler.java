@@ -78,7 +78,7 @@ public class OnlineDatabaseSampler {
 		if(classID == classWithLeastVectors) {
 			addVector(classID, inputVector);
 			calcLeastVectorIndex();
-		} else if(sumsOfVectors.get(classID) / sumsOfVectors.get(classWithLeastVectors) <= classRatio) {
+		} else if(sumsOfVectors.get(classID) / sumsOfVectors.get(classWithLeastVectors) < classRatio) {
 			addVector(classID, inputVector);
 		} else {
 			LOGGER.debug("Skiping vector of ID: {}", classID);
