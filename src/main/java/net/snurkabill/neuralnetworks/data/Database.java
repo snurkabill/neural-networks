@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +20,7 @@ public class Database<T extends DataItem> {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger("Database");
 	
-	private final Random random;
+	private final SecureRandom random;
 	
 	private final Map<Integer, List<T>> trainingSet;
 	private final Map<Integer, List<T>> testingSet;

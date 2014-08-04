@@ -1,7 +1,17 @@
 package net.snurkabill.neuralnetworks;
 
+import java.io.File;
 import java.io.IOException;
-import net.snurkabill.neuralnetworks.examples.mnist.MnistExampleFFNN;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import net.snurkabill.neuralnetworks.data.Database;
+import net.snurkabill.neuralnetworks.data.MnistDatasetReader;
+import net.snurkabill.neuralnetworks.deepbeliefnets.DeepBeliefNeuralNetwork;
+import net.snurkabill.neuralnetworks.energybasednetwork.BinaryRestrictedBolzmannMachine;
+import net.snurkabill.neuralnetworks.energybasednetwork.HeuristicParamsRBM;
+import net.snurkabill.neuralnetworks.energybasednetwork.RestrictedBoltzmannMachine;
+import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.GaussianRndWeightsFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,14 +25,14 @@ public class App {
 		//BinaryMarketMove.startExample();
 		
 		
-		MnistExampleFFNN.startExample();
+		//MnistExampleFFNN.startExample();
 		//MnistExampleFFNN.startSaveLoadExample();
 		//new RBMTest().test();	
 		
 		// *********************************************************************************
 		// DBN test
 		// *********************************************************************************
-		/*double weightScale = 0.01;
+		double weightScale = 0.01;
 		File labels = new File("target/minst/train-labels-idx1-ubyte.gz");
 		File images = new File("target/minst/train-images-idx3-ubyte.gz");
 		MnistDatasetReader reader;
@@ -32,7 +42,7 @@ public class App {
 			throw new IllegalArgumentException(ex);
 		}
 		
-		Database database = new Database(0, reader.getTrainingData(), reader.getTestingData());
+		Database database = new Database(0L, reader.getTrainingData(), reader.getTestingData(), "MNIST");
 		
 		List<RestrictedBoltzmannMachine> machines = new ArrayList<>();
 		
@@ -116,7 +126,7 @@ public class App {
 		double sec = ((testingFinished - testingStarted) / 1000.0);
 		LOGGER.info("Testing {} samples took {} seconds, {} samples/sec", all, sec, all/sec);
 		LOGGER.info("RESULTS: {}", ((success * 100.0) / all));
-		*/
+		
 
 		// *********************************************************************************
 		// benchmarker test
