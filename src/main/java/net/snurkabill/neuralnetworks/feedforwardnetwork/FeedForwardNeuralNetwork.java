@@ -234,7 +234,7 @@ public class FeedForwardNeuralNetwork {
 		}
 	}
 	
-	private void saveWeights(DataOutputStream os) throws IOException {
+	protected void saveWeights(DataOutputStream os) throws IOException {
 		os.writeInt(topology.size());
 		for (int i = 0; i < topology.size(); i++) {
 			os.writeInt(this.outputValues[i].length);
@@ -248,7 +248,7 @@ public class FeedForwardNeuralNetwork {
 		}
 	}
 	
-	private void saveInputModdifiers(DataOutputStream os) throws IOException {
+	protected void saveInputModdifiers(DataOutputStream os) throws IOException {
 		for (int i = 0; i < topology.get(0); i++) {
 			os.writeDouble(this.inputMeans[i]);
 		}
