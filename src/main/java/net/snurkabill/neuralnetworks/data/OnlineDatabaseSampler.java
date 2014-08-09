@@ -10,11 +10,14 @@ import org.slf4j.LoggerFactory;
 public class OnlineDatabaseSampler {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger("Online Database Sampler");
+	private static final int SIZE_OF_DOUBLE = 8;
+	private static final int SIZE_OF_MEGABYTE = 1024 * 1024;
 	
 	private final Map<Integer, List<DataItem>> trainingSet;
 	private final Map<Integer, List<DataItem>> testingSet;
 	private final List<Integer> sumsOfVectors = new ArrayList<>();
 	
+	// TODO : implement data buffer
 	/*private final Map<Integer, List<DataItem>> vectorsBuffer = new HashMap<>();
 	private final int maxSizeOfBuffer;
 	*/
@@ -24,11 +27,12 @@ public class OnlineDatabaseSampler {
 	private int classWithLeastVectors;
 	private int classRatio;
 	private final int sizeOfVector;
+	private final int maxSizeOfDatabaseInMB;
 	
 	private final String databaseName;
 
 	public OnlineDatabaseSampler(String databaseName, int sizeOfVector, int classesOfDivision, 
-			int ratioOfMaxDiffBetweenClasses, int trainTestRatio) {
+			int ratioOfMaxDiffBetweenClasses, int trainTestRatio, int maxSizeOfDatabaseInMB) {
 		if(ratioOfMaxDiffBetweenClasses <= 0) {
 			throw new IllegalArgumentException("Invalid ratio");
 		}
@@ -40,11 +44,9 @@ public class OnlineDatabaseSampler {
 		this.classRatio = ratioOfMaxDiffBetweenClasses;
 		this.trainTestRatio = trainTestRatio;
 		this.databaseName = databaseName;
+		this.maxSizeOfDatabaseInMB = maxSizeOfDatabaseInMB;
 		trainingSet = new HashMap<>(classesOfDivision);
 		testingSet = new HashMap<>(classesOfDivision);
-		/*for (int i = 0; i < classesOfDivision; i++) {
-			vectorsBuffer.put(i, new LinkedList<DataItem>());
-		}*/
 		for (int i = 0; i < classesOfDivision; i++) {
 			trainingSet.put(i, new ArrayList<DataItem>());
 			testingSet.put(i, new ArrayList<DataItem>());
@@ -74,7 +76,11 @@ public class OnlineDatabaseSampler {
 		return allVectors;
 	}
 	
-	public void sampleVector(int classID, double[] inputVector) {
+	public void sampleVector(int classID, double[] inputVector) throws FullDatabase {
+		if(maxSizeOfDatabaseInMB > this.sizeOfDatabaseInMegabytes()) {
+			throw new FullDatabase(this.databaseName + " is full: "
+					+ "" + this.sizeOfDatabaseInMegabytes() + "MB");
+		}
 		if(classID == classWithLeastVectors) {
 			addVector(classID, inputVector);
 			calcLeastVectorIndex();
@@ -115,7 +121,7 @@ public class OnlineDatabaseSampler {
 	}
 	
 	public int sizeOfDatabaseInMegabytes() {
-		return (int)((sizeOfVector * allVectors * 8) / 1_000_000);
+		return (int)((sizeOfVector * allVectors * SIZE_OF_DOUBLE) / SIZE_OF_MEGABYTE);
 	}
 	
 	public Database getDatabase(String name, long seed) {

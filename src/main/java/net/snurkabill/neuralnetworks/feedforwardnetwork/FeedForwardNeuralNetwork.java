@@ -412,43 +412,59 @@ public class FeedForwardNeuralNetwork {
 	
 	//TODO : implements mini-batch training
 	
-	public static FeedForwardNeuralNetwork loadNeuralNetwork(File fWeights, String name, HeuristicParamsFFNN heuristicParams, 
-			TransferFunctionCalculator transferFunction, long seed) throws FileNotFoundException, IOException {
+	public static FeedForwardNeuralNetwork buildNeuralNetwork(File fWeights, String name, 
+			HeuristicParamsFFNN heuristicParams, TransferFunctionCalculator transferFunction, long seed
+				) throws FileNotFoundException, IOException {
 		try(DataInputStream is = new DataInputStream(new FileInputStream(fWeights))) {
-			int layers = is.readInt();
-			List<Integer> topology = new ArrayList<>();
-			for (int i = 0; i < layers; i++) {
-				topology.add(is.readInt() - 1);
+			return readingFromStream(is, name, heuristicParams, transferFunction, seed);
+		}
+	}
+	
+	protected static FeedForwardNeuralNetwork readingFromStream(DataInputStream is, String name, 
+			HeuristicParamsFFNN heuristicParams, TransferFunctionCalculator transferFunction, long seed
+				) throws IOException {
+		int layers = is.readInt();
+		List<Integer> topology = new ArrayList<>();
+		for (int i = 0; i < layers; i++) {
+			topology.add(is.readInt() - 1);
+		}
+		double[][][] weights = initializeWeights(topology); 
+		loadWeights(weights, is);
+		WeightsFactory wFactory = new PretrainedWeightsFactory(weights);
+		if(is.available() != 0) {
+			double[] inputMeans = new double[topology.get(0)];
+			double[] inputStdDev = new double[topology.get(0)];
+			for (int i = 0; i < inputMeans.length; i++) {
+				inputMeans[i] = is.readDouble();
 			}
-			double[][][] weights;
-			weights = new double[topology.size() - 1][][];
-			for (int i = 0; i < topology.size() - 1; i++) {
-				weights[i] = new double[topology.get(i) + 1][];
-				for (int j = 0; j < topology.get(i) + 1; j++) {
-					weights[i][j] = new double[topology.get(i + 1)];
-				}	
+			for (int i = 0; i < inputStdDev.length; i++) {
+				inputStdDev[i] = is.readDouble();
 			}
-			for (int i = 0; i < weights.length; i++) {
-				for (int j = 0; j < weights[i].length; j++) {
-					for (int k = 0; k < weights[i][j].length; k++) {
-						weights[i][j][k] = is.readDouble();
-					}
+			return new FeedForwardNeuralNetwork(topology, wFactory, name, heuristicParams, transferFunction, seed,
+					inputMeans, inputStdDev);
+		} else {
+			return new FeedForwardNeuralNetwork(topology, wFactory, name, heuristicParams, transferFunction, seed);
+		}
+	}
+	
+	protected static double[][][] initializeWeights(List<Integer> topology) {
+		double[][][] weights;
+		weights = new double[topology.size() - 1][][];
+		for (int i = 0; i < topology.size() - 1; i++) {
+			weights[i] = new double[topology.get(i) + 1][];
+			for (int j = 0; j < topology.get(i) + 1; j++) {
+				weights[i][j] = new double[topology.get(i + 1)];
+			}	
+		}
+		return weights;
+	}
+	
+	protected static void loadWeights(double[][][] weights, DataInputStream is) throws IOException {
+		for (int i = 0; i < weights.length; i++) {
+			for (int j = 0; j < weights[i].length; j++) {
+				for (int k = 0; k < weights[i][j].length; k++) {
+					weights[i][j][k] = is.readDouble();
 				}
-			}
-			WeightsFactory wFactory = new PretrainedWeightsFactory(weights);
-			if(is.available() != 0) {
-				double[] inputMeans = new double[topology.get(0)];
-				double[] inputStdDev = new double[topology.get(0)];
-				for (int i = 0; i < inputMeans.length; i++) {
-					inputMeans[i] = is.readDouble();
-				}
-				for (int i = 0; i < inputStdDev.length; i++) {
-					inputStdDev[i] = is.readDouble();
-				}
-				return new FeedForwardNeuralNetwork(topology, wFactory, name, heuristicParams, transferFunction, seed,
-						inputMeans, inputStdDev);
-			} else {
-				return new FeedForwardNeuralNetwork(topology, wFactory, name, heuristicParams, transferFunction, seed);
 			}
 		}
 	}

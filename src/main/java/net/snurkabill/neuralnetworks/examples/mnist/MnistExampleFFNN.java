@@ -63,7 +63,7 @@ public class MnistExampleFFNN {
 		
 		/*manager.getNetworkList().get(0).saveNetwork(new File("saveTry"));
 		
-		FeedForwardNeuralNetwork network2 = FeedForwardNeuralNetwork.loadNeuralNetwork(new File("saveTry"), "mana", 
+		FeedForwardNeuralNetwork network2 = FeedForwardNeuralNetwork.buildNeuralNetwork(new File("saveTry"), "mana", 
 				HeuristicParamsFFNN.createDefaultHeuristic(), new HyperbolicTangens(), seed);
 		FeedForwardNetworkOfflineManager manager2 = new FeedForwardNetworkOfflineManager(
 				Collections.singletonList(network2), database);
@@ -83,7 +83,7 @@ public class MnistExampleFFNN {
 			throw new IllegalArgumentException(ex);
 		}
 
-		FeedForwardNeuralNetwork network = FeedForwardNeuralNetwork.loadNeuralNetwork(new File("saveTry"), "Clara:)", 
+		FeedForwardNeuralNetwork network = FeedForwardNeuralNetwork.buildNeuralNetwork(new File("saveTry"), "Clara:)", 
 				HeuristicParamsFFNN.createDefaultHeuristic(), new HyperbolicTangens(), seed);
 		
 		Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST");
@@ -107,7 +107,7 @@ public class MnistExampleFFNN {
 				HeuristicParamsFFNN.createDefaultHeuristic(), new HyperbolicTangens(), seed);
 		network.saveNetwork(new File("asdf"));
 		
-		FeedForwardNeuralNetwork network2 = FeedForwardNeuralNetwork.loadNeuralNetwork(new File("asdf"), "Clara:)", 
+		FeedForwardNeuralNetwork network2 = FeedForwardNeuralNetwork.buildNeuralNetwork(new File("asdf"), "Clara:)", 
 				HeuristicParamsFFNN.createDefaultHeuristic(), new HyperbolicTangens(), seed);
 		network2.getName();
 	*/	
