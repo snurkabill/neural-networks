@@ -77,7 +77,7 @@ public class OnlineDatabaseSampler {
 	}
 	
 	public void sampleVector(int classID, double[] inputVector) throws FullDatabase {
-		if(maxSizeOfDatabaseInMB > this.sizeOfDatabaseInMegabytes()) {
+		if(maxSizeOfDatabaseInMB < this.sizeOfDatabaseInMegabytes()) {
 			throw new FullDatabase(this.databaseName + " is full: "
 					+ "" + this.sizeOfDatabaseInMegabytes() + "MB");
 		}
@@ -124,11 +124,11 @@ public class OnlineDatabaseSampler {
 		return (int)((sizeOfVector * allVectors * SIZE_OF_DOUBLE) / SIZE_OF_MEGABYTE);
 	}
 	
-	public Database getDatabase(String name, long seed) {
+	public Database createDatabase(String name, long seed) {
 		return new Database(seed, trainingSet, testingSet, name);
 	}
 	
-	public Database getDatabase(String name) {
-		return getDatabase(name, 0);
+	public Database createDatabase(String name) {
+		return createDatabase(name, 0);
 	}
 }
