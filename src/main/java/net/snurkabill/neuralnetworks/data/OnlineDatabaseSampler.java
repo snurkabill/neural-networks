@@ -77,7 +77,7 @@ public class OnlineDatabaseSampler {
 	}
 	
 	public void sampleVector(int classID, double[] inputVector) throws FullDatabase {
-		if(maxSizeOfDatabaseInMB < this.sizeOfDatabaseInMegabytes()) {
+		if(maxSizeOfDatabaseInMB <= this.sizeOfDatabaseInMegabytes()) {
 			throw new FullDatabase(this.databaseName + " is full: "
 					+ "" + this.sizeOfDatabaseInMegabytes() + "MB");
 		}
