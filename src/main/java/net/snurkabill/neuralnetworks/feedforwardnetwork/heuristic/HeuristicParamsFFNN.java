@@ -1,7 +1,5 @@
 package net.snurkabill.neuralnetworks.feedforwardnetwork.heuristic;
 
-import java.nio.ByteBuffer;
-
 public class HeuristicParamsFFNN {
 	
 	public double eta;

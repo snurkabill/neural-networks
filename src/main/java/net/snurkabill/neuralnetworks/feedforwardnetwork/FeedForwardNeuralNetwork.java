@@ -111,10 +111,10 @@ public class FeedForwardNeuralNetwork {
 	public void setWeights(int layer, double[][] weights) {
 		this.weights[layer] = weights;
 	}
-	
-	public double[][][] getWeights() {
-		return weights;
-	}
+    
+    public WeightsFactory getWeights() {
+        return new PretrainedWeightsFactory(weights);
+    }
 	
 	public int getSizeOfInputVector() {
 		return sizeOfInputVector;
