@@ -131,4 +131,8 @@ public class OnlineDatabaseSampler {
 	public Database createDatabase(String name) {
 		return createDatabase(name, 0);
 	}
+
+	public int getClassWithLeastVectors() {
+		return classWithLeastVectors;
+	}
 }
