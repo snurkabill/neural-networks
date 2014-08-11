@@ -318,7 +318,7 @@ public class FeedForwardNeuralNetwork {
 			}
 		}
 		for (int i = 0; i < this.numOfLayers; i++) {
-			for (int j = 0; j < this.gradients[j].length; j++) {
+			for (int j = 0; j < this.gradients[i].length; j++) {
 				gradients[i][j] = batchGradients[i][j];
 			}
 		}
