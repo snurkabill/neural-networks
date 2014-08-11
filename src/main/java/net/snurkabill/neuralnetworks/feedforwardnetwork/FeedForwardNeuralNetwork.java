@@ -34,10 +34,12 @@ public class FeedForwardNeuralNetwork {
 	
 	private final double[][] outputValues;
 	private final double[][] gradients;
-	
+	private final double[][] batchGradients;
+			
 	private final double[][][] weights;
 	private final double[][][] deltaWeights;
 	private final double[][][] weightsEta;
+	
 	
 	private final String name;
 	
@@ -61,9 +63,11 @@ public class FeedForwardNeuralNetwork {
 		this.numOfLayers = topology.size();
 		this.outputValues = new double[topology.size()][];
 		this.gradients = new double[topology.size()][];
+		this.batchGradients = new double[topology.size()][];
 		for (int i = 0; i < topology.size(); i++) {
 			this.outputValues[i] = new double[topology.get(i) + 1];
 			this.gradients[i] = new double[topology.get(i) + 1];
+			this.batchGradients[i] = new double[topology.get(i) + 1];
 		}
 		for (int i = 0; i < topology.size(); i++) {
 			for (int j = 0; j < this.outputValues[i].length; j++) {
@@ -295,6 +299,40 @@ public class FeedForwardNeuralNetwork {
 			}
 		}
 	}
+	
+	public void miniBatchTraining(double[][] batch, double[][] targetBatch, boolean isNeuronsPretrained) {
+		for (double[] batchGradient : batchGradients) {
+			for (int j = 0; j < batchGradient.length; j++) {
+				batchGradient[j] = 0.0;
+			}
+		}
+		if(isNeuronsPretrained) {
+			for (int i = 0; i < batch.length; i++) {
+				this.feedForwardWithPretrainedInputs(batch[i]);
+				miniBatchTrainingInsideLoop(targetBatch[i]);
+			}
+		} else {
+			for (int i = 0; i < batch.length; i++) {
+				this.simpleFeedForward(batch[i]);
+				miniBatchTrainingInsideLoop(targetBatch[i]);				
+			}
+		}
+		for (int i = 0; i < this.numOfLayers; i++) {
+			for (int j = 0; j < this.gradients[i].length; j++) {
+				gradients[i][j] = batchGradients[i][j];
+			}
+		}
+		weightsCalc();
+	}
+	
+	private void miniBatchTrainingInsideLoop(double[] targetBatch) {
+		this.backPropagation(targetBatch);
+		for (int j = 0; j < this.numOfLayers; j++) {
+		for (int k = 0; k < this.gradients[j].length; k++) {
+			batchGradients[j][k] += gradients[j][k];
+			}
+		}
+	}
 	// ********************************************************************************
 	// back propagation methods
 	// ********************************************************************************
@@ -302,21 +340,9 @@ public class FeedForwardNeuralNetwork {
 		if(targetValues.length != sizeOfOutputVector) {
 			throw new IllegalArgumentException();
 		}
-		
 		calcOutputGradients(targetValues);
 		calcHiddenGradients();
-		
-		if(heuristicParams.dynamicKillingWeights) {
-			if(heuristicParams.dynamicBoostingEtas) {
-				complexUpdateWeights();
-			} else {
-				weightsKillingUpdateWeights();
-			}
-		} else if(heuristicParams.dynamicBoostingEtas) {
-			etaBoostUpdateWeights();
-		} else {
-			simpleUpdateWeights();
-		}
+		weightsCalc();
 		return currentError;
 	}
 	
@@ -349,6 +375,20 @@ public class FeedForwardNeuralNetwork {
 	// ********************************************************************************
 	// methods for updating weights
 	// ********************************************************************************
+	private void weightsCalc() {
+		if(heuristicParams.dynamicKillingWeights) {
+			if(heuristicParams.dynamicBoostingEtas) {
+				complexUpdateWeights();
+			} else {
+				weightsKillingUpdateWeights();
+			}
+		} else if(heuristicParams.dynamicBoostingEtas) {
+			etaBoostUpdateWeights();
+		} else {
+			simpleUpdateWeights();
+		}
+	}
+	
 	private double calcDeltaWeight(int i, int j, int k) {
 		double oldDeltaWeight = deltaWeights[i][k][j];
 		deltaWeights[i][k][j] = weightsEta[i][k][j] * outputValues[i][k] * gradients[i + 1][j] 
@@ -414,7 +454,9 @@ public class FeedForwardNeuralNetwork {
 		}
 	}
 	
-	//TODO : implements mini-batch training
+	// ********************************************************************************
+	// saving FFNN
+	// ********************************************************************************
 	
 	public static FeedForwardNeuralNetwork buildNeuralNetwork(File fWeights, String name, 
 			HeuristicParamsFFNN heuristicParams, TransferFunctionCalculator transferFunction, long seed
@@ -473,3 +515,5 @@ public class FeedForwardNeuralNetwork {
 		}
 	}
 }
+
+	// TODO : conjugate gradients!

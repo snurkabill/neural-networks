@@ -3,6 +3,7 @@ package net.snurkabill.neuralnetworks.feedforwardnetwork;
 import java.util.ArrayList;
 import java.util.List;
 import net.snurkabill.neuralnetworks.data.Database;
+import net.snurkabill.neuralnetworks.data.LabelledItem;
 import static net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNetworkOfflineManager.LOGGER;
 import net.snurkabill.neuralnetworks.results.BasicTestResults;
 import org.slf4j.Logger;
@@ -81,10 +82,51 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 		return results;
 	}
 	
-	public void trainNetwork(int numOfIterations) {
+	private void checkIterations(int numOfIterations) {
 		if(numOfIterations <= 0) {
 			throw new IllegalArgumentException("Number of iterations [" + numOfIterations + "] can't be negative");
 		}
+	}
+	
+	// it would be good, if sizeOfMiniBatch would be multiple of 
+	public void trainNetwork(int numOfIterations, int sizeOfMiniBatch, boolean isPretrained) {
+		checkIterations(numOfIterations);	
+		if(sizeOfMiniBatch < database.getNumberOfClasses()) {
+			LOGGER.warn("SizeOfiniBatch is too low and there is possibility to ... well IDK, it is just wrong");
+			sizeOfMiniBatch = database.getNumberOfClasses();
+		}
+		for (int network = 0; network < networks.size(); network++) {
+			long trainingStarted = System.currentTimeMillis();
+			double[][] batch = new double[sizeOfMiniBatch][networks.get(network).getSizeOfInputVector()];
+			double[][] targetValues = new double[sizeOfMiniBatch][];
+			for (int i = 0; i < sizeOfMiniBatch; i++) {
+				targetValues[i] = this.initializeTargetArray(network);
+			}
+			int[] learnedPatterns = new int[this.sizeOfOutputVector];
+			int previousIndex = 0;
+			for (int i = 0; i < numOfIterations ; i++) {
+				for (int j = 0; j < sizeOfMiniBatch; j++) {
+					LabelledItem item = database.getRandomizedLabelTrainingData();
+					batch[j] = item.data;
+					targetMaker.get(network).getTargetValues(item._class, previousIndex, targetValues[j]);
+					previousIndex = item._class;
+					learnedPatterns[previousIndex]++;
+				}
+				networks.get(network).miniBatchTraining(batch, targetValues, isPretrained);
+			}
+			long trainingEnded = System.currentTimeMillis();
+			double sec = ((trainingEnded - trainingStarted) / 1000.0);
+			LOGGER.info("Training: {} samples took {} seconds, {} samples/sec", (numOfIterations * sizeOfMiniBatch),
+					sec, (numOfIterations * sizeOfMiniBatch)/sec);
+			LOGGER.info("Learned Patterns: ");
+			for (int i = 0; i < this.sizeOfOutputVector; i++) {
+				LOGGER.info("{} - {}", i, learnedPatterns[i]);
+			}
+		}
+	}
+	
+	public void trainNetwork(int numOfIterations) {
+		checkIterations(numOfIterations);
 		if(numOfIterations < database.getNumberOfClasses()) {
 			LOGGER.warn("Count of iterations for training([{}]) is smaller than number of classes of division([{}]). "
 					+ "Uneffective training possible: setting numOfIterations to numberOfClasses", numOfIterations, 

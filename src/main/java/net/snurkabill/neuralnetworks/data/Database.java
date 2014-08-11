@@ -79,7 +79,16 @@ public class Database<T extends DataItem> {
 		return list.get(random.nextInt(list.size()));
 	}
 	
-	// TODO : randomized data with labels!
+	public LabelledItem getRandomizedLabelTestingData() {
+		int _class = random.nextInt(testingSet.size());
+		return new LabelledItem(getTestingData(_class), _class);
+	}
+	
+	public LabelledItem getRandomizedLabelTrainingData() {
+		int _class = random.nextInt(trainingSet.size());
+		return new LabelledItem(getTrainingData(_class), _class);
+	}
+	
 	public T getRandomizedTestingData() {
 		return getTestingData(random.nextInt(testingSet.size()));
 	}
