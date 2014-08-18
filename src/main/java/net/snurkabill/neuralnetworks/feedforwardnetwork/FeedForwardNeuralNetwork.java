@@ -28,6 +28,7 @@ public class FeedForwardNeuralNetwork {
 	private final int sizeOfInputVector;
 	private final int sizeOfOutputVector;
 	private final int numOfLayers;
+	private boolean isPretrained;
 	
 	private final double[] inputMeans;
 	private final double[] inputStdDev;
@@ -106,6 +107,14 @@ public class FeedForwardNeuralNetwork {
 			this.inputMeans[i] = inputMeans[i];
 			this.inputStdDev[i] = inputStdDev[i];
 		}
+	}
+
+	public boolean isIsPretrained() {
+		return isPretrained;
+	}
+
+	public void setIsPretrained(boolean isPretrained) {
+		this.isPretrained = isPretrained;
 	}
 	
 	public void setWeights(WeightsFactory wFactory) {
@@ -268,11 +277,20 @@ public class FeedForwardNeuralNetwork {
 	// ********************************************************************************
 	// feedForward methods
 	// ********************************************************************************
-	public void feedForwardWithPretrainedInputs(double[] inputVector) {
+	
+	public void feedForward(double[] inputVector) {
 		if(inputVector.length != sizeOfInputVector) {
 			throw new IllegalArgumentException("InputVector has different size than neural network first "
 					+ "layer");
 		}
+		if(isPretrained) {
+			feedForwardWithPretrainedInputs(inputVector);
+		} else {
+			simpleFeedForward(inputVector);
+		}
+	}
+	
+	private void feedForwardWithPretrainedInputs(double[] inputVector) {
 		for (int i = 0; i < sizeOfInputVector; i++) {
 			outputValues[0][i] = (inputVector[i] - inputMeans[i]) / inputStdDev[i];
 			LOGGER.trace("Neuron [0][{}], output: {}", i, outputValues[0][i]);
@@ -280,10 +298,7 @@ public class FeedForwardNeuralNetwork {
 		feedForward();	
 	}
 	
-	public void simpleFeedForward(double[] inputVector) {
-		if(inputVector.length != sizeOfInputVector) {
-			throw new IllegalArgumentException();
-		}
+	private void simpleFeedForward(double[] inputVector) {
 		System.arraycopy(inputVector, 0, outputValues[0], 0, sizeOfInputVector);
 		feedForward();
 	}
@@ -300,13 +315,13 @@ public class FeedForwardNeuralNetwork {
 		}
 	}
 	
-	public void miniBatchTraining(double[][] batch, double[][] targetBatch, boolean isNeuronsPretrained) {
+	public void miniBatchTraining(double[][] batch, double[][] targetBatch) {
 		for (double[] batchGradient : batchGradients) {
 			for (int j = 0; j < batchGradient.length; j++) {
 				batchGradient[j] = 0.0;
 			}
 		}
-		if(isNeuronsPretrained) {
+		if(isPretrained) {
 			for (int i = 0; i < batch.length; i++) {
 				this.feedForwardWithPretrainedInputs(batch[i]);
 				miniBatchTrainingInsideLoop(targetBatch[i]);

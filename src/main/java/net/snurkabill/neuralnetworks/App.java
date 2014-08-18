@@ -14,9 +14,9 @@ public class App {
 		
 		//BinaryMarketMove.startExample();
 		
-		
-		MnistExampleFFNN.startExample();
+		//MnistExampleFFNN.startExample();
 		//MnistExampleFFNN.startSaveLoadExample();
+		MnistExampleFFNN.benchmarkOnMNIST();
 		//new RBMTest().test();	
 		
 		// *********************************************************************************
@@ -150,10 +150,8 @@ public class App {
 		FeedForwardNetworkOfflineManager manager
 				= new FeedForwardNetworkOfflineManager(networks, database);
 
-		FeedForwardNetworkBenchmarker benchmarker = new FeedForwardNetworkBenchmarker(manager, 10, 100);
+		FeedForwardNetworkBenchmarker benchmarker = new FeedForwardNetworkBenchmarker(manager, 100, 1000);
 
-		benchmarker.benchmark();*/
-		
-		
+		benchmarker.benchmark();		*/
 	}
 }

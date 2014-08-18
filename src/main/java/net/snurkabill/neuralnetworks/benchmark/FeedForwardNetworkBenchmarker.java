@@ -15,9 +15,9 @@ public class FeedForwardNetworkBenchmarker implements Benchmarker {
 
 	FeedForwardNetworkOfflineManager feedForwardNetworks;
 	
-	private final int numOfRuns;
-	private final int sizeOfTrainingBatch;
-	private final List<ResultsSummary> summary;
+	protected final int numOfRuns;
+	protected final int sizeOfTrainingBatch;
+	protected final List<ResultsSummary> summary;
 	
 	public FeedForwardNetworkBenchmarker(FeedForwardNetworkOfflineManager feedForwardNetworks, int numOfRuns, 
 			int sizeOfTrainingBatch) {
@@ -53,7 +53,7 @@ public class FeedForwardNetworkBenchmarker implements Benchmarker {
 		return this.summary;
 	}
 	
-	private void makeReport() throws IOException {
+	protected void makeReport() throws IOException {
 		try (FileWriter w = new FileWriter((new Date(System.currentTimeMillis())).toString() + ".csv")) {
 			w.append("Name: ");
 			w.append(",");

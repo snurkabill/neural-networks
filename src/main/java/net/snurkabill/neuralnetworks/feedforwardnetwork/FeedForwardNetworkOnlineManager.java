@@ -19,10 +19,10 @@ public class FeedForwardNetworkOnlineManager extends FeedForwardNetworkManager {
 	}
 	
 	public List<Integer> feedForwardNetwork(double [] inputVector) {
-		LOGGER.debug("Simple feed forwarding");
+		LOGGER.debug("feed forwarding");
 		checkInput(inputVector);	
 		for (int network = 0; network < networks.size(); network++) {
-			networks.get(network).simpleFeedForward(inputVector);
+			networks.get(network).feedForward(inputVector);
 		}
 		List<Integer> tmp = new ArrayList<>();
 		for (int network = 0; network < networks.size(); network++) {
