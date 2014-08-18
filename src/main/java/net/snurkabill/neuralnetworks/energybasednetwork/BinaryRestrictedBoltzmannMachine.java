@@ -2,9 +2,9 @@ package net.snurkabill.neuralnetworks.energybasednetwork;
 
 import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.WeightsFactory;
 
-public class BinaryRestrictedBolzmannMachine extends RestrictedBoltzmannMachine {
+public class BinaryRestrictedBoltzmannMachine extends RestrictedBoltzmannMachine {
 
-	public BinaryRestrictedBolzmannMachine(int numOfVisible, int numOfHidden, WeightsFactory wFactory, 
+	public BinaryRestrictedBoltzmannMachine(int numOfVisible, int numOfHidden, WeightsFactory wFactory, 
 			HeuristicParamsRBM heuristicParams, long seed) {
 		super(numOfVisible, numOfHidden, wFactory, heuristicParams, seed);
 	}

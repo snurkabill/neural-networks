@@ -3,7 +3,7 @@ package net.snurkabill.neuralnetworks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import net.snurkabill.neuralnetworks.energybasednetwork.BinaryRestrictedBolzmannMachine;
+import net.snurkabill.neuralnetworks.energybasednetwork.BinaryRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.energybasednetwork.HeuristicParamsRBM;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.GaussianRndWeightsFactory;
 import org.slf4j.Logger;
@@ -18,7 +18,7 @@ public class RBMTest {
 		int numOfVisible = 2;
 		int numOfHidden = 10;
 
-		BinaryRestrictedBolzmannMachine rbm = new BinaryRestrictedBolzmannMachine(numOfVisible, numOfHidden, 
+		BinaryRestrictedBoltzmannMachine rbm = new BinaryRestrictedBoltzmannMachine(numOfVisible, numOfHidden, 
 				new GaussianRndWeightsFactory(0.001, 0), HeuristicParamsRBM.createBasicHeuristicParams(), 0);
 		
 		List<Tuple> asdf = new ArrayList<>();

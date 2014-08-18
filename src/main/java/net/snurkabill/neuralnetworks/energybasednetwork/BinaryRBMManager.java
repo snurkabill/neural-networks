@@ -9,10 +9,10 @@ public class BinaryRBMManager {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger("RBM binary manager");
 	
-	private final List<BinaryRestrictedBolzmannMachine> rbms;
+	private final List<BinaryRestrictedBoltzmannMachine> rbms;
 	private final Database database;
 	
-	public BinaryRBMManager(List<BinaryRestrictedBolzmannMachine> networks, Database database) {
+	public BinaryRBMManager(List<BinaryRestrictedBoltzmannMachine> networks, Database database) {
 		this.rbms = networks;
 		this.database = database;
 		LOGGER.info("Created Binary RBM manager");

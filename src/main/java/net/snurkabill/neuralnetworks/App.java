@@ -1,7 +1,17 @@
 package net.snurkabill.neuralnetworks;
 
+import java.io.File;
 import java.io.IOException;
-import net.snurkabill.neuralnetworks.examples.mnist.MnistExampleFFNN;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import net.snurkabill.neuralnetworks.data.Database;
+import net.snurkabill.neuralnetworks.data.MnistDatasetReader;
+import net.snurkabill.neuralnetworks.deepbeliefnets.DeepBeliefNeuralNetwork;
+import net.snurkabill.neuralnetworks.energybasednetwork.BinaryRestrictedBoltzmannMachine;
+import net.snurkabill.neuralnetworks.energybasednetwork.HeuristicParamsRBM;
+import net.snurkabill.neuralnetworks.energybasednetwork.RestrictedBoltzmannMachine;
+import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.GaussianRndWeightsFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,13 +26,13 @@ public class App {
 		
 		//MnistExampleFFNN.startExample();
 		//MnistExampleFFNN.startSaveLoadExample();
-		MnistExampleFFNN.benchmarkOnMNIST();
+		//MnistExampleFFNN.benchmarkOnMNIST();
 		//new RBMTest().test();	
 		
 		// *********************************************************************************
 		// DBN test
 		// *********************************************************************************
-		/*double weightScale = 0.01;
+		double weightScale = 0.01;
 		File labels = new File("target/minst/train-labels-idx1-ubyte.gz");
 		File images = new File("target/minst/train-images-idx3-ubyte.gz");
 		MnistDatasetReader reader;
@@ -36,12 +46,12 @@ public class App {
 		
 		List<RestrictedBoltzmannMachine> machines = new ArrayList<>();
 		
-		machines.add(new BinaryRestrictedBolzmannMachine(784, 500, new GaussianRndWeightsFactory(weightScale, 0),
-				new HeuristicParamsRBM(), 0));
-		machines.add(new BinaryRestrictedBolzmannMachine(500, 500, new GaussianRndWeightsFactory(weightScale, 0),
-				new HeuristicParamsRBM(), 0));
-		machines.add(new BinaryRestrictedBolzmannMachine(510, 2000, new GaussianRndWeightsFactory(weightScale, 0),
-				new HeuristicParamsRBM(), 0));
+		machines.add(new BinaryRestrictedBoltzmannMachine(784, 500, new GaussianRndWeightsFactory(weightScale, 0),
+				HeuristicParamsRBM.createBasicHeuristicParams(), 0));
+		machines.add(new BinaryRestrictedBoltzmannMachine(500, 500, new GaussianRndWeightsFactory(weightScale, 0),
+				HeuristicParamsRBM.createBasicHeuristicParams(), 0));
+		machines.add(new BinaryRestrictedBoltzmannMachine(510, 2000, new GaussianRndWeightsFactory(weightScale, 0),
+				HeuristicParamsRBM.createBasicHeuristicParams(), 0));
 		
 		DeepBeliefNeuralNetwork fuckingMonster = new DeepBeliefNeuralNetwork(machines, "Trhac Asfaltu");
 		
@@ -51,7 +61,7 @@ public class App {
 		
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < numOfIterations; j++) {
-				double[] input = database.getRandomizedTestingData().data;
+				double[] input = database.getRandomizedTrainingData().data;
 				LOGGER.trace("Size of input: {}", input.length);
 				for (int k = 0; k < input.length; k++) {
 					input[k] = input[k] > 30 ? 1 : 0;
@@ -116,7 +126,7 @@ public class App {
 		double sec = ((testingFinished - testingStarted) / 1000.0);
 		LOGGER.info("Testing {} samples took {} seconds, {} samples/sec", all, sec, all/sec);
 		LOGGER.info("RESULTS: {}", ((success * 100.0) / all));
-		*/
+		
 
 		// *********************************************************************************
 		// benchmarker test
