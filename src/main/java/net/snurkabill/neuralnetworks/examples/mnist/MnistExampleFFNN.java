@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import net.snurkabill.neuralnetworks.benchmark.MiniBatchVsOnlineBenchmarker;
 import net.snurkabill.neuralnetworks.data.Database;
 import net.snurkabill.neuralnetworks.data.MnistDatasetReader;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNeuralNetwork;
@@ -24,6 +25,41 @@ public class MnistExampleFFNN {
 	public static final int OUTPUT_SIZE = 10;
 	public static final int[] hiddenLayers = {200};
 	
+	public static void benchmarkOnMNIST() throws IOException {
+		long seed = 0;
+		File labels = new File("target/minst/train-labels-idx1-ubyte.gz");
+		File images = new File("target/minst/train-images-idx3-ubyte.gz");
+		MnistDatasetReader reader;
+		try {
+			reader = new MnistDatasetReader(labels, images);
+		} catch (IOException ex) {
+			throw new IllegalArgumentException(ex);
+		}
+		
+		List<Integer> topology = new ArrayList<>();
+		topology.add(INPUT_SIZE);
+		for (int i = 0; i < hiddenLayers.length; i++) {
+			topology.add(hiddenLayers[i]);
+		}
+		topology.add(OUTPUT_SIZE);
+		
+		double weightsScale = 0.001;
+		FeedForwardNeuralNetwork network = new FeedForwardNeuralNetwork(topology, 
+				new GaussianRndWeightsFactory(weightsScale, seed), "Online_learning", 
+				HeuristicParamsFFNN.createDefaultHeuristic(), new HyperbolicTangens(), seed);
+		
+		FeedForwardNeuralNetwork networkMiniBatch = new FeedForwardNeuralNetwork(topology, 
+				new GaussianRndWeightsFactory(weightsScale, seed), "miniBatch_learning", 
+				HeuristicParamsFFNN.createDefaultHeuristic(), new HyperbolicTangens(), seed);
+		
+		Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST");
+		FeedForwardNetworkOfflineManager manager = new FeedForwardNetworkOfflineManager(Collections.singletonList(network), database);
+		FeedForwardNetworkOfflineManager miniManager = new FeedForwardNetworkOfflineManager(Collections.singletonList(networkMiniBatch), database);
+		
+		
+		MiniBatchVsOnlineBenchmarker benchmarker = new MiniBatchVsOnlineBenchmarker(manager, 10, 500, 50, miniManager);
+		benchmarker.benchmark();
+	}
 	
 	public static void startExample() throws IOException {
 		long seed = 0;

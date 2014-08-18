@@ -36,7 +36,8 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 					batch[j] = database.getRandomizedTrainingData().data[i];
 				}
 				network.updateInputModifier(i, batch);
-			}	
+			}
+			network.setIsPretrained(true);
 		}
 	}
 	
@@ -55,7 +56,8 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 			for (int i = 0; i < database.getNumberOfClasses(); i++) {
 				targetMaker.get(network).getTargetValues(i, i, targetValues);
 				for (int j = 0; j < database.getSizeOfTestingDataset(i); j++) {
-					networks.get(network).feedForwardWithPretrainedInputs(database.getTestingIteratedData(i).data);
+						networks.get(network).feedForward(database.getTestingIteratedData(i).data);
+					
 					globalError += networks.get(network).getError(targetValues);
 
 					//TODO : general evaluation 
@@ -89,7 +91,7 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 	}
 	
 	// it would be good, if sizeOfMiniBatch would be multiple of 
-	public void trainNetwork(int numOfIterations, int sizeOfMiniBatch, boolean isPretrained) {
+	public void trainNetwork(int numOfIterations, int sizeOfMiniBatch) {
 		checkIterations(numOfIterations);	
 		if(sizeOfMiniBatch < database.getNumberOfClasses()) {
 			LOGGER.warn("SizeOfiniBatch is too low and there is possibility to ... well IDK, it is just wrong");
@@ -112,7 +114,7 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 					previousIndex = item._class;
 					learnedPatterns[previousIndex]++;
 				}
-				networks.get(network).miniBatchTraining(batch, targetValues, isPretrained);
+				networks.get(network).miniBatchTraining(batch, targetValues);
 			}
 			long trainingEnded = System.currentTimeMillis();
 			double sec = ((trainingEnded - trainingStarted) / 1000.0);
@@ -139,7 +141,7 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 			int[] learnedPatterns = new int[this.sizeOfOutputVector];
 			for (int i = 1; i < numOfIterations + 1; i++) {
 				int newIndex = i % database.getNumberOfClasses();
-				networks.get(network).feedForwardWithPretrainedInputs(database.getTrainingIteratedData(newIndex).data);
+				networks.get(network).feedForward(database.getTrainingIteratedData(newIndex).data);
 				networks.get(network).backPropagation(targetMaker.get(network).getTargetValues(newIndex, 
 						((i - 1) % database.getNumberOfClasses()), targetValues));
 				learnedPatterns[newIndex]++;
