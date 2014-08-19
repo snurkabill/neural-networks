@@ -74,7 +74,7 @@ public class App {
 		Random random = new Random(0);
 		for (int i = 0; i < numOfIterations; i++) {
 			int labelIndex = random.nextInt(10);
-			double[] input = database.getTestingData(labelIndex).data;
+			double[] input = database.getTrainingData(labelIndex).data;
 			double[] label = new double[10];
 			label[labelIndex] = 1.0;
 			for (int k = 0; k < input.length; k++) {
