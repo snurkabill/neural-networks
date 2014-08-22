@@ -66,6 +66,7 @@ public class DeepBeliefNeuralNetwork {
 				levels.get(indexOfLastInnerLayer).getSizeOfHiddenVector());
 		double[] reconstructed = new double[levels.get(indexOfLastLayer).getSizeOfVisibleVector()];
 		double[] lastHidden = innerFeedForward(inputVector);
+		LOGGER.info("{}", lastHidden);
 		for (int i = 0; i < lastHidden.length; i++) {
 			reconstructed[i] = lastHidden[i];
 		}

@@ -96,6 +96,7 @@ public class FeedForwardNeuralNetwork {
 			this.inputMeans[i] = 0.0;
 			this.inputStdDev[i] = 1.0;
 		}
+		isPretrained = false;
 		LOGGER.info("Created Feed forward neural network {}", topology.toString());
 	}
 	
@@ -107,6 +108,7 @@ public class FeedForwardNeuralNetwork {
 			this.inputMeans[i] = inputMeans[i];
 			this.inputStdDev[i] = inputStdDev[i];
 		}
+		isPretrained = true;
 	}
 
 	public boolean isIsPretrained() {
@@ -247,7 +249,9 @@ public class FeedForwardNeuralNetwork {
             LOGGER.info("Saving network");
 		try(DataOutputStream os = new DataOutputStream(new FileOutputStream(baseFile))) {
 			saveWeights(os);
-			saveInputModdifiers(os);
+			if(isPretrained) {
+				saveInputModdifiers(os);	
+			}
 		}
 	}
 	

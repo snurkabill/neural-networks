@@ -55,7 +55,7 @@ public class App {
 		
 		DeepBeliefNeuralNetwork fuckingMonster = new DeepBeliefNeuralNetwork(machines, "Trhac Asfaltu");
 		
-		int numOfIterations = 100;
+		int numOfIterations = 1000;
 		
 		LOGGER.info("Inner training started");
 		
@@ -104,7 +104,7 @@ public class App {
 				for (int k = 0; k < input.length; k++) {
 					input[k] = input[k] > 30 ? 1 : 0;
 				}
-				double[] output = fuckingMonster.feedForward(input, 1);
+				double[] output = fuckingMonster.feedForward(input, 3);
 				
 				//TODO : general evaluation 
 				

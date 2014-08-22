@@ -39,8 +39,7 @@ public class RBMTest {
 			asdf.add(new Tuple(0,0));
 		}
 		
-		
-		int numOfIterations = 100;
+		int numOfIterations = 1000;
 		for (int i = 0; i < numOfIterations; i++) {
 			Collections.shuffle(asdf);
 			
@@ -58,13 +57,10 @@ public class RBMTest {
 		int numOfTestingIterations = 100000;
 		for (int i = 0; i < numOfTestingIterations; i++) {
 			
-			LOGGER.info("{}", rbm.reconstructNext());
-			//Tuple tuple = new Tuple(rbm.reconstructNext());
-			
-			
-			//counter[tuple.num]++;
+			//LOGGER.info("{}", rbm.reconstructNext());
+			Tuple tuple = new Tuple(rbm.reconstructNext());
+			counter[tuple.num]++;
 		}
 		LOGGER.info("RESULTS: {}", counter);
-		
 	}	
 }
