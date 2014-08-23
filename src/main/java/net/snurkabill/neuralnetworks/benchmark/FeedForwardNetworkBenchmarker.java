@@ -54,8 +54,10 @@ public class FeedForwardNetworkBenchmarker implements Benchmarker {
 	}
 	
 	protected void makeReport() throws IOException {
-		try (FileWriter w = new FileWriter((new Date(System.currentTimeMillis())).toString() + ".csv")) {
-			w.append("Name: ");
+        String asdf = (new Date(System.currentTimeMillis())).toString();
+        asdf = asdf.replace(":", "_");
+		try (FileWriter w = new FileWriter(asdf + ".csv")) {
+            w.append("Name: ");
 			w.append(",");
 			List<FeedForwardNeuralNetwork> networks = feedForwardNetworks.getNetworkList();
 			for (int i = 0; i < feedForwardNetworks.getNumOfNeuralNetworks(); i++) {
