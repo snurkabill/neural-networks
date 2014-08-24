@@ -1,15 +1,11 @@
 package net.snurkabill.neuralnetworks.benchmark;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNetworkOfflineManager;
-import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNeuralNetwork;
 import net.snurkabill.neuralnetworks.results.BasicTestResults;
 import net.snurkabill.neuralnetworks.results.ResultsSummary;
-import net.snurkabill.neuralnetworks.results.SupervisedTestResults;
 
 public class MiniBatchVsOnlineBenchmarker extends FeedForwardNetowkrBatchBenchmarker {
 

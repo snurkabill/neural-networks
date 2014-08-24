@@ -70,7 +70,7 @@ public class FeedForwardNetworkBenchmarker implements Benchmarker {
 				w.append(String.valueOf(exclusiveSum));
 				w.append(",");
 				exclusiveSum += this.sizeOfTrainingBatch;
-				for (int j = 0; j < feedForwardNetworks.getNumOfNeuralNetworks(); j++) {
+				for (int j = 0; j < summary.size(); j++) {
 					w.append(String.valueOf(((SupervisedTestResults) summary.get(j).getResults().get(i)).getSuccessPercentage()));
 					w.append(",");
 				}

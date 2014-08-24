@@ -3,6 +3,7 @@ package net.snurkabill.neuralnetworks.examples.mnist;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import net.snurkabill.neuralnetworks.benchmark.MiniBatchVsOnlineBenchmarker;
@@ -43,19 +44,25 @@ public class MnistExampleFFNN {
 		}
 		topology.add(OUTPUT_SIZE);
 		
+		HeuristicParamsFFNN heuristic = HeuristicParamsFFNN.createDefaultHeuristic();
+		
+		
 		double weightsScale = 0.001;
 		FeedForwardNeuralNetwork network = new FeedForwardNeuralNetwork(topology, 
-				new GaussianRndWeightsFactory(weightsScale, seed), "Online_learning", 
+				new GaussianRndWeightsFactory(weightsScale, seed), "Online_learning_simple", 
 				HeuristicParamsFFNN.createDefaultHeuristic(), new HyperbolicTangens(), seed);
+		
+		FeedForwardNeuralNetwork network2 = new FeedForwardNeuralNetwork(topology, 
+				new GaussianRndWeightsFactory(weightsScale, seed), "Online_learning", 
+				heuristic, new HyperbolicTangens(), seed);
 		
 		FeedForwardNeuralNetwork networkMiniBatch = new FeedForwardNeuralNetwork(topology, 
 				new GaussianRndWeightsFactory(weightsScale, seed), "miniBatch_learning", 
-				HeuristicParamsFFNN.createDefaultHeuristic(), new HyperbolicTangens(), seed);
+				heuristic, new HyperbolicTangens(), seed);
 		
 		Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST");
-		FeedForwardNetworkOfflineManager manager = new FeedForwardNetworkOfflineManager(Collections.singletonList(network), database);
+		FeedForwardNetworkOfflineManager manager = new FeedForwardNetworkOfflineManager(Arrays.asList(network, network2), database);
 		FeedForwardNetworkOfflineManager miniManager = new FeedForwardNetworkOfflineManager(Collections.singletonList(networkMiniBatch), database);
-		
 		
 		MiniBatchVsOnlineBenchmarker benchmarker = new MiniBatchVsOnlineBenchmarker(manager, 10, 500, 50, miniManager);
 		benchmarker.benchmark();
