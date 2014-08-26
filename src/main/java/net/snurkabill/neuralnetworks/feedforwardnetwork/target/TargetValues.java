@@ -11,4 +11,5 @@ public abstract class TargetValues {
 	}
 	
 	public abstract double[] getTargetValues(int acutalIndex, int previousIndex, double[] targetValues);
+	public abstract double[] getTargetValues(int actualIndex, double[] targetValues);
 }

@@ -200,19 +200,34 @@ public class Database<T extends DataItem> {
 		return new Database(seed, trainingSet, testingSet, baseFile.getName());
 	}
 	
+	public synchronized Iterator<T> getTestingIteratorOverClass(int i) {
+		return testingSet.get(i).iterator();
+	}
+	
+	public synchronized Iterator<T> getTrainingIteratorOverClass(int i) {
+		return trainingSet.get(i).iterator();
+	}
+	
+	public synchronized Iterator<T> getTestingIterator() {
+		return new TestSetIterator(testingSet);
+	}
+	
+	public synchronized Iterator<T> getInfiniteTrainingIterator() {
+		return new InfiniteSimpleTrainSetIterator(trainingSet);
+	}
+	
 	public class InfiniteSimpleTrainSetIterator implements Iterator {
 
 		private Map<Integer, List<T>> map;
-		private List<Iterator<T>> iterators;
+		private List<Iterator<T>> iterators = new ArrayList<>();
+		private int lastUnusedClass;
 		
 		public InfiniteSimpleTrainSetIterator(Map<Integer, List<T>> map) {
 			this.map = map;
 			for (int i = 0; i < map.size(); i++) {
 				iterators.add(map.get(i).iterator());
 			}
-			
-			// FINISH ME
-			
+			lastUnusedClass = 0;
 		}
 
 		@Override
@@ -221,19 +236,25 @@ public class Database<T extends DataItem> {
 		}
 
 		@Override
-		public Object next() {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
+		public LabelledItem next() {
+			if(lastUnusedClass == map.size()) {
+				lastUnusedClass = 0;
+			}
+			if(!iterators.get(lastUnusedClass).hasNext()) {
+				iterators.set(lastUnusedClass, map.get(lastUnusedClass).iterator());
+			}
+			lastUnusedClass++;
+			return new LabelledItem(iterators.get(lastUnusedClass - 1).next(), lastUnusedClass - 1);
+		}	
 
 		@Override
 		public void remove() {
 			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
-		
+		}	
 	}
 	
 	public class TestSetIterator implements Iterator {
-		private List<Iterator<T>> iterators;
+		private List<Iterator<T>> iterators = new ArrayList<>();
 		private Iterator<Iterator<T>> master;
 		private Iterator<T> actual;
 		private int actualClass;

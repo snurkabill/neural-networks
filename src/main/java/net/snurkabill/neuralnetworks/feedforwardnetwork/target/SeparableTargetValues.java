@@ -16,4 +16,13 @@ public class SeparableTargetValues extends TargetValues {
 		
 		return targetValues;
 	}
+
+	@Override
+	public double[] getTargetValues(int actualIndex, double[] targetValues) {
+		for (int i = 0; i < targetValues.length; i++) {
+			targetValues[i] = this.transferFunctionCalculator.getLowLimit();
+		}
+		targetValues[actualIndex] = this.transferFunctionCalculator.getTopLimit();
+		return targetValues;
+	}
 }
