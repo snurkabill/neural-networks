@@ -199,4 +199,99 @@ public class Database<T extends DataItem> {
 		LOGGER.info("Loading database done, took: {}", time2 - time1);
 		return new Database(seed, trainingSet, testingSet, baseFile.getName());
 	}
+	
+	public synchronized Iterator<T> getTestingIteratorOverClass(int i) {
+		return testingSet.get(i).iterator();
+	}
+	
+	public synchronized Iterator<T> getTrainingIteratorOverClass(int i) {
+		return trainingSet.get(i).iterator();
+	}
+	
+	public synchronized Iterator<T> getTestingIterator() {
+		return new TestSetIterator(testingSet);
+	}
+	
+	public synchronized Iterator<T> getInfiniteTrainingIterator() {
+		return new InfiniteSimpleTrainSetIterator(trainingSet);
+	}
+	
+	public class InfiniteSimpleTrainSetIterator implements Iterator {
+
+		private Map<Integer, List<T>> map;
+		private List<Iterator<T>> iterators = new ArrayList<>();
+		private int lastUnusedClass;
+		
+		public InfiniteSimpleTrainSetIterator(Map<Integer, List<T>> map) {
+			this.map = map;
+			for (int i = 0; i < map.size(); i++) {
+				iterators.add(map.get(i).iterator());
+			}
+
+			lastUnusedClass = 0;
+			// FINISH ME
+		}
+
+		@Override
+		public boolean hasNext() {
+			return true;
+		}
+
+		@Override
+		public LabelledItem next() {
+			if(lastUnusedClass == map.size()) {
+				lastUnusedClass = 0;
+			}
+			if(!iterators.get(lastUnusedClass).hasNext()) {
+				iterators.set(lastUnusedClass, map.get(lastUnusedClass).iterator());
+			}
+			lastUnusedClass++;
+			return new LabelledItem(iterators.get(lastUnusedClass - 1).next(), lastUnusedClass - 1);
+		}	
+
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}	
+	}
+	
+	public class TestSetIterator implements Iterator {
+		private List<Iterator<T>> iterators;
+		private Iterator<Iterator<T>> master;
+		private Iterator<T> actual;
+		private int actualClass;
+		
+		public TestSetIterator(Map<Integer, List<T>> map) {
+			for (int i = 0; i < map.size(); i++) {
+				iterators.add(map.get(i).iterator());
+			}
+			master = iterators.iterator();
+			actual = master.next();
+			actualClass = 0;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			if(master.hasNext()) {
+				return true;
+			} else return actual.hasNext() == true;
+		}
+
+		@Override
+		public LabelledItem next() {
+			if(actual.hasNext()) {
+				return new LabelledItem(actual.next(), actualClass);
+			} else {
+				actual = master.next();
+				actualClass++;
+				return new LabelledItem(actual.next(), actualClass);
+			}
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+	}
 }

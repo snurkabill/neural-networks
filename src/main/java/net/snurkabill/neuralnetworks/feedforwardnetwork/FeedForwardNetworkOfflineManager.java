@@ -1,7 +1,9 @@
 package net.snurkabill.neuralnetworks.feedforwardnetwork;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import net.snurkabill.neuralnetworks.data.DataItem;
 import net.snurkabill.neuralnetworks.data.Database;
 import net.snurkabill.neuralnetworks.data.LabelledItem;
 import static net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNetworkOfflineManager.LOGGER;
@@ -20,7 +22,6 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 	public FeedForwardNetworkOfflineManager(List<FeedForwardNeuralNetwork> networks, Database database) {
 		super(networks);
 		this.database = database;
-		LOGGER.info("Offline manager created with {} networks", networks.size());
 	}
 
 	public void pretrainInputNeurons(int percentageOfDataset) {
@@ -53,17 +54,24 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 			double globalError = 0.0;
 			int success = 0;
 			int fail = 0;
-			for (int i = 0; i < database.getNumberOfClasses(); i++) {
-				targetMaker.get(network).getTargetValues(i, i, targetValues);
-				for (int j = 0; j < database.getSizeOfTestingDataset(i); j++) {
-						networks.get(network).feedForward(database.getTestingIteratedData(i).data);
-					
+			for (int _class = 0; _class < database.getNumberOfClasses(); _class++) {
+				targetMaker.get(network).getTargetValues(_class, _class, targetValues);
+				/*for (int j = 0; j < database.getSizeOfTestingDataset(i); j++) {
+					networks.get(network).feedForward(database.getTestingIteratedData(i).data);
 					globalError += networks.get(network).getError(targetValues);
-
 					//TODO : general evaluation 
 					if(networks.get(network).getFirstHighestValueIndex() == i) {
 						success++;
 						successValuesCounter[i]++;
+					} else fail++;
+				}*/
+				Iterator<DataItem> testingIterator = database.getTestingIteratorOverClass(_class);
+				for (;testingIterator.hasNext();) {
+					networks.get(network).feedForward(testingIterator.next().data);
+					globalError += networks.get(network).getError(targetValues);
+					if(networks.get(network).getFirstHighestValueIndex() == _class) {
+						success++;
+						successValuesCounter[_class]++;
 					} else fail++;
 				}
 			}

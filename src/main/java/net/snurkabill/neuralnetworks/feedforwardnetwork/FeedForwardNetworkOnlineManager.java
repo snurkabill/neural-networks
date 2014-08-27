@@ -12,10 +12,20 @@ public class FeedForwardNetworkOnlineManager extends FeedForwardNetworkManager {
 	private int lastTrained =  -1;
 	private TrainingMode trainingMode;
 
+	private int MAX_PRETRAINING_BATCH;
+	private int actualBatch = 0;
+	private double [][] inputBatch;
+	
 	public FeedForwardNetworkOnlineManager(List<FeedForwardNeuralNetwork> networks) {
 		super(networks);
-		LOGGER.info("Created with {} networks", networks.size());
 		trainingMode = TrainingMode.SEQUENTIAL_TRAINING;
+	}
+	
+	public FeedForwardNetworkOnlineManager(List<FeedForwardNeuralNetwork> networks, int maxBatchSamplesOfPretraining) {
+		super(networks);
+		trainingMode = TrainingMode.PRE_TRAINING;
+		MAX_PRETRAINING_BATCH = maxBatchSamplesOfPretraining;
+		inputBatch = new double[networks.get(0).getSizeOfInputVector()][MAX_PRETRAINING_BATCH];
 	}
 	
 	public List<Integer> feedForwardNetwork(double [] inputVector) {
@@ -50,6 +60,23 @@ public class FeedForwardNetworkOnlineManager extends FeedForwardNetworkManager {
 			if(expectedOutputClassIndex == nextToTrain()) {
 				backPropagation(expectedOutputClassIndex);
 			}
+		} else if(trainingMode == TrainingMode.PRE_TRAINING) {
+			LOGGER.debug("PRE_TAINING {}", expectedOutputClassIndex);
+			if(actualBatch == MAX_PRETRAINING_BATCH) {
+				trainingMode = TrainingMode.FULL_TRAINING;
+				LOGGER.info("PRE_TRAINING mode stopped. {} is on", trainingMode);
+				for (int i = 0; i < networks.size(); i++) {
+					for (int j = 0; j < networks.get(0).getSizeOfInputVector(); j++) {
+						networks.get(i).updateInputModifier(j, inputBatch[j]);
+					}
+				}
+				inputBatch = null;
+			} else {
+				for (int i = 0; i < inputVector.length; i++) {
+					inputBatch[i][actualBatch] = inputVector[i];
+				}
+				actualBatch++;
+			}
 		}
 		return results;
 	}
@@ -69,13 +96,17 @@ public class FeedForwardNetworkOnlineManager extends FeedForwardNetworkManager {
 	}
 	
 	public void changeTrainingMode(TrainingMode trainingMode) {
+		if(trainingMode == TrainingMode.PRE_TRAINING && inputBatch == null) {
+			LOGGER.info("OnlineManager already pretrained networks. It is not possible to pretrain them again");
+		}
 		LOGGER.debug("Changing training mode to {}", trainingMode);
 		this.trainingMode = trainingMode;
 	}
 	
 	public static enum TrainingMode {
 		FULL_TRAINING, // train on all inputs
-		SEQUENTIAL_TRAINING, // train sequential on classes of division {1, 2, 3 ....}
+		SEQUENTIAL_TRAINING, // train sequentially on classes of division {1, 2, 3 ....}
+		PRE_TRAINING, // store batch for pretraining neurons
 		NON_TRAINING; // back propagation off
 	}
 }

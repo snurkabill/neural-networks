@@ -11,6 +11,7 @@ import net.snurkabill.neuralnetworks.deepbeliefnets.DeepBeliefNeuralNetwork;
 import net.snurkabill.neuralnetworks.energybasednetwork.BinaryRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.energybasednetwork.HeuristicParamsRBM;
 import net.snurkabill.neuralnetworks.energybasednetwork.RestrictedBoltzmannMachine;
+import net.snurkabill.neuralnetworks.examples.mnist.MnistExampleFFNN;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.GaussianRndWeightsFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,7 @@ public class App {
 		
 		//BinaryMarketMove.startExample();
 		
-		//MnistExampleFFNN.startExample();
+		MnistExampleFFNN.startExample();
 		//MnistExampleFFNN.startSaveLoadExample();
 		//MnistExampleFFNN.benchmarkOnMNIST();
 		//new RBMTest().test();	

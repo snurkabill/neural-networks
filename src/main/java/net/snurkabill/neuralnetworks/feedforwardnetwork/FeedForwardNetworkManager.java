@@ -2,6 +2,7 @@ package net.snurkabill.neuralnetworks.feedforwardnetwork;
 
 import java.util.ArrayList;
 import java.util.List;
+import static net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNetworkOnlineManager.LOGGER;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.target.SeparableTargetValues;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.target.TargetValues;
 
@@ -29,6 +30,7 @@ public abstract class FeedForwardNetworkManager {
 				throw new IllegalArgumentException("Networks have different output vector sizes");
 			}
 		}
+		LOGGER.info("Manager created with {} networks", networks.size());
 	}
 	
 	public List<FeedForwardNeuralNetwork> getNetworkList() {
