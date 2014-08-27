@@ -227,7 +227,9 @@ public class Database<T extends DataItem> {
 			for (int i = 0; i < map.size(); i++) {
 				iterators.add(map.get(i).iterator());
 			}
+
 			lastUnusedClass = 0;
+			// FINISH ME
 		}
 
 		@Override
@@ -247,6 +249,7 @@ public class Database<T extends DataItem> {
 			return new LabelledItem(iterators.get(lastUnusedClass - 1).next(), lastUnusedClass - 1);
 		}	
 
+
 		@Override
 		public void remove() {
 			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -254,7 +257,7 @@ public class Database<T extends DataItem> {
 	}
 	
 	public class TestSetIterator implements Iterator {
-		private List<Iterator<T>> iterators = new ArrayList<>();
+		private List<Iterator<T>> iterators;
 		private Iterator<Iterator<T>> master;
 		private Iterator<T> actual;
 		private int actualClass;
