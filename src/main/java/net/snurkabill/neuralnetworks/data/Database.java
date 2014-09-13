@@ -257,7 +257,7 @@ public class Database<T extends DataItem> {
 	}
 	
 	public class TestSetIterator implements Iterator {
-		private List<Iterator<T>> iterators;
+		private List<Iterator<T>> iterators = new ArrayList<>();
 		private Iterator<Iterator<T>> master;
 		private Iterator<T> actual;
 		private int actualClass;

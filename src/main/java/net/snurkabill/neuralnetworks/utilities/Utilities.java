@@ -28,6 +28,6 @@ public class Utilities {
 	}
 
     public static double secondsSpent(long from, long to) {
-        return ((to - from) / 1000.0);
+        return ((double)(to - from) / 1000.0);
     }
 }

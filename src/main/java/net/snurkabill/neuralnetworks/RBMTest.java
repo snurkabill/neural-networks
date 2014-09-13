@@ -2,15 +2,18 @@ package net.snurkabill.neuralnetworks;
 
 import net.snurkabill.neuralnetworks.benchmark.RBM.Vector.Tuple;
 import net.snurkabill.neuralnetworks.benchmark.RBM.Vector.TupleGenerator;
+import net.snurkabill.neuralnetworks.data.DataItem;
+import net.snurkabill.neuralnetworks.data.Database;
+import net.snurkabill.neuralnetworks.energybasednetwork.BinaryRBMManager;
 import net.snurkabill.neuralnetworks.energybasednetwork.BinaryRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.energybasednetwork.HeuristicParamsRBM;
+import net.snurkabill.neuralnetworks.energybasednetwork.randomize.randomindexer.LinearRandomIndexer;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.GaussianRndWeightsFactory;
+import net.snurkabill.neuralnetworks.results.UnsupervisedTestResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class RBMTest {
 	
@@ -69,9 +72,8 @@ public class RBMTest {
 		for (int i = 0; i < numOfIterations; i++) {
 			Collections.shuffle(asdf);
 			
-			double[] trainValues = new double[rbm.getSizeOfVisibleVector()];
 			for (int j = 0; j < asdf.size(); j++) {
-				trainValues = asdf.get(j).getDoubleArray();
+                double[] trainValues = asdf.get(j).getDoubleArray();
 				rbm.trainMachine(trainValues);
 				//LOGGER.info("Energy = {}", rbm.calcEnergy());
 			}
@@ -92,7 +94,7 @@ public class RBMTest {
         LOGGER.info("NEXT TEST");
 
         numOfVisible = 20;
-        numOfHidden = 20;
+        numOfHidden = 100;
 
         BinaryRestrictedBoltzmannMachine secondRbm = new BinaryRestrictedBoltzmannMachine(numOfVisible, numOfHidden,
                 new GaussianRndWeightsFactory(0.01, 0), HeuristicParamsRBM.createBasicHeuristicParams(), 0);
@@ -115,26 +117,31 @@ public class RBMTest {
                 0, 1, 0, 1, 0,
                 1, 0, 1, 0, 1};
 
-        List<double[]> asdfasdf = new ArrayList<>();
-        asdfasdf.add(firstVector);
-        asdfasdf.add(secondVector);
-        asdfasdf.add(thirdVector);
-
-        numOfIterations = 100;
-
-        double[] last = null;
-        for (int i = 0; i < numOfIterations; i++) {
-            Collections.shuffle(asdfasdf);
-
-            for (double[] kkk : asdfasdf) {
-                secondRbm.trainMachine(kkk);
-                last = kkk;
-            }
+        Map<Integer, List<?>> trainingSet = new HashMap<>();
+        List<DataItem> first = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            first.add(new DataItem(firstVector));
         }
+        List<DataItem> second = new ArrayList<>();
+        for (int i = 0; i < 200; i++) {
+            second.add(new DataItem(secondVector));
+        }
+        List<DataItem> third = new ArrayList<>();
+        for (int i = 0; i < 300; i++) {
+            third.add(new DataItem(thirdVector));
+        }
+        trainingSet.put(0, first);
+        trainingSet.put(1, second);
+        trainingSet.put(2, third);
+        Database database = new Database(0, trainingSet, trainingSet, "testingDatabaseRBM");
+
+        BinaryRBMManager manager = new BinaryRBMManager(Collections.singletonList(secondRbm), database, 0);
 
         for (int i = 0; i < 100; i++) {
-            LOGGER.info("{}", secondRbm.reconstructNext());
+            manager.trainNetworks(50);
+            List<UnsupervisedTestResults> results = manager.testNetworks(0,
+                    new LinearRandomIndexer(secondRbm.getSizeOfVisibleVector(), 0, 0));
+            LOGGER.info("Success: {}", results.get(0).getSuccess());
         }
-        LOGGER.info("LAST: {}", last);
     }	
 }
