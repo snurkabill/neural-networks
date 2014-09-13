@@ -16,13 +16,14 @@ public class FeedForwardNetworkOnlineManager extends FeedForwardNetworkManager {
 	private int actualBatch = 0;
 	private double [][] inputBatch;
 	
-	public FeedForwardNetworkOnlineManager(List<FeedForwardNeuralNetwork> networks) {
-		super(networks);
+	public FeedForwardNetworkOnlineManager(List<FeedForwardNeuralNetwork> networks, boolean enableThreads) {
+		super(networks, enableThreads);
 		trainingMode = TrainingMode.SEQUENTIAL_TRAINING;
 	}
 	
-	public FeedForwardNetworkOnlineManager(List<FeedForwardNeuralNetwork> networks, int maxBatchSamplesOfPretraining) {
-		super(networks);
+	public FeedForwardNetworkOnlineManager(List<FeedForwardNeuralNetwork> networks, 
+			int maxBatchSamplesOfPretraining, boolean enableThreads) {
+		super(networks, enableThreads);
 		trainingMode = TrainingMode.PRE_TRAINING;
 		MAX_PRETRAINING_BATCH = maxBatchSamplesOfPretraining;
 		inputBatch = new double[networks.get(0).getSizeOfInputVector()][MAX_PRETRAINING_BATCH];

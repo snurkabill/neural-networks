@@ -97,7 +97,7 @@ public class Database<T extends DataItem> {
 		return getTrainingData(random.nextInt(trainingSet.size()));
 	}
 	
-	public int getTestsetSize() {
+	public int getTestSetSize() {
 		return sizeOfTestingSet;
 	}
 	
@@ -257,7 +257,7 @@ public class Database<T extends DataItem> {
 	}
 	
 	public class TestSetIterator implements Iterator {
-		private List<Iterator<T>> iterators;
+		private List<Iterator<T>> iterators = new ArrayList<>();
 		private Iterator<Iterator<T>> master;
 		private Iterator<T> actual;
 		private int actualClass;

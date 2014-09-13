@@ -13,8 +13,10 @@ public abstract class FeedForwardNetworkManager {
 	protected final List<FeedForwardNeuralNetwork> networks;
 	// TODO: general evaluator
 	protected final List<TargetValues> targetMaker;
+    private final int determinedNumOfThreads;
+    private final boolean multiThreadingEnabled;
 
-	public FeedForwardNetworkManager(List<FeedForwardNeuralNetwork> networks) {
+	public FeedForwardNetworkManager(List<FeedForwardNeuralNetwork> networks, boolean enableThreads) {
 		this.networks = networks;
 		this.targetMaker = new ArrayList<>();
 		for (int i = 0; i < networks.size(); i++) {
@@ -30,6 +32,17 @@ public abstract class FeedForwardNetworkManager {
 				throw new IllegalArgumentException("Networks have different output vector sizes");
 			}
 		}
+        multiThreadingEnabled = enableThreads;
+        if(enableThreads) {
+            int numOfThreads = networks.size();
+            int safeNumOfThreads = Runtime.getRuntime().availableProcessors() - 1;
+            if(numOfThreads > safeNumOfThreads) {
+                numOfThreads = safeNumOfThreads;
+            }
+            determinedNumOfThreads = numOfThreads;
+        } else {
+            determinedNumOfThreads = 1;
+        }
 		LOGGER.info("Manager created with {} networks", networks.size());
 	}
 	

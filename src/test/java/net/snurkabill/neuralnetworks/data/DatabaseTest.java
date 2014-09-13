@@ -78,7 +78,7 @@ public class DatabaseTest {
 		for (int i = 0; i < sizeOfElementsTesting.length; i++) {
 			sum += sizeOfElementsTesting[i];
 		}
-		Assert.assertEquals(sum, database.getTestsetSize());
+		Assert.assertEquals(sum, database.getTestSetSize());
 		sum = 0;
 		for (int i = 0; i < sizeOfElementsTraining.length; i++) {
 			sum += sizeOfElementsTraining[i];

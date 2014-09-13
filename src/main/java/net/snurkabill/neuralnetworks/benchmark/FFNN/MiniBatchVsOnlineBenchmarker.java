@@ -1,13 +1,16 @@
-package net.snurkabill.neuralnetworks.benchmark;
+package net.snurkabill.neuralnetworks.benchmark.FFNN;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import net.snurkabill.neuralnetworks.benchmark.report.ReportMaker;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNetworkOfflineManager;
 import net.snurkabill.neuralnetworks.results.BasicTestResults;
 import net.snurkabill.neuralnetworks.results.ResultsSummary;
 
-public class MiniBatchVsOnlineBenchmarker extends FeedForwardNetowkrBatchBenchmarker {
+public class MiniBatchVsOnlineBenchmarker extends FeedForwardNetworkBatchBenchmarker {
 
 	private final FeedForwardNetworkOfflineManager miniBatchManager;
 	private final List<ResultsSummary> miniBatchSummary;
@@ -20,7 +23,7 @@ public class MiniBatchVsOnlineBenchmarker extends FeedForwardNetowkrBatchBenchma
 		miniBatchSummary = new ArrayList<>();
 		
 		for (int i = 0; i < miniBatchManager.getNumOfNeuralNetworks(); i++) {
-			miniBatchSummary.add(new ResultsSummary());
+			miniBatchSummary.add(new ResultsSummary(miniBatchManager.getNetworkList().get(i).getName()));
 		}
 	}
 
@@ -40,15 +43,16 @@ public class MiniBatchVsOnlineBenchmarker extends FeedForwardNetowkrBatchBenchma
 				miniBatchSummary.get(j).add(tmp2.get(j));
 			}
 		}
-		try {
-			concat();
-			makeReport();
-		} catch (IOException ex) {
-			throw new RuntimeException("Making report went wrong: " + ex);
-		}	
+		concat();
+		makeReport();
 	}
 	
 	private void concat() {
 		super.summary.addAll(this.miniBatchSummary);
 	}
+
+    @Override
+    protected void makeReport() {
+        ReportMaker.chart(new File("results.png"), summary, "FFNN", "iterations", "success");
+    }
 }

@@ -1,15 +1,14 @@
-package net.snurkabill.neuralnetworks.benchmark;
+package net.snurkabill.neuralnetworks.benchmark.FFNN;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNeuralNetwork;
+
+import net.snurkabill.neuralnetworks.benchmark.Benchmarker;
+import net.snurkabill.neuralnetworks.benchmark.report.ReportMaker;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNetworkOfflineManager;
 import net.snurkabill.neuralnetworks.results.BasicTestResults;
 import net.snurkabill.neuralnetworks.results.ResultsSummary;
-import net.snurkabill.neuralnetworks.results.SupervisedTestResults;
 
 public class FeedForwardNetworkBenchmarker implements Benchmarker {
 
@@ -27,7 +26,7 @@ public class FeedForwardNetworkBenchmarker implements Benchmarker {
 		summary = new ArrayList<>();
 		
 		for (int i = 0; i < feedForwardNetworks.getNumOfNeuralNetworks(); i++) {
-			summary.add(new ResultsSummary());
+			summary.add(new ResultsSummary(feedForwardNetworks.getNetworkList().get(i).getName()));
 		}
 	}
 	
@@ -42,41 +41,14 @@ public class FeedForwardNetworkBenchmarker implements Benchmarker {
 				summary.get(j).add(tmp.get(j));
 			}
 		}
-		try {
-			makeReport();
-		} catch (IOException ex) {
-			throw new RuntimeException("Making report went wrong: " + ex);
-		}
+        makeReport();
 	}
 	
 	public List<ResultsSummary> getResults() {
 		return this.summary;
 	}
-	
-	protected void makeReport() throws IOException {
-        String asdf = (new Date(System.currentTimeMillis())).toString();
-        asdf = asdf.replace(":", "_");
-		try (FileWriter w = new FileWriter(asdf + ".csv")) {
-            w.append("Name: ");
-			w.append(",");
-			List<FeedForwardNeuralNetwork> networks = feedForwardNetworks.getNetworkList();
-			for (int i = 0; i < feedForwardNetworks.getNumOfNeuralNetworks(); i++) {
-				w.append(networks.get(i).getName());
-				w.append(",");
-			}
-			w.append("\n");
-			int exclusiveSum = this.sizeOfTrainingBatch;
-			for (int i = 0; i < numOfRuns; i++) {
-				w.append(String.valueOf(exclusiveSum));
-				w.append(",");
-				exclusiveSum += this.sizeOfTrainingBatch;
-				for (int j = 0; j < summary.size(); j++) {
-					w.append(String.valueOf(((SupervisedTestResults) summary.get(j).getResults().get(i)).getSuccessPercentage()));
-					w.append(",");
-				}
-				w.append("\n");
-			}
-			w.flush();
-		}
-	}
+
+    protected void makeReport() {
+        ReportMaker.chart(new File("results.png"), summary, "FFNN", "iterations", "success");
+    }
 }

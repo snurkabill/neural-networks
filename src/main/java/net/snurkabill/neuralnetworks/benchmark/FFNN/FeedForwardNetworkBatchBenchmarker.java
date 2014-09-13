@@ -1,16 +1,16 @@
-package net.snurkabill.neuralnetworks.benchmark;
+package net.snurkabill.neuralnetworks.benchmark.FFNN;
 
 import java.io.IOException;
 import java.util.List;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNetworkOfflineManager;
 import net.snurkabill.neuralnetworks.results.BasicTestResults;
 
-public class FeedForwardNetowkrBatchBenchmarker extends FeedForwardNetworkBenchmarker {
+public class FeedForwardNetworkBatchBenchmarker extends FeedForwardNetworkBenchmarker {
 
 	protected final int sizeOfMiniBatch;
 	
-	public FeedForwardNetowkrBatchBenchmarker(FeedForwardNetworkOfflineManager feedForwardNetworks, int numOfRuns, 
-			int sizeOfTrainingBatch, int sizeOfMiniBatch) {
+	public FeedForwardNetworkBatchBenchmarker(FeedForwardNetworkOfflineManager feedForwardNetworks, int numOfRuns,
+                                              int sizeOfTrainingBatch, int sizeOfMiniBatch) {
 		super(feedForwardNetworks, numOfRuns, sizeOfTrainingBatch);
 		this.sizeOfMiniBatch = sizeOfMiniBatch;
 	}
@@ -26,10 +26,6 @@ public class FeedForwardNetowkrBatchBenchmarker extends FeedForwardNetworkBenchm
 				summary.get(j).add(tmp.get(j));
 			}
 		}
-		try {
-			makeReport();
-		} catch (IOException ex) {
-			throw new RuntimeException("Making report went wrong: " + ex);
-		}
+        makeReport();
 	}
 }
