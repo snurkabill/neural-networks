@@ -97,7 +97,7 @@ public class Database<T extends DataItem> {
 		return getTrainingData(random.nextInt(trainingSet.size()));
 	}
 	
-	public int getTestsetSize() {
+	public int getTestSetSize() {
 		return sizeOfTestingSet;
 	}
 	

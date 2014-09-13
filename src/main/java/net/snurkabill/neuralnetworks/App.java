@@ -25,15 +25,15 @@ public class App {
 		
 		//BinaryMarketMove.startExample();
 		
-		MnistExampleFFNN.startExample();
+		//MnistExampleFFNN.startExample();
 		//MnistExampleFFNN.startSaveLoadExample();
 		//MnistExampleFFNN.benchmarkOnMNIST();
-		//new RBMTest().test();	
+		new RBMTest().test();
 		
 		// *********************************************************************************
 		// DBN test
 		// *********************************************************************************
-		double weightScale = 0.01;
+		/*double weightScale = 0.01;
 		File labels = new File("target/minst/train-labels-idx1-ubyte.gz");
 		File images = new File("target/minst/train-images-idx3-ubyte.gz");
 		MnistDatasetReader reader;
@@ -127,7 +127,7 @@ public class App {
 		double sec = ((testingFinished - testingStarted) / 1000.0);
 		LOGGER.info("Testing {} samples took {} seconds, {} samples/sec", all, sec, all/sec);
 		LOGGER.info("RESULTS: {}", ((success * 100.0) / all));
-		
+		*/
 
 		// *********************************************************************************
 		// benchmarker test

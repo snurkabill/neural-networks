@@ -6,7 +6,6 @@ import java.util.List;
 import net.snurkabill.neuralnetworks.data.DataItem;
 import net.snurkabill.neuralnetworks.data.Database;
 import net.snurkabill.neuralnetworks.data.LabelledItem;
-import static net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNetworkOfflineManager.LOGGER;
 import net.snurkabill.neuralnetworks.results.BasicTestResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +18,9 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 	// TODO: general evaluator
 	private final Database database;
 	
-	public FeedForwardNetworkOfflineManager(List<FeedForwardNeuralNetwork> networks, Database database) {
-		super(networks);
+	public FeedForwardNetworkOfflineManager(List<FeedForwardNeuralNetwork> networks, Database database,
+                                            boolean isMultithreadingEnabled) {
+		super(networks, isMultithreadingEnabled);
 		this.database = database;
 	}
 
@@ -44,9 +44,6 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 	
 	public List<BasicTestResults> testNetworkOnWholeTestingDataset() {
 		List<BasicTestResults> results = new ArrayList<>();
-		for (int i = 0; i < networks.size(); i++) {
-			results.add(new SupervisedTestResults());
-		}
 		for (int network = 0; network < networks.size(); network++) {
 			long testingStarted = System.currentTimeMillis();
 			double[] targetValues = this.initializeTargetArray(network);
@@ -77,10 +74,8 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 			}
 			long testingFinished = System.currentTimeMillis();
 			int all = (success + fail);
-			results.get(network).setNumOfTestedItems(database.getTestsetSize());
-			results.get(network).setGlobalError(globalError);
-			((SupervisedTestResults) results.get(network)).setSuccessPercentage((success * 100.0) / all);
-			results.get(network).setMilliseconds(testingFinished - testingStarted);
+            results.add(new SupervisedTestResults(database.getTestSetSize(), globalError,
+                    testingFinished - testingStarted, (success * 100.0) / all));
 			double sec = ((testingFinished - testingStarted) / 1000.0);
 			LOGGER.info("Testing {} network: {} samples took {} seconds, {} samples/sec", 
 					networks.get(network).getName(), all, sec, all/sec);

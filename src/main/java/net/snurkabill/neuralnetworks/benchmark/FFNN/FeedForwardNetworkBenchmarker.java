@@ -1,10 +1,12 @@
-package net.snurkabill.neuralnetworks.benchmark;
+package net.snurkabill.neuralnetworks.benchmark.FFNN;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import net.snurkabill.neuralnetworks.benchmark.Benchmarker;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNeuralNetwork;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNetworkOfflineManager;
 import net.snurkabill.neuralnetworks.results.BasicTestResults;

@@ -1,21 +1,16 @@
 package net.snurkabill.neuralnetworks.feedforwardnetwork;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.heuristic.HeuristicParamsFFNN;
+import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.PretrainedWeightsFactory;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.WeightsFactory;
 import net.snurkabill.neuralnetworks.utilities.Utilities;
-import java.util.List;
-import java.util.Random;
-import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.PretrainedWeightsFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class FeedForwardNeuralNetwork {
 	

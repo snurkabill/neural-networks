@@ -106,7 +106,6 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
 	protected abstract void calcHiddenNeurons();
 	
 	public void trainMachine(double[] inputVals) {
-		LOGGER.info("{}", inputVals);
 		LOGGER.trace("Training machine started! InputVectorLength {}, sizeOfVisibleVector {}"
 				, inputVals.length, sizeOfVisibleVector);
 		if(inputVals.length != sizeOfVisibleVector) {

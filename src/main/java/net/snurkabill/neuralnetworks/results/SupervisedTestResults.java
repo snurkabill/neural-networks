@@ -4,7 +4,12 @@ public class SupervisedTestResults extends BasicTestResults {
 	
 	private double successPercentage;
 
-	public double getSuccessPercentage() {
+    public SupervisedTestResults(int numOfTestedItems, double globalError, long milliseconds, double successPercentage) {
+        super(numOfTestedItems, globalError, milliseconds);
+        this.successPercentage = successPercentage;
+    }
+
+    public double getSuccessPercentage() {
 		return successPercentage;
 	}
 

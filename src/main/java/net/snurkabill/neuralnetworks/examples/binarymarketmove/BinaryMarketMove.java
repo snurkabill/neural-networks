@@ -37,7 +37,7 @@ public class BinaryMarketMove {
 				HeuristicParamsFFNN.deepProgressive(), new HyperbolicTangens(), seed);
 		
 		FeedForwardNetworkOfflineManager manager = new FeedForwardNetworkOfflineManager(
-				Collections.singletonList(network), database);
+				Collections.singletonList(network), database, false);
 		
 		int sizeOfPretrainingBatch = 20;
 		manager.pretrainInputNeurons(sizeOfPretrainingBatch);

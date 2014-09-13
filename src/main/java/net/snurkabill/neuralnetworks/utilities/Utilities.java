@@ -26,4 +26,8 @@ public class Utilities {
 		double tmp = Math.exp(x);
 		return tmp / ((tmp + 1.0) * (tmp + 1.0));
 	}
+
+    public static double secondsSpent(long from, long to) {
+        return ((to - from) / 1000.0);
+    }
 }

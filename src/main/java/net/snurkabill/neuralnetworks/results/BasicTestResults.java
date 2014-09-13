@@ -6,7 +6,13 @@ public class BasicTestResults {
 	private double globalError;
 	private long milliseconds;
 
-	public long getMilliseconds() {
+    public BasicTestResults(int numOfTestedItems, double globalError, long milliseconds) {
+        this.numOfTestedItems = numOfTestedItems;
+        this.globalError = globalError;
+        this.milliseconds = milliseconds;
+    }
+
+    public long getMilliseconds() {
 		return milliseconds;
 	}
 

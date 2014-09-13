@@ -1,4 +1,4 @@
-package net.snurkabill.neuralnetworks.benchmark;
+package net.snurkabill.neuralnetworks.benchmark.FFNN;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,7 +7,7 @@ import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNetworkOfflin
 import net.snurkabill.neuralnetworks.results.BasicTestResults;
 import net.snurkabill.neuralnetworks.results.ResultsSummary;
 
-public class MiniBatchVsOnlineBenchmarker extends FeedForwardNetowkrBatchBenchmarker {
+public class MiniBatchVsOnlineBenchmarker extends FeedForwardNetworkBatchBenchmarker {
 
 	private final FeedForwardNetworkOfflineManager miniBatchManager;
 	private final List<ResultsSummary> miniBatchSummary;

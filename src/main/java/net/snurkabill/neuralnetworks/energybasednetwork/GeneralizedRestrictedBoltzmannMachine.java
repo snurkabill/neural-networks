@@ -22,5 +22,5 @@ public class GeneralizedRestrictedBoltzmannMachine extends RestrictedBoltzmannMa
 	public double calcEnergy() {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
-	
+
 }
