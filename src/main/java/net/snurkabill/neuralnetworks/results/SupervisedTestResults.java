@@ -16,4 +16,9 @@ public class SupervisedTestResults extends BasicTestResults {
 	public void setSuccessPercentage(double successPercentage) {
 		this.successPercentage = successPercentage;
 	}
+
+    @Override
+    public double getSuccess() {
+        return successPercentage;
+    }
 }

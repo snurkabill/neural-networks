@@ -27,8 +27,8 @@ public class App {
 		
 		//MnistExampleFFNN.startExample();
 		//MnistExampleFFNN.startSaveLoadExample();
-		//MnistExampleFFNN.benchmarkOnMNIST();
-		new RBMTest().test();
+		MnistExampleFFNN.benchmarkOnMNIST();
+		//new RBMTest().test();
 		
 		// *********************************************************************************
 		// DBN test

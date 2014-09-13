@@ -26,10 +26,6 @@ public class FeedForwardNetworkBatchBenchmarker extends FeedForwardNetworkBenchm
 				summary.get(j).add(tmp.get(j));
 			}
 		}
-		try {
-			makeReport();
-		} catch (IOException ex) {
-			throw new RuntimeException("Making report went wrong: " + ex);
-		}
+        makeReport();
 	}
 }

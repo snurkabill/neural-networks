@@ -28,8 +28,8 @@ public class MnistExampleFFNN {
 	
 	public static void benchmarkOnMNIST() throws IOException {
 		long seed = 0;
-		File labels = new File("target/minst/train-labels-idx1-ubyte.gz");
-		File images = new File("target/minst/train-images-idx3-ubyte.gz");
+		File labels = new File("minst/train-labels-idx1-ubyte.gz");
+		File images = new File("minst/train-images-idx3-ubyte.gz");
 		MnistDatasetReader reader;
 		try {
 			reader = new MnistDatasetReader(labels, images);
@@ -70,8 +70,8 @@ public class MnistExampleFFNN {
 	
 	public static void startExample() throws IOException {
 		long seed = 0;
-		File labels = new File("target/minst/train-labels-idx1-ubyte.gz");
-		File images = new File("target/minst/train-images-idx3-ubyte.gz");
+		File labels = new File("minst/train-labels-idx1-ubyte.gz");
+		File images = new File("minst/train-images-idx3-ubyte.gz");
 		MnistDatasetReader reader;
 		try {
 			reader = new MnistDatasetReader(labels, images);

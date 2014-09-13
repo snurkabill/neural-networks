@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.results;
 
-public class BasicTestResults {
+public abstract class BasicTestResults {
 	
 	private int numOfTestedItems;
 	private double globalError;
@@ -39,4 +39,6 @@ public class BasicTestResults {
 	public double getAverageGlobalError() {
 		return globalError / numOfTestedItems;
 	}
+
+    public abstract double getSuccess();
 }

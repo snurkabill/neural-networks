@@ -27,4 +27,9 @@ public class UnsupervisedTestResults extends BasicTestResults {
     public void setAvgRightPercentageOfUnknownPart(double avgRightPercentageOfUnknownPart) {
         this.avgRightPercentageOfUnknownPart = avgRightPercentageOfUnknownPart;
     }
+
+    @Override
+    public double getSuccess() {
+        return avgRightPercentageOfUnknownPart;
+    }
 }

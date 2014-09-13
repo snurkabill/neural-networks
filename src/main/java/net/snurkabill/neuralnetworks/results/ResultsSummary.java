@@ -8,6 +8,10 @@ public class ResultsSummary {
 	private String name;
 	private List<BasicTestResults> results = new ArrayList<>();
 
+    public ResultsSummary(final String name) {
+        this.name = name;
+    }
+
 	public String getName() {
 		return name;
 	}
