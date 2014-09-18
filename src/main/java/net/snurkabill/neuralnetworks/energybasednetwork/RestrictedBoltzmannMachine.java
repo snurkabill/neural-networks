@@ -148,10 +148,12 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
 		return weightExpected;
 	}
 	
-	public double[] reconstructNext() {
+	/*public double[] reconstructNext() {
 		machineStep();
 		return this.getVisibleNeurons();
-	}
+	}*/
+
+    public abstract double[] reconstructNext();
 	
 	private void constrastiveDivergence(int index, double[] inputVals) {
 		setVisibleNeurons(inputVals);

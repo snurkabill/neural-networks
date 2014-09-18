@@ -1,5 +1,10 @@
 package net.snurkabill.neuralnetworks;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import net.snurkabill.neuralnetworks.benchmark.RBM.Vector.Tuple;
 import net.snurkabill.neuralnetworks.benchmark.RBM.Vector.TupleGenerator;
 import net.snurkabill.neuralnetworks.data.DataItem;
@@ -13,12 +18,10 @@ import net.snurkabill.neuralnetworks.results.UnsupervisedTestResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
 
 public class RBMTest {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger("RBM test");
-
 
 	public void test() {
 
@@ -94,7 +97,7 @@ public class RBMTest {
         LOGGER.info("NEXT TEST");
 
         numOfVisible = 20;
-        numOfHidden = 100;
+        numOfHidden = 10;
 
         BinaryRestrictedBoltzmannMachine secondRbm = new BinaryRestrictedBoltzmannMachine(numOfVisible, numOfHidden,
                 new GaussianRndWeightsFactory(0.01, 0), HeuristicParamsRBM.createBasicHeuristicParams(), 0);
@@ -137,11 +140,16 @@ public class RBMTest {
 
         BinaryRBMManager manager = new BinaryRBMManager(Collections.singletonList(secondRbm), database, 0);
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1000; i++) {
             manager.trainNetworks(50);
-            List<UnsupervisedTestResults> results = manager.testNetworks(0,
-                    new LinearRandomIndexer(secondRbm.getSizeOfVisibleVector(), 0, 0));
+            List<UnsupervisedTestResults> results = manager.testNetworks(5,
+                    new LinearRandomIndexer(secondRbm.getSizeOfVisibleVector(), 5, 0));
             LOGGER.info("Success: {}", results.get(0).getSuccess());
         }
+
+        for (int i = 0; i < 100; i++) {
+            LOGGER.info("Reconstructed: {}", secondRbm.reconstructNext());
+        }
+
     }	
 }
