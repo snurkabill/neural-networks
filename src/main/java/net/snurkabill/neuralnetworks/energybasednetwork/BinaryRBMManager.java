@@ -74,7 +74,8 @@ public class BinaryRBMManager {
                 machine.setVisibleNeurons(generator.generateVector(item.getDoubleArray(), knownIndexes));
                 machine.activateHiddenNeurons();
                 Tuple resultTuple = new Tuple(machine.activateVisibleNeurons());
-                distributedSum += VectorAssociationMeter.check(item, resultTuple, knownIndexes);
+                distributedSum += VectorAssociationMeter.check(item, resultTuple, knownIndexes,
+                        numOfUnknownDimensionsOfVector);
             }
             distributedSum /= numOfVectors;
             long testingEnded = System.currentTimeMillis();

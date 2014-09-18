@@ -25,7 +25,17 @@ public class BinaryRestrictedBoltzmannMachine extends RestrictedBoltzmannMachine
 		}
 	}
 
-	@Override
+    @Override
+    public double[] reconstructNext() {
+        for (int i = 0; i < this.getSizeOfVisibleVector(); i++) {
+            this.getVisibleNeurons()[i] = this.random.nextInt(2);
+        }
+        calcHiddenNeurons();
+        calcVisibleNeurons();
+        return this.getVisibleNeurons();
+    }
+
+    @Override
 	public double calcEnergy() {
 		super.energy = 0.0;
 		double helpEnergy = 0.0;

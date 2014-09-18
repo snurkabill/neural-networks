@@ -34,4 +34,17 @@ public class LinearRandomIndexer implements RandomDimensionsIndexer {
             }
         }
     }
+
+    public int getSizeOfVector() {
+        return sizeOfVector;
+    }
+
+    public double getRatio() {
+        return ratio;
+    }
+
+    @Override
+    public int getNumberOfUnknown() {
+        return this.numOfRandomElements;
+    }
 }

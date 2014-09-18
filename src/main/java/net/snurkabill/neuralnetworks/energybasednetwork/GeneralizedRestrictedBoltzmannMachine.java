@@ -18,7 +18,12 @@ public class GeneralizedRestrictedBoltzmannMachine extends RestrictedBoltzmannMa
 		
 	}
 
-	@Override
+    @Override
+    public double[] reconstructNext() {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
 	public double calcEnergy() {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}

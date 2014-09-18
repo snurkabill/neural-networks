@@ -7,4 +7,5 @@ public interface RandomDimensionsIndexer {
      * @return
      */
     public boolean [] generateIndexes();
+    public int getNumberOfUnknown();
 }
