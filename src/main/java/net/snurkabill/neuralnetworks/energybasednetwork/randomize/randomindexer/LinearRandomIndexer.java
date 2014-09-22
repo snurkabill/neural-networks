@@ -2,18 +2,10 @@ package net.snurkabill.neuralnetworks.energybasednetwork.randomize.randomindexer
 
 import java.util.Random;
 
-public class LinearRandomIndexer implements RandomDimensionsIndexer {
-
-    private Random random;
-    private int sizeOfVector;
-    private int numOfRandomElements;
-    private double ratio;
+public class LinearRandomIndexer extends RandomIndexer {
 
     public LinearRandomIndexer(int sizeOfVector, int numOfRandomElements, long seed) {
-        this.random = new Random(seed);
-        this.sizeOfVector = sizeOfVector;
-        this.numOfRandomElements = numOfRandomElements;
-        this.ratio = (double)numOfRandomElements/(double)sizeOfVector;
+        super(sizeOfVector, numOfRandomElements, seed);
     }
 
     @Override
@@ -33,18 +25,5 @@ public class LinearRandomIndexer implements RandomDimensionsIndexer {
                 }
             }
         }
-    }
-
-    public int getSizeOfVector() {
-        return sizeOfVector;
-    }
-
-    public double getRatio() {
-        return ratio;
-    }
-
-    @Override
-    public int getNumberOfUnknown() {
-        return this.numOfRandomElements;
     }
 }

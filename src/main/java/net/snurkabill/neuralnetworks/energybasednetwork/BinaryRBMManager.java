@@ -53,8 +53,8 @@ public class BinaryRBMManager {
 		}
 	}
 
-	public List<UnsupervisedTestResults> testNetworks(int numOfUnknownDimensionsOfVector,
-                                                      RandomDimensionsIndexer randomIndexer) {
+	public List<UnsupervisedTestResults> testNetworks(RandomDimensionsIndexer randomIndexer) {
+        int numOfUnknownDimensionsOfVector = randomIndexer.getNumberOfUnknown();
         if(numOfUnknownDimensionsOfVector >= this.sizeOfInputVector) {
             throw new IllegalArgumentException("Vector must have some known dimensions for association");
         }

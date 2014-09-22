@@ -10,15 +10,16 @@ public class FeedForwardNetworkBatchBenchmarker extends FeedForwardNetworkBenchm
 	protected final int sizeOfMiniBatch;
 	
 	public FeedForwardNetworkBatchBenchmarker(FeedForwardNetworkOfflineManager feedForwardNetworks, int numOfRuns,
-                                              int sizeOfTrainingBatch, int sizeOfMiniBatch) {
-		super(feedForwardNetworks, numOfRuns, sizeOfTrainingBatch);
+                                              int sizeOfTrainingBatch, int sizeOfMiniBatch, int pretrainingTrainingSet) {
+		super(feedForwardNetworks, numOfRuns, sizeOfTrainingBatch, pretrainingTrainingSet);
 		this.sizeOfMiniBatch = sizeOfMiniBatch;
 	}
 
 	@Override
 	public void benchmark() {
-		int percentageOfTrainingSet = 20;
-		feedForwardNetworks.pretrainInputNeurons(percentageOfTrainingSet);
+        if(pretrainingTrainingSet != 0) {
+            feedForwardNetworks.pretrainInputNeurons(pretrainingTrainingSet);
+        }
 		for (int i = 0; i < numOfRuns; i++) {
 			feedForwardNetworks.trainNetwork(sizeOfTrainingBatch, sizeOfMiniBatch);
 			List<BasicTestResults> tmp = feedForwardNetworks.testNetworkOnWholeTestingDataset();

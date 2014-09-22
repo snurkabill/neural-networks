@@ -16,8 +16,9 @@ public class MiniBatchVsOnlineBenchmarker extends FeedForwardNetworkBatchBenchma
 	private final List<ResultsSummary> miniBatchSummary;
 	
 	public MiniBatchVsOnlineBenchmarker(FeedForwardNetworkOfflineManager feedForwardNetworks, int numOfRuns, 
-			int sizeOfTrainingBatch, int sizeOfMiniBatch, FeedForwardNetworkOfflineManager miniBatchNetworks) {
-		super(feedForwardNetworks, numOfRuns, sizeOfTrainingBatch, sizeOfMiniBatch);
+			int sizeOfTrainingBatch, int sizeOfMiniBatch, FeedForwardNetworkOfflineManager miniBatchNetworks,
+            int pretrainingPercentageTrainingSet) {
+		super(feedForwardNetworks, numOfRuns, sizeOfTrainingBatch, sizeOfMiniBatch, pretrainingPercentageTrainingSet);
 		this.miniBatchManager = miniBatchNetworks;
 		
 		miniBatchSummary = new ArrayList<>();
@@ -29,8 +30,9 @@ public class MiniBatchVsOnlineBenchmarker extends FeedForwardNetworkBatchBenchma
 
 	@Override
 	public void benchmark() {
-		int percentageOfTrainingSet = 20;
-		feedForwardNetworks.pretrainInputNeurons(percentageOfTrainingSet);
+        if(this.pretrainingTrainingSet != 0) {
+            feedForwardNetworks.pretrainInputNeurons(pretrainingTrainingSet);
+        }
 		for (int i = 0; i < numOfRuns; i++) {
 			feedForwardNetworks.trainNetwork(sizeOfTrainingBatch);
 			miniBatchManager.trainNetwork(sizeOfTrainingBatch / sizeOfMiniBatch, sizeOfMiniBatch);

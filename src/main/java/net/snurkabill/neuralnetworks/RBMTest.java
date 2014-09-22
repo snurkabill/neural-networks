@@ -12,6 +12,7 @@ import net.snurkabill.neuralnetworks.data.Database;
 import net.snurkabill.neuralnetworks.energybasednetwork.BinaryRBMManager;
 import net.snurkabill.neuralnetworks.energybasednetwork.BinaryRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.energybasednetwork.HeuristicParamsRBM;
+import net.snurkabill.neuralnetworks.energybasednetwork.randomize.randomindexer.LastPartIndexer;
 import net.snurkabill.neuralnetworks.energybasednetwork.randomize.randomindexer.LinearRandomIndexer;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.GaussianRndWeightsFactory;
 import net.snurkabill.neuralnetworks.results.UnsupervisedTestResults;
@@ -84,7 +85,7 @@ public class RBMTest {
 		
 		int[] counter = new int[10];
 		
-		int numOfTestingIterations = 100000;
+		int numOfTestingIterations = 1000;
 		for (int i = 0; i < numOfTestingIterations; i++) {
 			
 			//LOGGER.info("{}", rbm.reconstructNext());
@@ -97,59 +98,41 @@ public class RBMTest {
         LOGGER.info("NEXT TEST");
 
         numOfVisible = 20;
-        numOfHidden = 10;
+        numOfHidden = 100;
 
         BinaryRestrictedBoltzmannMachine secondRbm = new BinaryRestrictedBoltzmannMachine(numOfVisible, numOfHidden,
                 new GaussianRndWeightsFactory(0.01, 0), HeuristicParamsRBM.createBasicHeuristicParams(), 0);
 
-        double[] firstVector =
-                {1, 1, 1, 1, 1,
-                1, 1, 1, 1, 1,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0};
+        List<double[]> vectors = new ArrayList<>();
 
-        double[] secondVector =
-                {1, 0, 1, 0, 1,
-                0, 1, 0, 1, 0,
-                1, 0, 1, 0, 1,
-                0, 1, 0, 1, 0};
-
-        double[] thirdVector =
-                {0, 1, 0, 1, 0,
-                1, 0, 1, 0, 1,
-                0, 1, 0, 1, 0,
-                1, 0, 1, 0, 1};
+        vectors.add(new double[] {1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0});
+        vectors.add(new double[] {1, 0, 1, 0, 1,0, 1, 0, 1, 0,1, 0, 1, 0, 1,0, 1, 0, 1, 0});
+        vectors.add(new double[] {0, 1, 0, 1, 0,1, 0, 1, 0, 1,0, 1, 0, 1, 0,1, 0, 1, 0, 1});
 
         Map<Integer, List<?>> trainingSet = new HashMap<>();
-        List<DataItem> first = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            first.add(new DataItem(firstVector));
+        List<List<DataItem>> data = new ArrayList<>();
+
+        for (int i = 0; i < vectors.size(); i++) {
+            int multiplicator = 100;
+            data.add(new ArrayList<DataItem>());
+            for (int j = 0; j < multiplicator * (i + 1); j++) {
+                data.get(i).add(new DataItem(vectors.get(i)));
+            }
         }
-        List<DataItem> second = new ArrayList<>();
-        for (int i = 0; i < 200; i++) {
-            second.add(new DataItem(secondVector));
+        for (int i = 0; i < data.size(); i++) {
+            trainingSet.put(i, data.get(i));
         }
-        List<DataItem> third = new ArrayList<>();
-        for (int i = 0; i < 300; i++) {
-            third.add(new DataItem(thirdVector));
-        }
-        trainingSet.put(0, first);
-        trainingSet.put(1, second);
-        trainingSet.put(2, third);
         Database database = new Database(0, trainingSet, trainingSet, "testingDatabaseRBM");
-
         BinaryRBMManager manager = new BinaryRBMManager(Collections.singletonList(secondRbm), database, 0);
-
-        for (int i = 0; i < 1000; i++) {
-            manager.trainNetworks(50);
-            List<UnsupervisedTestResults> results = manager.testNetworks(5,
-                    new LinearRandomIndexer(secondRbm.getSizeOfVisibleVector(), 5, 0));
-            LOGGER.info("Success: {}", results.get(0).getSuccess());
+        for (int i = 0; i < 100; i++) {
+            manager.trainNetworks(500);
+            List<UnsupervisedTestResults> results = manager.testNetworks(
+                    new LastPartIndexer(secondRbm.getSizeOfVisibleVector(), 15, 0));
+            LOGGER.info("Error: {}", results.get(0).getSuccess());
         }
-
         for (int i = 0; i < 100; i++) {
             LOGGER.info("Reconstructed: {}", secondRbm.reconstructNext());
         }
-
-    }	
+        LOGGER.info("Testing DEEP NETWORK");
+    }
 }

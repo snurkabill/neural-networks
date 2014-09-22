@@ -97,7 +97,7 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 	public void trainNetwork(int numOfIterations, int sizeOfMiniBatch) {
 		checkIterations(numOfIterations);	
 		if(sizeOfMiniBatch < database.getNumberOfClasses()) {
-			LOGGER.warn("SizeOfiniBatch is too low and there is possibility to ... well IDK, it is just wrong");
+			LOGGER.warn("SizeOfMiniBatch is too low and there is possibility to ... well IDK, it is just wrong");
 			sizeOfMiniBatch = database.getNumberOfClasses();
 		}
 		for (int network = 0; network < networks.size(); network++) {

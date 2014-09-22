@@ -1,14 +1,20 @@
-package net.snurkabill.neuralnetworks.deepbeliefnets;
+package net.snurkabill.neuralnetworks.deepnets;
 
-import java.util.List;
 import net.snurkabill.neuralnetworks.energybasednetwork.RestrictedBoltzmannMachine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
+/**
+ * NOT FINISHED
+ */
+
 /**
  * TODO : make DBN abstract and create binary and real valued DBN. 
  */
-public class DeepBeliefNeuralNetwork {
+@Deprecated
+public class DeepBeliefNeuralNetwork extends StuckedRBM {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("DBN");
 	private final List<RestrictedBoltzmannMachine> levels;
@@ -19,6 +25,7 @@ public class DeepBeliefNeuralNetwork {
 	private final int sizeOfInputVector;
 	
 	public DeepBeliefNeuralNetwork(List<RestrictedBoltzmannMachine> levels, String name) {
+        super(levels, name);
 		if(levels.size() == 1) {
 			throw new IllegalArgumentException("DBN does not support one level RMBs, use one RBM instead for "
 					+ "same effect");

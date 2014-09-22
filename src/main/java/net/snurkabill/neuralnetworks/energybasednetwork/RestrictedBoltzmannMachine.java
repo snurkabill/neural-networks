@@ -4,11 +4,6 @@ import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.WeightsFac
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * NOT FINISHED YET!
- * @author snurkabill
- */
-
 public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
 
 	protected final Logger LOGGER;
@@ -59,6 +54,19 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
 		this.heuristicParams = heuristicParams;
 		super.temperature = heuristicParams.temperature;
 	}
+
+    public double[][] createLayerForFFNN() {
+        double[][] weightsLayer = new double[this.sizeOfVisibleVector + 1][sizeOfHiddenVector];
+        for (int i = 0; i < this.sizeOfVisibleVector; i++) {
+            for (int j = 0; j < this.sizeOfHiddenVector; j++) {
+                weightsLayer[i][j] = weights[i][j];
+            }
+        }
+        for (int i = 0; i < sizeOfHiddenVector; i++) {
+            weightsLayer[this.sizeOfVisibleVector][i] = this.hiddenBias[i];
+        }
+        return weightsLayer;
+    }
 
 	public double[] getVisibleNeurons() {
 		return visibleNeurons;

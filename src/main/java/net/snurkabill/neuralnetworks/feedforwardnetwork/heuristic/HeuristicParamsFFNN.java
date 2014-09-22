@@ -11,13 +11,13 @@ public class HeuristicParamsFFNN {
 	public double KILLING_ETA_COEFF;
 	
 	public byte[] getAsBytes() {
-		// TODO 
+		// TODO   .... need XML instead
 		return null;
 	}
 	
 	public static HeuristicParamsFFNN createDefaultHeuristic() {
 		HeuristicParamsFFNN heuristic = new HeuristicParamsFFNN();
-		heuristic.eta = 0.001;
+		heuristic.eta = 0.0001;
 		heuristic.alpha = 0.1;
 		heuristic.BOOSTING_ETA_COEFF = 1.000001;
 		heuristic.KILLING_ETA_COEFF = 0.9999999;

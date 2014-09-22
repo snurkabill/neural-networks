@@ -1,16 +1,23 @@
 package net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory;
 
 import java.io.File;
+import java.util.List;
 
 public class PretrainedWeightsFactory implements WeightsFactory {
 
 	private double weights[][][];
 	
 	public PretrainedWeightsFactory(File file) {
-		//TODO : load weihgts
-		
+		//TODO : load weights
 	}
-	
+
+    public PretrainedWeightsFactory(List<double[][]> wInput) {
+        this.weights = new double[wInput.size()][][];
+        for (int i = 0; i < wInput.size(); i++) {
+            this.weights[i] = wInput.get(i);
+        }
+    }
+
 	public PretrainedWeightsFactory(double[][][] wInput) {
 		this.weights = wInput;
 	}

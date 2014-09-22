@@ -1,5 +1,6 @@
 package net.snurkabill.neuralnetworks.feedforwardnetwork;
 
+import net.snurkabill.neuralnetworks.NeuralNetwork;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.heuristic.HeuristicParamsFFNN;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.PretrainedWeightsFactory;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.WeightsFactory;
@@ -12,10 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class FeedForwardNeuralNetwork {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger("FFNN");
-	
+public class FeedForwardNeuralNetwork extends FeedForwardableNetwork {
+
 	private final TransferFunctionCalculator transferFunction;
 	private final Random random = new Random();
 	private final List<Integer> topology;
@@ -35,20 +34,17 @@ public class FeedForwardNeuralNetwork {
 	private final double[][][] weights;
 	private final double[][][] deltaWeights;
 	private final double[][][] weightsEta;
-	
-	
-	private final String name;
-	
+
 	private HeuristicParamsFFNN heuristicParams;
 	
 	private double currentError;
 	
 	public FeedForwardNeuralNetwork(List<Integer> topology, WeightsFactory wFactory, String name,  
 			HeuristicParamsFFNN heuristicParams, TransferFunctionCalculator transferFunction, long seed) {
+        super(name, "FFNN");
 		if(topology.size() <= 1) {
 			throw new IllegalArgumentException("Wrong topology of FFNN");
 		}
-		this.name = name;
 		this.random.setSeed(seed);
 		this.transferFunction = transferFunction;
 		this.topology = topology;
@@ -137,11 +133,7 @@ public class FeedForwardNeuralNetwork {
 	public TransferFunctionCalculator getTransferFunction() {
 		return transferFunction;
 	}
-	
-	public String getName() {
-		return this.name;
-	}
-	
+
 	public HeuristicParamsFFNN getHeuristicParams() {
 		return heuristicParams;
 	}
@@ -237,7 +229,7 @@ public class FeedForwardNeuralNetwork {
 	}
 	
 	public void saveNetwork() throws FileNotFoundException, IOException {
-		this.saveNetwork(new File(this.name + "_weights"));
+		this.saveNetwork(new File(super.getFullName() + "_weights"));
 	}
 	
 	public void saveNetwork(File baseFile) throws FileNotFoundException, IOException {

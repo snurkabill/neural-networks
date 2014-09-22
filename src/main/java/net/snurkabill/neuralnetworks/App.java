@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Random;
 import net.snurkabill.neuralnetworks.data.Database;
 import net.snurkabill.neuralnetworks.data.MnistDatasetReader;
-import net.snurkabill.neuralnetworks.deepbeliefnets.DeepBeliefNeuralNetwork;
+import net.snurkabill.neuralnetworks.deepnets.DeepBeliefNeuralNetwork;
 import net.snurkabill.neuralnetworks.energybasednetwork.BinaryRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.energybasednetwork.HeuristicParamsRBM;
 import net.snurkabill.neuralnetworks.energybasednetwork.RestrictedBoltzmannMachine;
@@ -22,20 +22,20 @@ public class App {
 
 	public static void main(String argv[]) throws IOException {
 
-		
 		//BinaryMarketMove.startExample();
 		
 		//MnistExampleFFNN.startExample();
+        MnistExampleFFNN.deepLearning();
 		//MnistExampleFFNN.startSaveLoadExample();
 		//MnistExampleFFNN.benchmarkOnMNIST();
-		new RBMTest().test();
+		//new RBMTest().test();
 		
 		// *********************************************************************************
 		// DBN test
 		// *********************************************************************************
-		/*double weightScale = 0.01;
-		File labels = new File("target/minst/train-labels-idx1-ubyte.gz");
-		File images = new File("target/minst/train-images-idx3-ubyte.gz");
+		/*double weightScale = 1;
+		File labels = new File("minst/train-labels-idx1-ubyte.gz");
+		File images = new File("minst/train-images-idx3-ubyte.gz");
 		MnistDatasetReader reader;
 		try {
 			reader = new MnistDatasetReader(labels, images);
@@ -47,20 +47,20 @@ public class App {
 		
 		List<RestrictedBoltzmannMachine> machines = new ArrayList<>();
 		
-		machines.add(new BinaryRestrictedBoltzmannMachine(784, 500, new GaussianRndWeightsFactory(weightScale, 0),
+		machines.add(new BinaryRestrictedBoltzmannMachine(784, 300, new GaussianRndWeightsFactory(weightScale, 0),
 				HeuristicParamsRBM.createBasicHeuristicParams(), 0));
-		machines.add(new BinaryRestrictedBoltzmannMachine(500, 500, new GaussianRndWeightsFactory(weightScale, 0),
+		machines.add(new BinaryRestrictedBoltzmannMachine(300, 300, new GaussianRndWeightsFactory(weightScale, 0),
 				HeuristicParamsRBM.createBasicHeuristicParams(), 0));
-		machines.add(new BinaryRestrictedBoltzmannMachine(510, 2000, new GaussianRndWeightsFactory(weightScale, 0),
+		machines.add(new BinaryRestrictedBoltzmannMachine(310, 1000, new GaussianRndWeightsFactory(weightScale, 0),
 				HeuristicParamsRBM.createBasicHeuristicParams(), 0));
 		
 		DeepBeliefNeuralNetwork fuckingMonster = new DeepBeliefNeuralNetwork(machines, "Trhac Asfaltu");
 		
-		int numOfIterations = 1000;
+		int numOfIterations = 5000;
 		
 		LOGGER.info("Inner training started");
 		
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < machines.size() - 1; i++) {
 			for (int j = 0; j < numOfIterations; j++) {
 				double[] input = database.getRandomizedTrainingData().data;
 				LOGGER.trace("Size of input: {}", input.length);
@@ -68,6 +68,7 @@ public class App {
 					input[k] = input[k] > 30 ? 1 : 0;
 				}
 				fuckingMonster.trainInnerNetworkLevel(input, i);
+                LOGGER.info("Iteration: {},  {}", i, j);
 			}
 		}
 		
@@ -83,7 +84,6 @@ public class App {
 			}
 			fuckingMonster.trainLastNetworkLayer(input, label);
 		}
-		
 		
 		LOGGER.info("Testing started");
 		long testingStarted = System.currentTimeMillis();
@@ -127,7 +127,7 @@ public class App {
 		double sec = ((testingFinished - testingStarted) / 1000.0);
 		LOGGER.info("Testing {} samples took {} seconds, {} samples/sec", all, sec, all/sec);
 		LOGGER.info("RESULTS: {}", ((success * 100.0) / all));
-		*/
+        */
 
 		// *********************************************************************************
 		// benchmarker test
