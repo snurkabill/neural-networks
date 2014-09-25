@@ -1,4 +1,4 @@
-package net.snurkabill.neuralnetworks.feedforwardnetwork;
+package net.snurkabill.neuralnetworks.feedforwardnetwork.trasferfunction;
 
 public class SigmoidFunction implements TransferFunctionCalculator {
 

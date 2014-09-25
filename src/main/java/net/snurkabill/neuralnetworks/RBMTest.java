@@ -133,6 +133,5 @@ public class RBMTest {
         for (int i = 0; i < 100; i++) {
             LOGGER.info("Reconstructed: {}", secondRbm.reconstructNext());
         }
-        LOGGER.info("Testing DEEP NETWORK");
     }
 }

@@ -1,18 +1,8 @@
 package net.snurkabill.neuralnetworks;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import net.snurkabill.neuralnetworks.data.Database;
-import net.snurkabill.neuralnetworks.data.MnistDatasetReader;
-import net.snurkabill.neuralnetworks.deepnets.DeepBeliefNeuralNetwork;
-import net.snurkabill.neuralnetworks.energybasednetwork.BinaryRestrictedBoltzmannMachine;
-import net.snurkabill.neuralnetworks.energybasednetwork.HeuristicParamsRBM;
-import net.snurkabill.neuralnetworks.energybasednetwork.RestrictedBoltzmannMachine;
+
 import net.snurkabill.neuralnetworks.examples.mnist.MnistExampleFFNN;
-import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.GaussianRndWeightsFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

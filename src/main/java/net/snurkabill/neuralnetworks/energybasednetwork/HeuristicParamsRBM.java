@@ -12,7 +12,7 @@ public class HeuristicParamsRBM {
 		HeuristicParamsRBM rbm = new HeuristicParamsRBM();
 		
 		rbm.temperature = 1.0;
-		rbm.constructiveDivergenceIndex = 3;
+		rbm.constructiveDivergenceIndex = 1;
 		rbm.numOfTrainingIterations = 30;
 		rbm.momentum = 0.5;
 		rbm.learningSpeed = 0.1;

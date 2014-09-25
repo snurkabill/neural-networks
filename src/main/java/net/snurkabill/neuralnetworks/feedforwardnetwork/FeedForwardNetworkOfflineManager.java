@@ -1,15 +1,16 @@
 package net.snurkabill.neuralnetworks.feedforwardnetwork;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import net.snurkabill.neuralnetworks.data.DataItem;
 import net.snurkabill.neuralnetworks.data.Database;
 import net.snurkabill.neuralnetworks.data.LabelledItem;
 import net.snurkabill.neuralnetworks.results.BasicTestResults;
+import net.snurkabill.neuralnetworks.results.SupervisedTestResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import net.snurkabill.neuralnetworks.results.SupervisedTestResults;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager {
 	
@@ -17,6 +18,7 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 	
 	// TODO: general evaluator
 	private final Database database;
+    private int trainingIterations;
 	
 	public FeedForwardNetworkOfflineManager(List<FeedForwardNeuralNetwork> networks, Database database,
                                             boolean isMultithreadingEnabled) {
@@ -74,16 +76,17 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 			}
 			long testingFinished = System.currentTimeMillis();
 			int all = (success + fail);
-            results.add(new SupervisedTestResults(database.getTestSetSize(), globalError,
-                    testingFinished - testingStarted, (success * 100.0) / all));
+            results.add(new SupervisedTestResults(trainingIterations, globalError,
+                    testingFinished - testingStarted, ((double)success * 100.0) / (double)all));
 			double sec = ((testingFinished - testingStarted) / 1000.0);
 			LOGGER.info("Testing {} network: {} samples took {} seconds, {} samples/sec", 
 					networks.get(network).getName(), all, sec, all/sec);
-			for (int i = 0; i < database.getNumberOfClasses(); i++) {
+			/*for (int i = 0; i < database.getNumberOfClasses(); i++) {
 				LOGGER.info("{}th class: TOTAL - {}, {}% correct samples", i, database.getSizeOfTestingDataset(i),
 						(1.0 / ((double)database.getSizeOfTestingDataset(i) / (double)successValuesCounter[i])));
-			}
-		}	
+			}*/
+            LOGGER.info("{}", ((double)success * 100.0) / (double)all);
+		}
 		return results;
 	}
 	
@@ -92,11 +95,12 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 			throw new IllegalArgumentException("Number of iterations [" + numOfIterations + "] can't be negative");
 		}
 	}
-	
-	// it would be good, if sizeOfMiniBatch would be multiple of 
+
+    @Deprecated // "FIX ME - num of iterations coutner"
+   	// it would be good, if sizeOfMiniBatch would be multiple of
 	public void trainNetwork(int numOfIterations, int sizeOfMiniBatch) {
-		checkIterations(numOfIterations);	
-		if(sizeOfMiniBatch < database.getNumberOfClasses()) {
+		checkIterations(numOfIterations);
+        if(sizeOfMiniBatch < database.getNumberOfClasses()) {
 			LOGGER.warn("SizeOfMiniBatch is too low and there is possibility to ... well IDK, it is just wrong");
 			sizeOfMiniBatch = database.getNumberOfClasses();
 		}
@@ -121,17 +125,18 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 			}
 			long trainingEnded = System.currentTimeMillis();
 			double sec = ((trainingEnded - trainingStarted) / 1000.0);
-			LOGGER.info("Training: {} samples took {} seconds, {} samples/sec", (numOfIterations * sizeOfMiniBatch),
+			LOGGER.info("Training network {} with {} samples took {} seconds, {} samples/sec", this.networks.get(network).getName(), numOfIterations * sizeOfMiniBatch,
 					sec, (numOfIterations * sizeOfMiniBatch)/sec);
-			LOGGER.info("Learned Patterns: ");
+			/*LOGGER.info("Learned Patterns: ");
 			for (int i = 0; i < this.sizeOfOutputVector; i++) {
 				LOGGER.info("{} - {}", i, learnedPatterns[i]);
-			}
+			}*/
 		}
 	}
 	
 	public void trainNetwork(int numOfIterations) {
 		checkIterations(numOfIterations);
+        trainingIterations += numOfIterations;
 		if(numOfIterations < database.getNumberOfClasses()) {
 			LOGGER.warn("Count of iterations for training([{}]) is smaller than number of classes of division([{}]). "
 					+ "Uneffective training possible: setting numOfIterations to numberOfClasses", numOfIterations, 
@@ -153,10 +158,11 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 			double sec = ((trainingEnded - trainingStarted) / 1000.0);
 			LOGGER.info("Training: {} samples took {} seconds, {} samples/sec", numOfIterations, sec,
 					numOfIterations/sec);
+            /*
 			LOGGER.info("Learned Patterns: ");
 			for (int i = 0; i < this.sizeOfOutputVector; i++) {
 				LOGGER.info("{} - {}", i, learnedPatterns[i]);
-			}
+			}*/
 		}
 	}
 }

@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.feedforwardnetwork.target;
 
-import net.snurkabill.neuralnetworks.feedforwardnetwork.TransferFunctionCalculator;
+import net.snurkabill.neuralnetworks.feedforwardnetwork.trasferfunction.TransferFunctionCalculator;
 
 public class SeparableTargetValues extends TargetValues {
 

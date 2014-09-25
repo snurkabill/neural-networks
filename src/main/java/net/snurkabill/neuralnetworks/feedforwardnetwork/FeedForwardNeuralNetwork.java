@@ -1,12 +1,10 @@
 package net.snurkabill.neuralnetworks.feedforwardnetwork;
 
-import net.snurkabill.neuralnetworks.NeuralNetwork;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.heuristic.HeuristicParamsFFNN;
+import net.snurkabill.neuralnetworks.feedforwardnetwork.trasferfunction.TransferFunctionCalculator;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.PretrainedWeightsFactory;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.WeightsFactory;
 import net.snurkabill.neuralnetworks.utilities.Utilities;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;

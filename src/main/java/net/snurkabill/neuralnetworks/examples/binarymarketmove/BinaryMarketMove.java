@@ -9,7 +9,7 @@ import net.snurkabill.neuralnetworks.data.Database;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNetworkOfflineManager;
 import static net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNetworkOfflineManager.LOGGER;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNeuralNetwork;
-import net.snurkabill.neuralnetworks.feedforwardnetwork.HyperbolicTangens;
+import net.snurkabill.neuralnetworks.feedforwardnetwork.trasferfunction.HyperbolicTangens;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.heuristic.HeuristicParamsFFNN;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.GaussianRndWeightsFactory;
 import net.snurkabill.neuralnetworks.results.SupervisedTestResults;

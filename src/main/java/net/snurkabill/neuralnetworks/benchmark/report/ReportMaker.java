@@ -3,7 +3,6 @@ package net.snurkabill.neuralnetworks.benchmark.report;
 import net.snurkabill.neuralnetworks.results.ResultsSummary;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -32,8 +31,8 @@ public class ReportMaker {
             final XYSeries xy = new XYSeries(summary.getName());
             long distributedSum = 0;
             for (int i = 0; i < summary.getResults().size(); i++) {
-                distributedSum += summary.getResults().get(i).getNumOfTestedItems();
-                xy.add(distributedSum, summary.getResults().get(i).getSuccess());
+                //distributedSum += summary.getResults().get(i).getNumOfTrainedItems();
+                xy.add(summary.getResults().get(i).getNumOfTrainedItems(), summary.getResults().get(i).getSuccess());
             }
             dataset.addSeries(xy);
         }

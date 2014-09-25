@@ -14,7 +14,7 @@ import java.util.List;
  * TODO : make DBN abstract and create binary and real valued DBN. 
  */
 @Deprecated
-public class DeepBeliefNeuralNetwork extends StuckedRBM {
+public class ReconstructingDeepBeliefNeuralNetwork extends StuckedRBM {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("DBN");
 	private final List<RestrictedBoltzmannMachine> levels;
@@ -24,7 +24,7 @@ public class DeepBeliefNeuralNetwork extends StuckedRBM {
 	private final int sizeOfOutputVector;
 	private final int sizeOfInputVector;
 	
-	public DeepBeliefNeuralNetwork(List<RestrictedBoltzmannMachine> levels, String name) {
+	public ReconstructingDeepBeliefNeuralNetwork(List<RestrictedBoltzmannMachine> levels, String name) {
         super(levels, name);
 		if(levels.size() == 1) {
 			throw new IllegalArgumentException("DBN does not support one level RMBs, use one RBM instead for "

@@ -35,9 +35,11 @@ public class StuckedRBM extends FeedForwardableNetwork {
             throw new IllegalArgumentException("Level can't be negative");
         }
         checkInputVectorSize(inputVector);
-        LOGGER.debug("Training inner network level {}", level);
+        long timeStart = System.currentTimeMillis();
         innerFeedForward(inputVector, level);
         levels.get(level).trainMachine();
+        long timeEnd = System.currentTimeMillis();
+        LOGGER.debug("Training inner network level {},  {}", level, timeEnd - timeStart);
     }
 
     public double[] feedForward(double[] inputVector) {
