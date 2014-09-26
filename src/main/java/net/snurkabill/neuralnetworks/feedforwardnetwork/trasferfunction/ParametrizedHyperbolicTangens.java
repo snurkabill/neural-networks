@@ -27,4 +27,9 @@ public class ParametrizedHyperbolicTangens implements TransferFunctionCalculator
 	public double getLowLimit() {
 		return -LIMIT;
 	}
+
+    @Override
+    public String getName() {
+        return "ParamHyperTan(1.7159)";
+    }
 }

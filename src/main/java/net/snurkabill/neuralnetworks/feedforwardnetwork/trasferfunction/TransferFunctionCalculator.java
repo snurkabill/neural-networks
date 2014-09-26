@@ -7,4 +7,6 @@ public interface TransferFunctionCalculator {
 	
 	public double calculateOutputValue(double x);
 	public double calculateDerivative(double x);
+
+    public String getName();
 }

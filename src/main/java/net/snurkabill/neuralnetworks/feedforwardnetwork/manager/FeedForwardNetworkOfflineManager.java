@@ -1,8 +1,9 @@
-package net.snurkabill.neuralnetworks.feedforwardnetwork;
+package net.snurkabill.neuralnetworks.feedforwardnetwork.manager;
 
 import net.snurkabill.neuralnetworks.data.DataItem;
 import net.snurkabill.neuralnetworks.data.Database;
 import net.snurkabill.neuralnetworks.data.LabelledItem;
+import net.snurkabill.neuralnetworks.feedforwardnetwork.core.FeedForwardNeuralNetwork;
 import net.snurkabill.neuralnetworks.results.BasicTestResults;
 import net.snurkabill.neuralnetworks.results.SupervisedTestResults;
 import org.slf4j.Logger;
@@ -11,18 +12,16 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager {
-	
-	public static final Logger LOGGER = LoggerFactory.getLogger("FFNN Manager");
-	
+
 	// TODO: general evaluator
 	private final Database database;
-    private int trainingIterations;
-	
-	public FeedForwardNetworkOfflineManager(List<FeedForwardNeuralNetwork> networks, Database database,
-                                            boolean isMultithreadingEnabled) {
-		super(networks, isMultithreadingEnabled);
+
+    public FeedForwardNetworkOfflineManager(List<FeedForwardNeuralNetwork> networks, Database database,
+                                            boolean threadsEnabled) {
+		super(networks, threadsEnabled);
 		this.database = database;
 	}
 
@@ -43,6 +42,17 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 			network.setIsPretrained(true);
 		}
 	}
+
+    /*private class NetworkTester implements Callable<BasicTestResults> {
+
+        private final int index;
+
+        public NetworkTester(int index) {
+            this.index = index;
+        }
+
+
+    }*/
 	
 	public List<BasicTestResults> testNetworkOnWholeTestingDataset() {
 		List<BasicTestResults> results = new ArrayList<>();
@@ -54,16 +64,8 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 			int success = 0;
 			int fail = 0;
 			for (int _class = 0; _class < database.getNumberOfClasses(); _class++) {
-				targetMaker.get(network).getTargetValues(_class, _class, targetValues);
-				/*for (int j = 0; j < database.getSizeOfTestingDataset(i); j++) {
-					networks.get(network).feedForward(database.getTestingIteratedData(i).data);
-					globalError += networks.get(network).getError(targetValues);
-					//TODO : general evaluation 
-					if(networks.get(network).getFirstHighestValueIndex() == i) {
-						success++;
-						successValuesCounter[i]++;
-					} else fail++;
-				}*/
+				targetMaker.get(network).getTargetValues(_class, targetValues);
+				//TODO : general evaluation
 				Iterator<DataItem> testingIterator = database.getTestingIteratorOverClass(_class);
 				for (;testingIterator.hasNext();) {
 					networks.get(network).feedForward(testingIterator.next().data);
@@ -76,16 +78,12 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 			}
 			long testingFinished = System.currentTimeMillis();
 			int all = (success + fail);
+            double percentageSuccess = ((double)success * 100.0) / (double)all;
             results.add(new SupervisedTestResults(trainingIterations, globalError,
-                    testingFinished - testingStarted, ((double)success * 100.0) / (double)all));
+                    testingFinished - testingStarted, percentageSuccess));
 			double sec = ((testingFinished - testingStarted) / 1000.0);
-			LOGGER.info("Testing {} network: {} samples took {} seconds, {} samples/sec", 
-					networks.get(network).getName(), all, sec, all/sec);
-			/*for (int i = 0; i < database.getNumberOfClasses(); i++) {
-				LOGGER.info("{}th class: TOTAL - {}, {}% correct samples", i, database.getSizeOfTestingDataset(i),
-						(1.0 / ((double)database.getSizeOfTestingDataset(i) / (double)successValuesCounter[i])));
-			}*/
-            LOGGER.info("{}", ((double)success * 100.0) / (double)all);
+			LOGGER.info("Testing {} network, success: {}. {} samples took {} seconds, {} samples/sec",
+					networks.get(network).getName(), percentageSuccess, all, sec, all/sec);
 		}
 		return results;
 	}
@@ -126,7 +124,7 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 			long trainingEnded = System.currentTimeMillis();
 			double sec = ((trainingEnded - trainingStarted) / 1000.0);
 			LOGGER.info("Training network {} with {} samples took {} seconds, {} samples/sec", this.networks.get(network).getName(), numOfIterations * sizeOfMiniBatch,
-					sec, (numOfIterations * sizeOfMiniBatch)/sec);
+                    sec, (numOfIterations * sizeOfMiniBatch) / sec);
 			/*LOGGER.info("Learned Patterns: ");
 			for (int i = 0; i < this.sizeOfOutputVector; i++) {
 				LOGGER.info("{} - {}", i, learnedPatterns[i]);
@@ -143,6 +141,7 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 					database.getNumberOfClasses());
 			numOfIterations = database.getNumberOfClasses();
 		}
+
 		for (int network = 0; network < networks.size(); network++) {
 			long trainingStarted = System.currentTimeMillis();
 			double[] targetValues = this.initializeTargetArray(network);

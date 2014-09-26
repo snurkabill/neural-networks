@@ -1,12 +1,11 @@
 package net.snurkabill.neuralnetworks.benchmark.FFNN;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.snurkabill.neuralnetworks.benchmark.report.ReportMaker;
-import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNetworkOfflineManager;
+import net.snurkabill.neuralnetworks.feedforwardnetwork.manager.FeedForwardNetworkOfflineManager;
 import net.snurkabill.neuralnetworks.results.BasicTestResults;
 import net.snurkabill.neuralnetworks.results.ResultsSummary;
 

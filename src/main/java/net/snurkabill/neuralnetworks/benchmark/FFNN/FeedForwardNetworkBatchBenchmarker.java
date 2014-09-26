@@ -1,8 +1,7 @@
 package net.snurkabill.neuralnetworks.benchmark.FFNN;
 
-import java.io.IOException;
 import java.util.List;
-import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNetworkOfflineManager;
+import net.snurkabill.neuralnetworks.feedforwardnetwork.manager.FeedForwardNetworkOfflineManager;
 import net.snurkabill.neuralnetworks.results.BasicTestResults;
 
 public class FeedForwardNetworkBatchBenchmarker extends FeedForwardNetworkBenchmarker {

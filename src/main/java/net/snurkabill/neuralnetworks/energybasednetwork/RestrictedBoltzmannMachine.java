@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.energybasednetwork;
 
-import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.WeightsFactory;
+import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

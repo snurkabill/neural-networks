@@ -1,22 +1,32 @@
-package net.snurkabill.neuralnetworks.feedforwardnetwork;
+package net.snurkabill.neuralnetworks.feedforwardnetwork.manager;
 
 import java.util.ArrayList;
 import java.util.List;
-import static net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNetworkOnlineManager.LOGGER;
+
+import net.snurkabill.neuralnetworks.feedforwardnetwork.core.FeedForwardNeuralNetwork;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.target.SeparableTargetValues;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.target.TargetValues;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class FeedForwardNetworkManager {
-	
-	protected final int sizeOfOutputVector;
+
+    protected static final Logger LOGGER = LoggerFactory.getLogger("FFNN Manager");
+
+    protected final int sizeOfOutputVector;
 	protected final int sizeOfInputVector;
-	protected final List<FeedForwardNeuralNetwork> networks;
+
+    protected final List<FeedForwardNeuralNetwork> networks;
+
 	// TODO: general evaluator
 	protected final List<TargetValues> targetMaker;
+
     private final int determinedNumOfThreads;
     private final boolean multiThreadingEnabled;
 
-	public FeedForwardNetworkManager(List<FeedForwardNeuralNetwork> networks, boolean enableThreads) {
+    protected int trainingIterations;
+
+	public FeedForwardNetworkManager(List<FeedForwardNeuralNetwork> networks, boolean threadsEnabled) {
 		this.networks = networks;
 		this.targetMaker = new ArrayList<>();
 		for (int i = 0; i < networks.size(); i++) {
@@ -32,8 +42,9 @@ public abstract class FeedForwardNetworkManager {
 				throw new IllegalArgumentException("Networks have different output vector sizes");
 			}
 		}
-        multiThreadingEnabled = enableThreads;
-        if(enableThreads) {
+
+        multiThreadingEnabled = threadsEnabled;
+        if(threadsEnabled) {
             int numOfThreads = networks.size();
             int safeNumOfThreads = Runtime.getRuntime().availableProcessors() - 1;
             if(numOfThreads > safeNumOfThreads) {
@@ -43,7 +54,10 @@ public abstract class FeedForwardNetworkManager {
         } else {
             determinedNumOfThreads = 1;
         }
+
 		LOGGER.info("Manager created with {} networks", networks.size());
+        LOGGER.info("Threads enabled = {}, determined number of threads = {}", multiThreadingEnabled,
+                determinedNumOfThreads);
 	}
 	
 	public List<FeedForwardNeuralNetwork> getNetworkList() {
@@ -60,5 +74,13 @@ public abstract class FeedForwardNetworkManager {
 	
 	public int getNumOfNeuralNetworks() {
 		return this.networks.size();
-	}	
+	}
+
+    public boolean isMultiThreadingEnabled() {
+        return this.multiThreadingEnabled;
+    }
+
+    public int numberOfThreads() {
+        return this.determinedNumOfThreads;
+    }
 }

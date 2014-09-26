@@ -1,14 +1,18 @@
-package net.snurkabill.neuralnetworks.feedforwardnetwork;
+package net.snurkabill.neuralnetworks.feedforwardnetwork.manager;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import net.snurkabill.neuralnetworks.feedforwardnetwork.core.FeedForwardNeuralNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FeedForwardNetworkOnlineManager extends FeedForwardNetworkManager {
-	
-	public static final Logger LOGGER = LoggerFactory.getLogger("Online Manager");
-	
+
+    /**
+     * it is pointless to have online manager ... yet
+     */
+
 	private int lastTrained =  -1;
 	private TrainingMode trainingMode;
 

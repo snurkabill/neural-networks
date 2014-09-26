@@ -1,10 +1,12 @@
-package net.snurkabill.neuralnetworks.feedforwardnetwork;
+package net.snurkabill.neuralnetworks.feedforwardnetwork.core;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardableNetwork;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.heuristic.HeuristicParamsFFNN;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.trasferfunction.TransferFunctionCalculator;
-import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.PretrainedWeightsFactory;
-import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.WeightsFactory;
 import net.snurkabill.neuralnetworks.utilities.Utilities;
+import net.snurkabill.neuralnetworks.weights.weightfactory.PretrainedWeightsFactory;
+import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -13,8 +15,11 @@ import java.util.Random;
 
 public class FeedForwardNeuralNetwork extends FeedForwardableNetwork {
 
+    public static final String WORKING_NAME = "FFNN";
+
 	private final TransferFunctionCalculator transferFunction;
-	private final Random random = new Random();
+	private final Random random;
+	
 	private final List<Integer> topology;
 	private final int lastLayerIndex;
 	private final int sizeOfInputVector;
@@ -39,11 +44,11 @@ public class FeedForwardNeuralNetwork extends FeedForwardableNetwork {
 	
 	public FeedForwardNeuralNetwork(List<Integer> topology, WeightsFactory wFactory, String name,  
 			HeuristicParamsFFNN heuristicParams, TransferFunctionCalculator transferFunction, long seed) {
-        super(name, "FFNN");
+        super(name, WORKING_NAME + " " + transferFunction.getName());
 		if(topology.size() <= 1) {
 			throw new IllegalArgumentException("Wrong topology of FFNN");
 		}
-		this.random.setSeed(seed);
+		this.random = new Random(seed);
 		this.transferFunction = transferFunction;
 		this.topology = topology;
 		this.heuristicParams = heuristicParams;
@@ -227,7 +232,7 @@ public class FeedForwardNeuralNetwork extends FeedForwardableNetwork {
 	}
 	
 	public void saveNetwork() throws FileNotFoundException, IOException {
-		this.saveNetwork(new File(super.getFullName() + "_weights"));
+		this.saveNetwork(new File(super.getWorkName() + "_weights"));
 	}
 	
 	public void saveNetwork(File baseFile) throws FileNotFoundException, IOException {

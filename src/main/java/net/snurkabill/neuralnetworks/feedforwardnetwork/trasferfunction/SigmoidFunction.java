@@ -25,4 +25,9 @@ public class SigmoidFunction implements TransferFunctionCalculator {
 		double tmp = Math.exp(x);
 		return tmp / ((tmp + 1.0) * (tmp + 1.0));
 	}
+
+    @Override
+    public String getName() {
+        return "SimpleSigmoid";
+    }
 }

@@ -1,4 +1,4 @@
-package net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory;
+package net.snurkabill.neuralnetworks.weights.weightfactory;
 
 import java.util.Random;
 

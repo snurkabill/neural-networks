@@ -25,4 +25,9 @@ public class ParametrizedSigmoidFunctionForBinaryVector implements TransferFunct
         double tmp = Math.exp(x);
         return tmp / ((tmp + 1.0) * (tmp + 1.0));
     }
+
+    @Override
+    public String getName() {
+        return "SimpleSigmoid(-0.5)";
+    }
 }

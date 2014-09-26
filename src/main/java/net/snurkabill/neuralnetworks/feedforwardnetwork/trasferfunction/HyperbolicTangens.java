@@ -28,4 +28,9 @@ public class HyperbolicTangens implements TransferFunctionCalculator {
 	public double getLowLimit() {
 		return -LIMIT;
 	}
+
+    @Override
+    public String getName() {
+        return "HyperbolicTangens";
+    }
 }

@@ -9,15 +9,14 @@ import net.snurkabill.neuralnetworks.deepnets.StuckedRBM;
 import net.snurkabill.neuralnetworks.energybasednetwork.BinaryRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.energybasednetwork.HeuristicParamsRBM;
 import net.snurkabill.neuralnetworks.energybasednetwork.RestrictedBoltzmannMachine;
-import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNetworkOfflineManager;
-import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNeuralNetwork;
+import net.snurkabill.neuralnetworks.feedforwardnetwork.manager.FeedForwardNetworkOfflineManager;
+import net.snurkabill.neuralnetworks.feedforwardnetwork.core.FeedForwardNeuralNetwork;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.heuristic.HeuristicParamsFFNN;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.trasferfunction.HyperbolicTangens;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.trasferfunction.ParametrizedHyperbolicTangens;
-import net.snurkabill.neuralnetworks.feedforwardnetwork.trasferfunction.SigmoidFunction;
-import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.GaussianRndWeightsFactory;
-import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.PretrainedWeightsFactory;
-import net.snurkabill.neuralnetworks.feedforwardnetwork.weightfactory.WeightsFactory;
+import net.snurkabill.neuralnetworks.weights.weightfactory.GaussianRndWeightsFactory;
+import net.snurkabill.neuralnetworks.weights.weightfactory.PretrainedWeightsFactory;
+import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 import net.snurkabill.neuralnetworks.results.SupervisedTestResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,7 +148,7 @@ public class MnistExampleFFNN {
         machines.add(new BinaryRestrictedBoltzmannMachine(20, 20,
                 new GaussianRndWeightsFactory(weightsScale, seed), HeuristicParamsRBM.createBasicHeuristicParams(), seed));
         StuckedRBM rbms = new StuckedRBM(machines, "PrvniKominEver");
-        int numOfIterations = 10000;
+        int numOfIterations = 1000;
         Iterator<DataItem> iterator = database.getInfiniteTrainingIterator();
         for (int i = 0; i < rbms.getNumOfLevels(); i++) {
             for (int j = 0; j < numOfIterations; j++) {
@@ -171,14 +170,14 @@ public class MnistExampleFFNN {
                 heuristic, new ParametrizedHyperbolicTangens(), seed));
         heuristic = HeuristicParamsFFNN.createDefaultHeuristic();
         heuristic.eta = 0.01;
-        networks.add(new FeedForwardNeuralNetwork(topology, wFactory, "eta=0.01",
+        networks.add(new FeedForwardNeuralNetwork(topology, wFactory, "experimental",
                 heuristic, new ParametrizedHyperbolicTangens(), seed));
         heuristic = HeuristicParamsFFNN.createDefaultHeuristic();
-        heuristic.eta = 0.0001;
-        networks.add(new FeedForwardNeuralNetwork(topology, wFactory, "eta=0.0001",
+        heuristic.eta = 0.01;
+        networks.add(new FeedForwardNeuralNetwork(topology, wFactory, "eta=0.01",
                 heuristic, new ParametrizedHyperbolicTangens(), seed));
 
-        for (int i = 0; i < networks.size() - 1 /** -1 because last networks represents simple back prop**/; i++) {
+        for (int i = 0; i < networks.size() /**- 1 /** -1 because last networks represents simple back prop**/; i++) {
             for (int j = 0; j < machines.size(); j++) {
                 networks.get(i).setWeights(j, machines.get(j).createLayerForFFNN());
             }

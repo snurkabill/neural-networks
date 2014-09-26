@@ -6,7 +6,7 @@ import java.util.List;
 
 import net.snurkabill.neuralnetworks.benchmark.Benchmarker;
 import net.snurkabill.neuralnetworks.benchmark.report.ReportMaker;
-import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardNetworkOfflineManager;
+import net.snurkabill.neuralnetworks.feedforwardnetwork.manager.FeedForwardNetworkOfflineManager;
 import net.snurkabill.neuralnetworks.results.BasicTestResults;
 import net.snurkabill.neuralnetworks.results.ResultsSummary;
 

@@ -10,8 +10,9 @@ public class LinearDeepBeliefNetwork extends FeedForwardableNetwork {
         super(name, "LinearDBN");
         this.rbms = rbm;
     }
-
-
-
+	
+	/**
+	 * TODO : everything .... (after RBM chimney put linear classificators FOR MORE FUN!)
+	 */
 
 }

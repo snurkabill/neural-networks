@@ -3,23 +3,24 @@ package net.snurkabill.neuralnetworks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 public abstract class NeuralNetwork {
 
     private final String name;
-    private final String fullName;
+    private final String workName;
     protected final Logger LOGGER;
 
-    public NeuralNetwork(String name, String typeOfNeuralNetwork) {
+    public NeuralNetwork(String name, String workingString) {
         this.name = name;
-        this.fullName = typeOfNeuralNetwork + " " + name;
-        this.LOGGER = LoggerFactory.getLogger(fullName);
+        this.workName = workingString + " " + name;
+        this.LOGGER = LoggerFactory.getLogger(workName);
     }
 
     public String getName() {
         return name;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getWorkName() {
+        return workName;
     }
 }
