@@ -14,8 +14,8 @@ public class App {
 
 		//BinaryMarketMove.startExample();
 		
-		//MnistExampleFFNN.startExample();
-        MnistExampleFFNN.deepLearning();
+		MnistExampleFFNN.startExample();
+        //MnistExampleFFNN.deepLearning();
 		//MnistExampleFFNN.startSaveLoadExample();
 		//MnistExampleFFNN.benchmarkOnMNIST();
 		//new RBMTest().test();
