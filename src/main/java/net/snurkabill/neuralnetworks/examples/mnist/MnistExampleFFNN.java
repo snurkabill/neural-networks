@@ -63,7 +63,7 @@ public class MnistExampleFFNN {
 		FeedForwardNetworkOfflineManager manager = new FeedForwardNetworkOfflineManager(Arrays.asList(network, network2), database, false);
 		FeedForwardNetworkOfflineManager miniManager = new FeedForwardNetworkOfflineManager(Collections.singletonList(networkMiniBatch), database, false);
 		
-		MiniBatchVsOnlineBenchmarker benchmarker = new MiniBatchVsOnlineBenchmarker(manager, 10, 500, 50, miniManager, 20);
+		MiniBatchVsOnlineBenchmarker benchmarker = new MiniBatchVsOnlineBenchmarker(manager, 10, 500, 50, miniManager);
 		benchmarker.benchmark();
 	}
 	
@@ -86,8 +86,6 @@ public class MnistExampleFFNN {
 		Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST");
 		FeedForwardNetworkOfflineManager manager = new FeedForwardNetworkOfflineManager(Collections.singletonList(network), database, false);
 		
-		int sizeOfPretrainingBatch = 10;
-		manager.pretrainInputNeurons(sizeOfPretrainingBatch);
 		LOGGER.info("Process started!");
 		int sizeOfTrainingBatch = 10_000;
 		for (int i = 0; i < 10; i++) {
@@ -183,7 +181,7 @@ public class MnistExampleFFNN {
             }
         }
         FeedForwardNetworkOfflineManager manager = new FeedForwardNetworkOfflineManager(networks, database, false);
-        FeedForwardNetworkBenchmarker benchmark = new FeedForwardNetworkBenchmarker(manager, 50, 2000, 0);
+        FeedForwardNetworkBenchmarker benchmark = new FeedForwardNetworkBenchmarker(manager, 50, 2000);
         benchmark.benchmark();
     }
 

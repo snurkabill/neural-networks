@@ -17,15 +17,13 @@ public class FeedForwardNetworkBenchmarker implements Benchmarker {
 	protected final int numOfRuns;
 	protected final int sizeOfTrainingBatch;
 	protected final List<ResultsSummary> summary;
-    protected final int pretrainingTrainingSet;
 	
 	public FeedForwardNetworkBenchmarker(FeedForwardNetworkOfflineManager feedForwardNetworks, int numOfRuns, 
-			int sizeOfTrainingBatch, int pretrainingTrainingSet) {
+			int sizeOfTrainingBatch) {
 		this.feedForwardNetworks = feedForwardNetworks;
 		this.numOfRuns = numOfRuns;
 		this.sizeOfTrainingBatch = sizeOfTrainingBatch;
 		summary = new ArrayList<>();
-        this.pretrainingTrainingSet = pretrainingTrainingSet;
 		
 		for (int i = 0; i < feedForwardNetworks.getNumOfNeuralNetworks(); i++) {
 			summary.add(new ResultsSummary(feedForwardNetworks.getNetworkList().get(i).getName()));
@@ -34,9 +32,6 @@ public class FeedForwardNetworkBenchmarker implements Benchmarker {
 	
 	@Override
 	public void benchmark() {
-        if(pretrainingTrainingSet != 0) {
-            feedForwardNetworks.pretrainInputNeurons(this.pretrainingTrainingSet);
-        }
 		for (int i = 0; i < numOfRuns; i++) {
 			feedForwardNetworks.trainNetwork(sizeOfTrainingBatch);
 			List<BasicTestResults> tmp = feedForwardNetworks.testNetworkOnWholeTestingDataset();

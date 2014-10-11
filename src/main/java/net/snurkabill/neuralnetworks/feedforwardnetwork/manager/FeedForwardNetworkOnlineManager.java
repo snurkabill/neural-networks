@@ -67,7 +67,7 @@ public class FeedForwardNetworkOnlineManager extends FeedForwardNetworkManager {
 			}
 		} else if(trainingMode == TrainingMode.PRE_TRAINING) {
 			LOGGER.debug("PRE_TAINING {}", expectedOutputClassIndex);
-			if(actualBatch == MAX_PRETRAINING_BATCH) {
+			/*if(actualBatch == MAX_PRETRAINING_BATCH) {
 				trainingMode = TrainingMode.FULL_TRAINING;
 				LOGGER.info("PRE_TRAINING mode stopped. {} is on", trainingMode);
 				for (int i = 0; i < networks.size(); i++) {
@@ -81,7 +81,7 @@ public class FeedForwardNetworkOnlineManager extends FeedForwardNetworkManager {
 					inputBatch[i][actualBatch] = inputVector[i];
 				}
 				actualBatch++;
-			}
+			}*/
 		}
 		return results;
 	}
@@ -111,7 +111,8 @@ public class FeedForwardNetworkOnlineManager extends FeedForwardNetworkManager {
 	public static enum TrainingMode {
 		FULL_TRAINING, // train on all inputs
 		SEQUENTIAL_TRAINING, // train sequentially on classes of division {1, 2, 3 ....}
-		PRE_TRAINING, // store batch for pretraining neurons
+		@Deprecated
+        PRE_TRAINING, // store batch for pretraining neurons
 		NON_TRAINING; // back propagation off
 	}
 }

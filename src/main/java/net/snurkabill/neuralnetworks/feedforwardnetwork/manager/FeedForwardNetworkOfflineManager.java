@@ -25,35 +25,10 @@ public class FeedForwardNetworkOfflineManager extends FeedForwardNetworkManager 
 		this.database = database;
 	}
 
-	public void pretrainInputNeurons(int percentageOfDataset) {
-		LOGGER.info("Pretraining input neurons on {} percentages of dataset", percentageOfDataset);
-		if(percentageOfDataset > 100) {
-			throw new IllegalArgumentException("PercentageOfDataset makes no sense" + percentageOfDataset);
-		}
-		for (FeedForwardNeuralNetwork network : networks) {
-			int pretrainedPatterns = (database.getTrainingsetSize() / 100) * percentageOfDataset;
-			double[] batch = new double [pretrainedPatterns];
-			for (int i = 0; i < network.getSizeOfInputVector(); i++) {
-				for (int j = 0; j < pretrainedPatterns; j++) {
-					batch[j] = database.getRandomizedTrainingData().data[i];
-				}
-				network.updateInputModifier(i, batch);
-			}
-			network.setIsPretrained(true);
-		}
-	}
+    /*
+    there should be method for converting database|!!
+     */
 
-    /*private class NetworkTester implements Callable<BasicTestResults> {
-
-        private final int index;
-
-        public NetworkTester(int index) {
-            this.index = index;
-        }
-
-
-    }*/
-	
 	public List<BasicTestResults> testNetworkOnWholeTestingDataset() {
 		List<BasicTestResults> results = new ArrayList<>();
 		for (int network = 0; network < networks.size(); network++) {

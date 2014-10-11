@@ -1,6 +1,5 @@
 package net.snurkabill.neuralnetworks.feedforwardnetwork.core;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.FeedForwardableNetwork;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.heuristic.HeuristicParamsFFNN;
 import net.snurkabill.neuralnetworks.feedforwardnetwork.trasferfunction.TransferFunctionCalculator;
@@ -25,7 +24,6 @@ public class FeedForwardNeuralNetwork extends FeedForwardableNetwork {
 	private final int sizeOfInputVector;
 	private final int sizeOfOutputVector;
 	private final int numOfLayers;
-	private boolean isPretrained;
 	
 	private final double[] inputMeans;
 	private final double[] inputStdDev;
@@ -90,27 +88,7 @@ public class FeedForwardNeuralNetwork extends FeedForwardableNetwork {
 			this.inputMeans[i] = 0.0;
 			this.inputStdDev[i] = 1.0;
 		}
-		isPretrained = false;
 		LOGGER.info("Created Feed forward neural network {}", topology.toString());
-	}
-	
-	public FeedForwardNeuralNetwork(List<Integer> topology, WeightsFactory wFactory, String name,  
-			HeuristicParamsFFNN heuristicParams, TransferFunctionCalculator transferFunction, long seed, 
-			double[] inputMeans, double[] inputStdDev) {
-		this(topology, wFactory, name, heuristicParams, transferFunction, seed);
-		for (int i = 0; i < inputStdDev.length; i++) {
-			this.inputMeans[i] = inputMeans[i];
-			this.inputStdDev[i] = inputStdDev[i];
-		}
-		isPretrained = true;
-	}
-
-	public boolean isIsPretrained() {
-		return isPretrained;
-	}
-
-	public void setIsPretrained(boolean isPretrained) {
-		this.isPretrained = isPretrained;
 	}
 	
 	public void setWeights(WeightsFactory wFactory) {
@@ -219,18 +197,6 @@ public class FeedForwardNeuralNetwork extends FeedForwardableNetwork {
 		}
 	}
 
-	public void updateInputModifier(int index, double [] batch) {
-		if(index < 0 || index >= sizeOfInputVector) {
-			throw new IllegalArgumentException("Wrong index: " + index);
-		}
-		inputMeans[index] = Utilities.mean(batch);
-		inputStdDev[index] = Utilities.stddev(batch, inputMeans[index]);
-		if(inputStdDev[index] == 0.0) {
-			inputStdDev[index] = 1.0;
-		}
-		LOGGER.trace("Index: {}, Mean: {}, StDev: {}", index, inputMeans[index], inputStdDev[index]);
-	}
-	
 	public void saveNetwork() throws FileNotFoundException, IOException {
 		this.saveNetwork(new File(super.getWorkName() + "_weights"));
 	}
@@ -239,9 +205,6 @@ public class FeedForwardNeuralNetwork extends FeedForwardableNetwork {
             LOGGER.info("Saving network");
 		try(DataOutputStream os = new DataOutputStream(new FileOutputStream(baseFile))) {
 			saveWeights(os);
-			if(isPretrained) {
-				saveInputModdifiers(os);	
-			}
 		}
 	}
 	
@@ -259,15 +222,6 @@ public class FeedForwardNeuralNetwork extends FeedForwardableNetwork {
 		}
 	}
 	
-	protected void saveInputModdifiers(DataOutputStream os) throws IOException {
-		for (int i = 0; i < topology.get(0); i++) {
-			os.writeDouble(this.inputMeans[i]);
-		}
-		for (int i = 0; i < topology.get(0); i++) {
-			os.writeDouble(this.inputStdDev[i]);
-		}
-	}
-	
 	// ********************************************************************************
 	// feedForward methods
 	// ********************************************************************************
@@ -277,19 +231,7 @@ public class FeedForwardNeuralNetwork extends FeedForwardableNetwork {
 			throw new IllegalArgumentException("InputVector has different size than neural network first "
 					+ "layer");
 		}
-		if(isPretrained) {
-			feedForwardWithPretrainedInputs(inputVector);
-		} else {
-			simpleFeedForward(inputVector);
-		}
-	}
-	
-	private void feedForwardWithPretrainedInputs(double[] inputVector) {
-		for (int i = 0; i < sizeOfInputVector; i++) {
-			outputValues[0][i] = (inputVector[i] - inputMeans[i]) / inputStdDev[i];
-			LOGGER.trace("Neuron [0][{}], output: {}", i, outputValues[0][i]);
-		}
-		feedForward();	
+		simpleFeedForward(inputVector);
 	}
 	
 	private void simpleFeedForward(double[] inputVector) {
@@ -315,16 +257,10 @@ public class FeedForwardNeuralNetwork extends FeedForwardableNetwork {
 				batchGradient[j] = 0.0;
 			}
 		}
-		if(isPretrained) {
-			for (int i = 0; i < batch.length; i++) {
-				this.feedForwardWithPretrainedInputs(batch[i]);
-				miniBatchTrainingInsideLoop(targetBatch[i]);
-			}
-		} else {
-			for (int i = 0; i < batch.length; i++) {
-				this.simpleFeedForward(batch[i]);
-				miniBatchTrainingInsideLoop(targetBatch[i]);				
-			}
+		for (int i = 0; i < batch.length; i++) {
+			this.simpleFeedForward(batch[i]);
+			miniBatchTrainingInsideLoop(targetBatch[i]);				
+		
 		}
 		for (int i = 0; i < this.numOfLayers; i++) {
 			for (int j = 0; j < this.gradients[i].length; j++) {
@@ -486,20 +422,7 @@ public class FeedForwardNeuralNetwork extends FeedForwardableNetwork {
 		double[][][] weights = initializeWeights(topology); 
 		loadWeights(weights, is);
 		WeightsFactory wFactory = new PretrainedWeightsFactory(weights);
-		if(is.available() != 0) {
-			double[] inputMeans = new double[topology.get(0)];
-			double[] inputStdDev = new double[topology.get(0)];
-			for (int i = 0; i < inputMeans.length; i++) {
-				inputMeans[i] = is.readDouble();
-			}
-			for (int i = 0; i < inputStdDev.length; i++) {
-				inputStdDev[i] = is.readDouble();
-			}
-			return new FeedForwardNeuralNetwork(topology, wFactory, name, heuristicParams, transferFunction, seed,
-					inputMeans, inputStdDev);
-		} else {
-			return new FeedForwardNeuralNetwork(topology, wFactory, name, heuristicParams, transferFunction, seed);
-		}
+		return new FeedForwardNeuralNetwork(topology, wFactory, name, heuristicParams, transferFunction, seed);
 	}
 	
 	protected static double[][][] initializeWeights(List<Integer> topology) {

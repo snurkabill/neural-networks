@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,6 +104,7 @@ public class DatabaseTest {
 	}
 	
 	@Test 
+	@Ignore
 	public void testInfiniteTrainingIterator() {
 		Iterator<DataItem> iterator = database.getInfiniteTrainingIterator();
 		int lastFirst = 0;
