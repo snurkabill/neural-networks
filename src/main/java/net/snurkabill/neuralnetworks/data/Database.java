@@ -273,9 +273,7 @@ public class Database<T extends DataItem> {
 		
 		@Override
 		public boolean hasNext() {
-			if(master.hasNext()) {
-				return true;
-			} else return actual.hasNext() == true;
+            return master.hasNext() || actual.hasNext();
 		}
 
 		@Override
