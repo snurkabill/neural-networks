@@ -4,8 +4,10 @@ public interface RandomDimensionsIndexer {
 
     /**
      * index[i] == true - RANDOM VALUE
+     *
      * @return
      */
-    public boolean [] generateIndexes();
+    public boolean[] generateIndexes();
+
     public int getNumberOfUnknown();
 }

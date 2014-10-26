@@ -8,14 +8,10 @@ public class LastPartIndexer extends RandomIndexer {
 
     @Override
     public boolean[] generateIndexes() {
-        boolean [] indexes = new boolean [sizeOfVector];
+        boolean[] indexes = new boolean[sizeOfVector];
         int treshold = indexes.length - this.getNumberOfUnknown();
         for (int i = 0; i < indexes.length; i++) {
-            if(i < treshold) {
-                indexes[i] = false;
-            } else {
-                indexes[i] = true;
-            }
+			indexes[i] = i >= treshold;
         }
         return indexes;
     }
