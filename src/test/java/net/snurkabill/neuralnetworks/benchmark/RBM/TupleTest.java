@@ -7,6 +7,6 @@ public class TupleTest extends TestCase {
 
     @Test
     public void testTuple() {
-        
+
     }
 }

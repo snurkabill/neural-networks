@@ -12,7 +12,7 @@ public class TupleGenerator {
     }
 
     public static void recursiveGenerator(List<Tuple> tail, int index, int[] array) {
-        if(index == array.length) {
+        if (index == array.length) {
             tail.add(new Tuple(array));
             return;
         }

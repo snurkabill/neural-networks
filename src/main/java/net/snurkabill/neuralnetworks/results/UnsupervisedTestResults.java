@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.results;
 
-public class UnsupervisedTestResults extends BasicTestResults {
+public class UnsupervisedTestResults extends TestResults {
 
     private double avgRightPercentageOfUnknownPart;
     private double percentageSizeOfUnknownSize;

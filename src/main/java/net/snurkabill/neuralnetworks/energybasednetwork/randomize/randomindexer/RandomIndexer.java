@@ -13,7 +13,7 @@ public abstract class RandomIndexer implements RandomDimensionsIndexer {
         this.random = new Random(seed);
         this.sizeOfVector = sizeOfVector;
         this.numOfRandomElements = numOfRandomElements;
-        this.ratio = (double)numOfRandomElements/(double)sizeOfVector;
+        this.ratio = (double) numOfRandomElements / (double) sizeOfVector;
     }
 
     public Random getRandom() {
