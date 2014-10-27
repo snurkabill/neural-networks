@@ -42,6 +42,7 @@ public class BatchFeedForwardNetwork extends BackPropagative {
     protected void weightsCalculation() {
         super.weightsCalculation();
         clearGradients();
+        trainedBeforeLearning = 0;
     }
 
     private void clearGradients() {
