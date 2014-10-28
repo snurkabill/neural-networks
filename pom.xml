@@ -157,5 +157,10 @@
           <artifactId>jfreechart</artifactId>
           <version>1.0.15</version>
       </dependency>
+      <dependency>
+          <groupId>gov.nist.math</groupId>
+          <artifactId>jama</artifactId>
+          <version>1.0.2</version>
+      </dependency>
   </dependencies>
 </project>
