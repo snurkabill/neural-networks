@@ -1,5 +1,6 @@
 package net.snurkabill.neuralnetworks.examples.mnist;
 
+import Jama.Matrix;
 import net.snurkabill.neuralnetworks.benchmark.SupervisedBenchmarker;
 import net.snurkabill.neuralnetworks.data.MnistDatasetReader;
 import net.snurkabill.neuralnetworks.data.database.DataItem;
@@ -13,7 +14,10 @@ import net.snurkabill.neuralnetworks.managers.feedforward.FeedForwardNetworkMana
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.BinaryRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.OnlineFeedForwardNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.ParametrizedHyperbolicTangens;
+import net.snurkabill.neuralnetworks.pcatransform.PCA;
+import net.snurkabill.neuralnetworks.pcatransform.PCA.TransformationType;
 import net.snurkabill.neuralnetworks.results.SupervisedTestResults;
+import net.snurkabill.neuralnetworks.utilities.Utilities;
 import net.snurkabill.neuralnetworks.weights.weightfactory.GaussianRndWeightsFactory;
 import net.snurkabill.neuralnetworks.weights.weightfactory.SmartGaussianRndWeightsFactory;
 import org.slf4j.Logger;
@@ -37,8 +41,16 @@ public class MnistExampleFFNN {
 	
 	public static void basicBenchmark() throws IOException {
 		long seed = 0;
-        MnistDatasetReader reader = getReader(2000);
-
+        MnistDatasetReader reader = getReader(FULL_MNIST_SIZE);
+        LOGGER.info("Building PCA");
+        PCA pca = new PCA(Utilities.buildMatrix(reader.getTrainingData(), 10_000));
+        LOGGER.info("Transforming Matrixces");
+        Matrix trainingMatrix =
+                pca.transform(Utilities.buildMatrix(reader.getTrainingData()), TransformationType.WHITENING);
+        Matrix testingMatrix =
+                pca.transform(Utilities.buildMatrix(reader.getTestingData()), TransformationType.WHITENING);
+        LOGGER.info("Testing matrix sizes: {} {}", trainingMatrix.getRowDimension(), trainingMatrix.getColumnDimension());
+        LOGGER.info("Testing matrix sizes: {} {}", testingMatrix.getRowDimension(), testingMatrix.getColumnDimension());
 		Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST");
         List<Integer> topology = new ArrayList<>();
         topology.add(database.getSizeOfVector());
@@ -80,7 +92,7 @@ public class MnistExampleFFNN {
 		
 		MasterNetworkManager superManager = new MasterNetworkManager("MNIST", 
 				Arrays.asList(manager, manager_rbm, manager_rbm2, manager_rbm3, manager_rbm4));
-		SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(10, 100, superManager);
+		SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(2, 100, superManager);
         benchmarker.benchmark();
 	}
 	
@@ -101,6 +113,7 @@ public class MnistExampleFFNN {
                 FFNNHeuristic.createDefaultHeuristic(), new ParametrizedHyperbolicTangens());
 
         Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST");
+
         FeedForwardNetworkManager manager = new FeedForwardNetworkManager(network, database);
 
         LOGGER.info("Process started!");

@@ -91,7 +91,7 @@ public abstract class NetworkManager {
     }
 
     public ResultsSummary getResults() {
-        ResultsSummary results = new ResultsSummary(LOGGER.getName());
+        ResultsSummary results = new ResultsSummary(neuralNetwork.determineWorkingName());
         for (TestResults results_ : this.results) {
             results.add(results_);
         }

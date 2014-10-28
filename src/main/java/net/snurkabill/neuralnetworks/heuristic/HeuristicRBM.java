@@ -18,8 +18,8 @@ public class HeuristicRBM extends Heuristic {
 
     @Override
     public String toString() {
-        return super.toString() + "temperature: " + String.valueOf(temperature) +
-                " oneVectorTrainingIterations: " + String.valueOf(numOfTrainingIterations) +
-                " constructiveDivergenceIndex: " + String.valueOf(constructiveDivergenceIndex);
+        return super.toString() + " temperature: " + String.valueOf(temperature) +
+                " sizeOfVectorBatch: " + String.valueOf(numOfTrainingIterations) +
+                " constructiveDivergence: " + String.valueOf(constructiveDivergenceIndex);
     }
 }

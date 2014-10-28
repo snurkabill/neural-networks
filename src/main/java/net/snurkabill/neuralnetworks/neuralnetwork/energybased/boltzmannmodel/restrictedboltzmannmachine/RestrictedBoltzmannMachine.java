@@ -223,4 +223,12 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
     public void trainNetwork(double[] targetValues) {
         this.trainMachine(targetValues);
     }
+
+    @Override
+    public String determineWorkingName() {
+        String workingName = super.determineWorkingName();
+        workingName += " [ " + visibleNeurons + " -> " + hiddenNeurons + " ] ";
+        workingName += this.heuristic;
+        return workingName;
+    }
 }

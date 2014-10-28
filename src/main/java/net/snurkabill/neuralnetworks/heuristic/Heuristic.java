@@ -16,7 +16,7 @@ public abstract class Heuristic {
 
     @Override
     public String toString() {
-        return "Heuristic: " + name + " learningRate: " + String.valueOf(learningRate) + "momentum" +
+        return " LearningRate: " + String.valueOf(learningRate) + " momentum: " +
                 String.valueOf(momentum);
     }
 }

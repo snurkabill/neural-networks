@@ -1,5 +1,13 @@
 package net.snurkabill.neuralnetworks.utilities;
 
+import Jama.Matrix;
+import net.snurkabill.neuralnetworks.data.database.DataItem;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Utilities {
 
     public static double mean(final double[] input) {
@@ -35,5 +43,34 @@ public class Utilities {
             error += diff * diff;
         }
         return 0.5 * error;
+    }
+
+    public static Matrix buildMatrix(Map<Integer, List<DataItem>> data) {
+        int totalNumOfVectors = 0;
+        for (int i = 0; i < data.size(); i++) {
+            totalNumOfVectors += data.get(i).size();
+        }
+        System.out.println("Creating matrix for: " + totalNumOfVectors + " x " + data.get(0).get(0).data.length );
+        double[][] rawData = new double[totalNumOfVectors][];
+        int lastUsedIndex = 0;
+        for (int i = 0; i < data.size(); i++) {
+            for (int j = 0; j < data.get(i).size(); j++) {
+                rawData[lastUsedIndex] = data.get(i).get(j).data;
+                lastUsedIndex++;
+            }
+        }
+        return new Matrix(rawData, totalNumOfVectors, data.get(0).get(0).data.length);
+    }
+
+    @Deprecated
+    public static Matrix buildMatrix(Map<Integer, List<DataItem>> data, int numOfElements) {
+        Map<Integer, List<DataItem>> newMap = new HashMap<>(data.size());
+        for (int i = 0; i < data.size(); i++) {
+            newMap.put(i, new ArrayList<DataItem>());
+        }
+        for (int i = 0; i < numOfElements; i++) {
+            newMap.get(i % data.size()).add(data.get(i % data.size()).get(i % data.size()));
+        }
+        return buildMatrix(newMap);
     }
 }

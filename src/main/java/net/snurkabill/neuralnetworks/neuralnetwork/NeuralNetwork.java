@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 public abstract class NeuralNetwork {
 
     private final String name;
-    private final String workingName;
+    protected final String workingName;
     protected final Logger LOGGER;
 
     public NeuralNetwork(String name) {
@@ -48,6 +48,6 @@ public abstract class NeuralNetwork {
     public abstract void setHeuristic(Heuristic heuristic);
 
     public String determineWorkingName() {
-        return "Name: " + this.name + " ";
+        return "Name: " + this.name;
     }
 }

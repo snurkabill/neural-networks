@@ -1,5 +1,6 @@
 package net.snurkabill.neuralnetworks.data;
 
+import Jama.Matrix;
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,7 @@ public class MnistDatasetReader implements Enumeration<MnistItem> {
             verify();
             createTrainingSet(sizeOfDataset);
         }
+        System.gc();
     }
 
     public final void createTrainingSet(int sizeOfDataset) {
@@ -106,4 +108,5 @@ public class MnistDatasetReader implements Enumeration<MnistItem> {
     public Map<Integer, List<DataItem>> getTestingData() {
         return testSet;
     }
+
 }
