@@ -14,9 +14,11 @@ public class BinaryRBMManager extends RestrictedBoltzmannMachineManager {
 
     private double avgRightPercentageOfUnknownPart;
     private double percentageSizeOfUnknownSize;
+    private int numOfAttemptsDuringTesting;
 
-    public BinaryRBMManager(NeuralNetwork neuralNetwork, Database database, long seed) {
+    public BinaryRBMManager(NeuralNetwork neuralNetwork, Database database, long seed, int numOfAttemptsDuringTesting) {
         super(neuralNetwork, database, seed);
+        this.numOfAttemptsDuringTesting = numOfAttemptsDuringTesting;
     }
 
     @Override
@@ -31,7 +33,6 @@ public class BinaryRBMManager extends RestrictedBoltzmannMachineManager {
             for (int j = item.data.length, k = 0; j < inputVector.length; j++, k++) {
                 inputVector[j] = targetValues[k];
             }
-            //neuralNetwork.calculateNetwork(inputVector);
 			neuralNetwork.trainNetwork(inputVector);
         }
     }
@@ -62,13 +63,15 @@ public class BinaryRBMManager extends RestrictedBoltzmannMachineManager {
 					item[i] = (tmpItem[i] < 30 ? 0 : 1);
 				}
 				for (int i = 0, j = tmpItem.length; i < database.getNumberOfClasses(); i++, j++) {
-					item[j] = 0;
+			    		item[j] = 0;
 				}
-                machine.calculateNetwork(item);
-                double[] outputVector = machine.getOutputValues();
                 double[] results = new double[database.getNumberOfClasses()];
-                for (int i = 0; i < results.length; i++) {
-                    results[i] = outputVector[database.getSizeOfVector() + i];
+                for (int i = 0; i < numOfAttemptsDuringTesting; i++) {
+                    machine.calculateNetwork(item);
+                    double[] outputVector = machine.getOutputValues();
+                    for (int j = 0; j < results.length; j++) {
+                        results[j] += outputVector[database.getSizeOfVector() + j];
+                    }
                 }
 				globalError += Utilities.calcError(targetValues, results);
                 if (this.getFirstHighestValueIndex(results) == _class) {
