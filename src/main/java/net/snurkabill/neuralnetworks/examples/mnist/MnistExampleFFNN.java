@@ -70,25 +70,25 @@ public class MnistExampleFFNN {
                 new BinaryRestrictedBoltzmannMachine("RBM basicHeuristic", (database.getSizeOfVector() + database.getNumberOfClasses()), 50,
                         new GaussianRndWeightsFactory(weightsScale, seed), 
                         HeuristicRBM.createBasicHeuristicParams(), seed);
-        NetworkManager manager_rbm = new BinaryRBMManager(machine, database, seed);
+        NetworkManager manager_rbm = new BinaryRBMManager(machine, database, seed, 5);
 		
 		machine = new BinaryRestrictedBoltzmannMachine("RBM basicHeuristic_low", 
 				(database.getSizeOfVector() + database.getNumberOfClasses()), 100,
                         new GaussianRndWeightsFactory(weightsScale, seed), 
                         HeuristicRBM.createBasicHeuristicParams(), seed);
-        NetworkManager manager_rbm2 = new BinaryRBMManager(machine, database, seed);
+        NetworkManager manager_rbm2 = new BinaryRBMManager(machine, database, seed, 5);
 
 		machine = new BinaryRestrictedBoltzmannMachine("RBM myHeuristic_low", 
 				(database.getSizeOfVector() + database.getNumberOfClasses()), 150,
                         new GaussianRndWeightsFactory(weightsScale, seed), 
                         HeuristicRBM.createBasicHeuristicParams(), seed);
-        NetworkManager manager_rbm3 = new BinaryRBMManager(machine, database, seed);
+        NetworkManager manager_rbm3 = new BinaryRBMManager(machine, database, seed, 5);
 		
 		machine = new BinaryRestrictedBoltzmannMachine("RBM myHeuristic", 
 				(database.getSizeOfVector() + database.getNumberOfClasses()), 200,
                         new GaussianRndWeightsFactory(weightsScale, seed), 
                         HeuristicRBM.createBasicHeuristicParams(), seed);
-        NetworkManager manager_rbm4 = new BinaryRBMManager(machine, database, seed);
+        NetworkManager manager_rbm4 = new BinaryRBMManager(machine, database, seed, 5);
 		
 		MasterNetworkManager superManager = new MasterNetworkManager("MNIST", 
 				Arrays.asList(manager, manager_rbm, manager_rbm2, manager_rbm3, manager_rbm4));
