@@ -8,6 +8,7 @@ import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.re
 import net.snurkabill.neuralnetworks.results.SupervisedTestResults;
 
 import java.util.Iterator;
+import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 import net.snurkabill.neuralnetworks.utilities.Utilities;
 
 public class BinaryRBMManager extends RestrictedBoltzmannMachineManager {
@@ -16,8 +17,9 @@ public class BinaryRBMManager extends RestrictedBoltzmannMachineManager {
     private double percentageSizeOfUnknownSize;
     private int numOfAttemptsDuringTesting;
 
-    public BinaryRBMManager(NeuralNetwork neuralNetwork, Database database, long seed, int numOfAttemptsDuringTesting) {
-        super(neuralNetwork, database, seed);
+    public BinaryRBMManager(NeuralNetwork neuralNetwork, Database database, long seed, int numOfAttemptsDuringTesting,
+			HeuristicCalculator heuristicCalculator) {
+        super(neuralNetwork, database, seed, heuristicCalculator);
         this.numOfAttemptsDuringTesting = numOfAttemptsDuringTesting;
     }
 

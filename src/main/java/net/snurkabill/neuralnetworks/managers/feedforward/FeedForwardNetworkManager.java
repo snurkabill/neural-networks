@@ -9,11 +9,13 @@ import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardableNe
 import net.snurkabill.neuralnetworks.results.SupervisedTestResults;
 
 import java.util.Iterator;
+import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 
 public class FeedForwardNetworkManager extends NetworkManager {
 
-    public FeedForwardNetworkManager(NeuralNetwork neuralNetwork, Database database) {
-        super(neuralNetwork, database);
+    public FeedForwardNetworkManager(NeuralNetwork neuralNetwork, Database database, 
+			HeuristicCalculator heuristicCalculator) {
+        super(neuralNetwork, database, heuristicCalculator);
         if (neuralNetwork.getSizeOfOutputVector() != database.getNumberOfClasses()) {
             throw new IllegalArgumentException("Size of output vector is different from number of classes");
         }
@@ -69,10 +71,5 @@ public class FeedForwardNetworkManager extends NetworkManager {
     protected void processResults() {
         super.results.add(new SupervisedTestResults(super.learnedVectorsBeforeTest,
                 globalError, super.learningTimeBeforeTest, percentageSuccess));
-    }
-
-    @Override
-    public void recalculateHeuristic() {
-        throw new UnsupportedOperationException("Not implemented yet");
     }
 }

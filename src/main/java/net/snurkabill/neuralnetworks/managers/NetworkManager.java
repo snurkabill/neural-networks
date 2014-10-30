@@ -2,6 +2,7 @@ package net.snurkabill.neuralnetworks.managers;
 
 
 import net.snurkabill.neuralnetworks.data.database.Database;
+import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.BinaryRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardableNetwork;
@@ -30,11 +31,14 @@ public abstract class NetworkManager {
     protected double percentageSuccess;
     protected int learnedVectorsBeforeTest;
     protected long learningTimeBeforeTest;
+    private final HeuristicCalculator heuristicCalculator;
 
-    public NetworkManager(NeuralNetwork neuralNetwork, Database database) {
+    public NetworkManager(NeuralNetwork neuralNetwork, Database database,
+                          HeuristicCalculator heuristicCalculator) {
         this.neuralNetwork = neuralNetwork;
         this.LOGGER = LoggerFactory.getLogger(neuralNetwork.getName());
         this.database = database;
+        this.heuristicCalculator = heuristicCalculator;
         // TODO: general EVALUATOR!
         if (neuralNetwork instanceof BinaryRestrictedBoltzmannMachine) {
             this.targetMaker = new SeparableTargetValues(new SigmoidFunction(), database.getNumberOfClasses());
@@ -76,6 +80,9 @@ public abstract class NetworkManager {
         this.learningTimeBeforeTest = 0;
         LOGGER.info("Testing {} samples took {} seconds, {} samples/sec",
                 database.getTestSetSize(), timer.secondsSpent(), timer.samplesPerSec(database.getTestSetSize()));
+        if(heuristicCalculator != null) {
+            heuristicCalculator.calculateNewHeuristic(results);
+        }
     }
 
     protected abstract void train(int numOfIterations);
@@ -83,8 +90,6 @@ public abstract class NetworkManager {
     protected abstract void test();
 
     protected abstract void processResults();
-
-    public abstract void recalculateHeuristic();
 
     public TestResults getTestResults() {
         return this.results.get(this.results.size() - 1);
