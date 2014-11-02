@@ -11,9 +11,9 @@ public class HeuristicRBM extends Heuristic {
         HeuristicRBM rbm = new HeuristicRBM();
         rbm.temperature = 1;
         rbm.constructiveDivergenceIndex = 3;
-        rbm.numOfTrainingIterations = 30;
+        rbm.numOfTrainingIterations = 10;
         rbm.momentum = 0.3;
-        rbm.learningRate = 0.1;
+        rbm.learningRate = 0.01;
         return rbm;
     }
 

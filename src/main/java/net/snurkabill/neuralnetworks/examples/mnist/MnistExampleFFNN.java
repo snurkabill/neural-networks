@@ -68,16 +68,20 @@ public class MnistExampleFFNN {
 		NetworkManager manager = new FeedForwardNetworkManager(network, database, null);
 
         BinaryRestrictedBoltzmannMachine machine =
-                new BinaryRestrictedBoltzmannMachine("RBM basicHeuristic", (database.getSizeOfVector() + database.getNumberOfClasses()), 50,
+                new BinaryRestrictedBoltzmannMachine("RBM basicHeuristic",
+                        (database.getSizeOfVector() + database.getNumberOfClasses()), 50,
                         new GaussianRndWeightsFactory(weightsScale, seed), 
                         HeuristicRBM.createBasicHeuristicParams(), seed);
-        NetworkManager manager_rbm = new BinaryRBMManager(machine, database, seed, 5, null);
-		
+        NetworkManager manager_rbm = new BinaryRBMManager(machine, database, seed, 10, 5, null);
+
+        HeuristicRBM heuristic = HeuristicRBM.createStartingHeuristicParams();
+        heuristic.constructiveDivergenceIndex = 1;
+        heuristic.numOfTrainingIterations = 30;
 		machine = new BinaryRestrictedBoltzmannMachine("RBM heurCalculator",
 				(database.getSizeOfVector() + database.getNumberOfClasses()), 50,
                         new GaussianRndWeightsFactory(weightsScale, seed), 
-                        HeuristicRBM.createStartingHeuristicParams(), seed);
-        NetworkManager manager_rbm2 = new BinaryRBMManager(machine, database, seed, 5, new BasicRBMHeuristicCalculator());
+                        heuristic, seed);
+        NetworkManager manager_rbm2 = new BinaryRBMManager(machine, database, seed, 10, 5, null/*new BasicRBMHeuristicCalculator()*/);
 
 		/*machine = new BinaryRestrictedBoltzmannMachine("RBM myHeuristic_low",
 				(database.getSizeOfVector() + database.getNumberOfClasses()), 150,
@@ -93,7 +97,7 @@ public class MnistExampleFFNN {
 		
 		MasterNetworkManager superManager = new MasterNetworkManager("MNIST", 
 				Arrays.asList(manager, manager_rbm, manager_rbm2/*, manager_rbm3, manager_rbm4*/));
-		SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(10, 100, superManager);
+		SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(10, 1000, superManager);
         benchmarker.benchmark();
 	}
 	

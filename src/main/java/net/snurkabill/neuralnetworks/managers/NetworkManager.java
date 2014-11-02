@@ -81,7 +81,7 @@ public abstract class NetworkManager {
         LOGGER.info("Testing {} samples took {} seconds, {} samples/sec",
                 database.getTestSetSize(), timer.secondsSpent(), timer.samplesPerSec(database.getTestSetSize()));
         if(heuristicCalculator != null) {
-            heuristicCalculator.calculateNewHeuristic(results);
+            neuralNetwork.setHeuristic(heuristicCalculator.calculateNewHeuristic(results));
         }
     }
 
