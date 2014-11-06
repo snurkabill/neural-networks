@@ -62,14 +62,13 @@ public class Utilities {
         return new Matrix(rawData, totalNumOfVectors, data.get(0).get(0).data.length);
     }
 
-    @Deprecated
     public static Matrix buildMatrix(Map<Integer, List<DataItem>> data, int numOfElements) {
         Map<Integer, List<DataItem>> newMap = new HashMap<>(data.size());
         for (int i = 0; i < data.size(); i++) {
             newMap.put(i, new ArrayList<DataItem>());
         }
         for (int i = 0; i < numOfElements; i++) {
-            newMap.get(i % data.size()).add(data.get(i % data.size()).get(i % data.size()));
+            newMap.get(i % data.size()).add(data.get(i % data.size()).get(i / data.size()));
         }
         return buildMatrix(newMap);
     }

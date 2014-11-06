@@ -8,17 +8,21 @@ import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.re
 import net.snurkabill.neuralnetworks.results.SupervisedTestResults;
 
 import java.util.Iterator;
+import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 import net.snurkabill.neuralnetworks.utilities.Utilities;
 
 public class BinaryRBMManager extends RestrictedBoltzmannMachineManager {
 
     private double avgRightPercentageOfUnknownPart;
     private double percentageSizeOfUnknownSize;
-    private int numOfAttemptsDuringTesting;
+    private int maximumAttemptsDuringTesting;
+    private int minimumAttemptsDuringTesting;
 
-    public BinaryRBMManager(NeuralNetwork neuralNetwork, Database database, long seed, int numOfAttemptsDuringTesting) {
-        super(neuralNetwork, database, seed);
-        this.numOfAttemptsDuringTesting = numOfAttemptsDuringTesting;
+    public BinaryRBMManager(NeuralNetwork neuralNetwork, Database database, long seed, int maximumAttemptsDuringTesting,
+                            int minimumAttemptsDuringTesting, HeuristicCalculator heuristicCalculator) {
+        super(neuralNetwork, database, seed, heuristicCalculator);
+        this.maximumAttemptsDuringTesting = maximumAttemptsDuringTesting;
+        this.minimumAttemptsDuringTesting = minimumAttemptsDuringTesting;
     }
 
     @Override
@@ -56,25 +60,22 @@ public class BinaryRBMManager extends RestrictedBoltzmannMachineManager {
         for (int _class = 0; _class < database.getNumberOfClasses(); _class++) {
             targetMaker.getTargetValues(_class);
             Iterator<DataItem> testingIterator = database.getTestingIteratorOverClass(_class);
+            Integer index = Integer.MIN_VALUE;
             for (; testingIterator.hasNext(); ) {
-                double[] item = new double[database.getSizeOfVector() + database.getNumberOfClasses()];
-				double[] tmpItem = testingIterator.next().data;
-				for (int i = 0; i < tmpItem.length; i++) {
-					item[i] = (tmpItem[i] < 30 ? 0 : 1);
-				}
-				for (int i = 0, j = tmpItem.length; i < database.getNumberOfClasses(); i++, j++) {
-			    		item[j] = 0;
-				}
+                double[] item = this.fillTestingVectorForReconstruction(testingIterator.next().data);
                 double[] results = new double[database.getNumberOfClasses()];
-                for (int i = 0; i < numOfAttemptsDuringTesting; i++) {
+                for (int i = 0; i < maximumAttemptsDuringTesting; i++) {
                     machine.calculateNetwork(item);
                     double[] outputVector = machine.getOutputValues();
                     for (int j = 0; j < results.length; j++) {
                         results[j] += outputVector[database.getSizeOfVector() + j];
                     }
+                    if((index = isOnlyValueTheBiggest(results)) >= 0 && i >= minimumAttemptsDuringTesting) {
+                       break;
+                    }
                 }
 				globalError += Utilities.calcError(targetValues, results);
-                if (this.getFirstHighestValueIndex(results) == _class) {
+                if (index == _class) {
                     success++;
                     successValuesCounter[_class]++;
                 } else fail++;
@@ -83,6 +84,33 @@ public class BinaryRBMManager extends RestrictedBoltzmannMachineManager {
         int all = (success + fail);
         percentageSuccess = ((double) success * 100.0) / (double) all;
         globalError /= all;
+    }
+
+    private double[] fillTestingVectorForReconstruction(double[] tmpItem) {
+        double[] item = new double[database.getSizeOfVector() + database.getNumberOfClasses()];
+        for (int i = 0; i < tmpItem.length; i++) {
+            item[i] = (tmpItem[i] < 30 ? 0 : 1);
+        }
+        for (int i = 0, j = tmpItem.length; i < database.getNumberOfClasses(); i++, j++) {
+            item[j] = 0;
+        }
+        return item;
+    }
+
+    private int isOnlyValueTheBiggest(double[] values) {
+        boolean isOnlyValueTheBiggest = false;
+        int highestIndex = Integer.MIN_VALUE;
+        double max = Double.NEGATIVE_INFINITY;
+        for (int i = 0; i < values.length; i++) {
+            if(max == values[i]) { // POSSIBLE COMPARE PROBLEMS
+                isOnlyValueTheBiggest = false;
+            } else if (max < values[i]) {
+                max = values[i];
+                highestIndex = i;
+                isOnlyValueTheBiggest = true;
+            }
+        }
+        return isOnlyValueTheBiggest ? highestIndex : Integer.MIN_VALUE;
     }
 
     @Deprecated
