@@ -1,4 +1,4 @@
-package net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl;
+package net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online;
 
 import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.BackPropagative;

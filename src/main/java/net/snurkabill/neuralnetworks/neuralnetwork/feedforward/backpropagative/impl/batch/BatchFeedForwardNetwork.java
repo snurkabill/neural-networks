@@ -1,4 +1,4 @@
-package net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl;
+package net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.batch;
 
 import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.BackPropagative;
@@ -7,6 +7,7 @@ import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 
 import java.util.List;
 
+@Deprecated // training method is wrong, batch should consists only of elements from one class
 public class BatchFeedForwardNetwork extends BackPropagative {
 
     private final int sizeOfBatch;
