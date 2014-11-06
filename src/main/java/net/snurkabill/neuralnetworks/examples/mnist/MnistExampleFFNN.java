@@ -12,7 +12,7 @@ import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.BinaryRBMManager;
 import net.snurkabill.neuralnetworks.managers.feedforward.FeedForwardNetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.BinaryRestrictedBoltzmannMachine;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.OnlineFeedForwardNetwork;
+import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.OnlineFeedForwardNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.ParametrizedHyperbolicTangens;
 import net.snurkabill.neuralnetworks.pcatransform.PCA;
 import net.snurkabill.neuralnetworks.pcatransform.PCA.TransformationType;

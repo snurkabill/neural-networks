@@ -59,7 +59,7 @@ public abstract class FeedForwardableNetwork extends NeuralNetwork {
         feedForward();
     }
 
-    private void feedForward() {
+    protected void feedForward() {
         for (int i = 1; i < numOfLayers; i++) {
             for (int j = 0; j < topology[i]; j++) {
                 double sumOfInputs = 0.0;
