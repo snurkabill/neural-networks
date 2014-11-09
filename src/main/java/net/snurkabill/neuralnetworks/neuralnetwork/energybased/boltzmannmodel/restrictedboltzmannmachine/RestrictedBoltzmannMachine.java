@@ -8,6 +8,7 @@ import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
 
     private static final int FIX_VISIBLE = 0;
+    private static final double ERROR_MODIFIER = 0.5;
 
     protected final int sizeOfVisibleVector;
     protected final int sizeOfHiddenVector;
@@ -46,9 +47,9 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
     public double[][] createLayerForFFNN() {
         double[][] weightsLayer = new double[this.sizeOfVisibleVector + 1][sizeOfHiddenVector];
         for (int i = 0; i < this.sizeOfVisibleVector; i++) {
-			System.arraycopy(weights[i], 0, weightsLayer[i], 0, this.sizeOfHiddenVector);
+            System.arraycopy(weights[i], 0, weightsLayer[i], 0, this.sizeOfHiddenVector);
         }
-		System.arraycopy(this.hiddenBias, 0, weightsLayer[this.sizeOfVisibleVector], 0, sizeOfHiddenVector);
+        System.arraycopy(this.hiddenBias, 0, weightsLayer[this.sizeOfVisibleVector], 0, sizeOfHiddenVector);
         return weightsLayer;
     }
 
@@ -162,13 +163,11 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
     }
 
     public double[] activateHiddenNeurons() {
-        LOGGER.trace("Activating hidden neurons");
         calcHiddenNeurons();
         return this.getHiddenNeurons();
     }
 
     public double[] activateVisibleNeurons() {
-        LOGGER.trace("Activating visible neurons");
         calcVisibleNeurons();
         return this.getVisibleNeurons();
     }
@@ -182,7 +181,7 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
     @Override
     public double[] getOutputValues() {
         double[] outputValues = new double[this.sizeOfVisibleVector];
-		System.arraycopy(this.visibleNeurons, 0, outputValues, 0, this.sizeOfVisibleVector);
+        System.arraycopy(this.visibleNeurons, 0, outputValues, 0, this.sizeOfVisibleVector);
         return outputValues;
     }
 
@@ -198,7 +197,7 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
 
     @Override
     public void getOutputValues(double[] outputValues) {
-		System.arraycopy(this.visibleNeurons, 0, outputValues, 0, this.sizeOfVisibleVector);
+        System.arraycopy(this.visibleNeurons, 0, outputValues, 0, this.sizeOfVisibleVector);
     }
 
     @Override
@@ -217,6 +216,19 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
                     HeuristicRBM.class.getName());
         }
 
+    }
+
+    @Override
+    protected double calcOutputVectorError(double[] targetValues) {
+        if (targetValues.length != sizeOfVisibleVector) {
+            throw new IllegalArgumentException();
+        }
+        double sum = 0.0;
+        for (int i = 0; i < visibleNeurons.length; i++) {
+            double tmp = visibleNeurons[i] - targetValues[i];
+            sum += (tmp * tmp);
+        }
+        return ERROR_MODIFIER * sum;
     }
 
     @Override
