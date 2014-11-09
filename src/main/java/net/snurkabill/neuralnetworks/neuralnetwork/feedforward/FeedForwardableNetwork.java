@@ -107,7 +107,7 @@ public abstract class FeedForwardableNetwork extends NeuralNetwork {
     }
 
     @Override
-    protected double calcError(double[] targetValues) {
+    protected double calcOutputVectorError(double[] targetValues) {
         if (targetValues.length != sizeOfOutputVector) {
             throw new IllegalArgumentException();
         }

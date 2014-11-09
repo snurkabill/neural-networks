@@ -26,12 +26,12 @@ public abstract class NeuralNetwork {
 
     public double calcError(double[] inputVector, double[] targetValues) {
         calculateNetwork(inputVector);
-        return calcError(targetValues);
+        return calcOutputVectorError(targetValues);
     }
 
     public abstract void calculateNetwork(double[] inputVector);
 
-    protected abstract double calcError(double[] targetValues);
+    protected abstract double calcOutputVectorError(double[] targetValues);
 
     public abstract int getSizeOfOutputVector();
 
