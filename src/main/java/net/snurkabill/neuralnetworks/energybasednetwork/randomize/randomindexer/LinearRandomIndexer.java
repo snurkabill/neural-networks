@@ -10,7 +10,7 @@ public class LinearRandomIndexer extends RandomIndexer {
     public boolean[] generateIndexes() {
         boolean[] indexes = new boolean[sizeOfVector];
         int randomRemaining = numOfRandomElements;
-        for (; ;) {
+        for (; ; ) {
             for (int i = 0; i < sizeOfVector; i++) {
                 if (indexes[i] == false) {
                     if (random.nextDouble() <= ratio) {

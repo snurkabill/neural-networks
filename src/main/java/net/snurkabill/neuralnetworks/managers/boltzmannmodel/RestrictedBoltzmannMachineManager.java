@@ -10,9 +10,9 @@ public abstract class RestrictedBoltzmannMachineManager extends NetworkManager {
     protected final long seed;
 
     public RestrictedBoltzmannMachineManager(NeuralNetwork neuralNetwork, Database database, long seed,
-			HeuristicCalculator heuristicCalculator) {
+                                             HeuristicCalculator heuristicCalculator) {
         super(neuralNetwork, database, heuristicCalculator);
         this.seed = seed;
     }
-	
+
 }

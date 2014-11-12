@@ -20,7 +20,7 @@ public class OnlineDatabaseSampler {
 
     // TODO : implement data buffer
     /*private final Map<Integer, List<DataItem>> vectorsBuffer = new HashMap<>();
-	private final int maxSizeOfBuffer;
+    private final int maxSizeOfBuffer;
 	*/
     private final int classesOfDivision;
     private final int trainTestRatio;

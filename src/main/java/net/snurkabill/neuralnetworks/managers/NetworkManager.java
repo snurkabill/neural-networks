@@ -7,8 +7,8 @@ import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.BinaryRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardableNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.SigmoidFunction;
+import net.snurkabill.neuralnetworks.results.NetworkResults;
 import net.snurkabill.neuralnetworks.results.ResultsSummary;
-import net.snurkabill.neuralnetworks.results.TestResults;
 import net.snurkabill.neuralnetworks.target.SeparableTargetValues;
 import net.snurkabill.neuralnetworks.target.TargetValues;
 import net.snurkabill.neuralnetworks.utilities.Timer;
@@ -25,7 +25,7 @@ public abstract class NetworkManager {
     protected final Database database;
     protected final TargetValues targetMaker;
     protected final Database.InfiniteSimpleTrainSetIterator infiniteTrainingIterator;
-    protected final List<TestResults> results = new ArrayList<>();
+    protected final List<NetworkResults> results = new ArrayList<>();
     private final Timer timer = new Timer();
     protected double globalError;
     protected double percentageSuccess;
@@ -80,7 +80,7 @@ public abstract class NetworkManager {
         this.learningTimeBeforeTest = 0;
         LOGGER.info("Testing {} samples took {} seconds, {} samples/sec",
                 database.getTestSetSize(), timer.secondsSpent(), timer.samplesPerSec(database.getTestSetSize()));
-        if(heuristicCalculator != null) {
+        if (heuristicCalculator != null) {
             neuralNetwork.setHeuristic(heuristicCalculator.calculateNewHeuristic(results));
         }
     }
@@ -91,13 +91,13 @@ public abstract class NetworkManager {
 
     protected abstract void processResults();
 
-    public TestResults getTestResults() {
+    public NetworkResults getTestResults() {
         return this.results.get(this.results.size() - 1);
     }
 
     public ResultsSummary getResults() {
         ResultsSummary results = new ResultsSummary(neuralNetwork.determineWorkingName());
-        for (TestResults results_ : this.results) {
+        for (NetworkResults results_ : this.results) {
             results.add(results_);
         }
         return results;

@@ -3,18 +3,18 @@ package net.snurkabill.neuralnetworks.managers.feedforward;
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.data.database.LabelledItem;
+import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardableNetwork;
-import net.snurkabill.neuralnetworks.results.SupervisedTestResults;
+import net.snurkabill.neuralnetworks.results.SupervisedNetworkResults;
 
 import java.util.Iterator;
-import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 
 public class FeedForwardNetworkManager extends NetworkManager {
 
-    public FeedForwardNetworkManager(NeuralNetwork neuralNetwork, Database database, 
-			HeuristicCalculator heuristicCalculator) {
+    public FeedForwardNetworkManager(NeuralNetwork neuralNetwork, Database database,
+                                     HeuristicCalculator heuristicCalculator) {
         super(neuralNetwork, database, heuristicCalculator);
         if (neuralNetwork.getSizeOfOutputVector() != database.getNumberOfClasses()) {
             throw new IllegalArgumentException("Size of output vector is different from number of classes");
@@ -69,7 +69,7 @@ public class FeedForwardNetworkManager extends NetworkManager {
 
     @Override
     protected void processResults() {
-        super.results.add(new SupervisedTestResults(super.learnedVectorsBeforeTest,
+        super.results.add(new SupervisedNetworkResults(super.learnedVectorsBeforeTest,
                 globalError, super.learningTimeBeforeTest, percentageSuccess));
     }
 }

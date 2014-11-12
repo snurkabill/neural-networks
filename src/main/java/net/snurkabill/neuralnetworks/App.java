@@ -11,6 +11,6 @@ public class App {
     private static final Logger LOGGER = LoggerFactory.getLogger("main");
 
     public static void main(String argv[]) throws IOException {
-		MnistExampleFFNN.basicBenchmark();
+        MnistExampleFFNN.basicBenchmark();
     }
 }

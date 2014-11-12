@@ -10,7 +10,7 @@ public class RBMWithGeneralizedVisibleNeurons extends RestrictedBoltzmannMachine
 
     public RBMWithGeneralizedVisibleNeurons(String name, int numOfVisible, int numOfHidden, WeightsFactory wFactory, HeuristicRBM heuristic, long seed) {
         super(name, numOfVisible, numOfHidden, wFactory, heuristic, seed);
-        this.inputDeviations = new double [numOfVisible];
+        this.inputDeviations = new double[numOfVisible];
         for (int i = 0; i < inputDeviations.length; i++) {
             inputDeviations[i] = 1;
         }

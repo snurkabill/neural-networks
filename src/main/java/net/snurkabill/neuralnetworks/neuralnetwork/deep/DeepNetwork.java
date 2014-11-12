@@ -13,7 +13,7 @@ public class DeepNetwork extends NeuralNetwork {
 
     @Override
     public void calculateNetwork(double[] inputVector) {
-        
+
     }
 
     @Override

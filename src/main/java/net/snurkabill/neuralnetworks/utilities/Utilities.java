@@ -34,7 +34,7 @@ public class Utilities {
     }
 
     public static double calcError(double[] expectedValues, double[] realValues) {
-        if(expectedValues.length != realValues.length) {
+        if (expectedValues.length != realValues.length) {
             throw new IllegalArgumentException("Lengths of arrays are different!");
         }
         double error = 0.0;
@@ -50,7 +50,7 @@ public class Utilities {
         for (int i = 0; i < data.size(); i++) {
             totalNumOfVectors += data.get(i).size();
         }
-        System.out.println("Creating matrix for: " + totalNumOfVectors + " x " + data.get(0).get(0).data.length );
+        System.out.println("Creating matrix for: " + totalNumOfVectors + " x " + data.get(0).get(0).data.length);
         double[][] rawData = new double[totalNumOfVectors][];
         int lastUsedIndex = 0;
         for (int i = 0; i < data.size(); i++) {

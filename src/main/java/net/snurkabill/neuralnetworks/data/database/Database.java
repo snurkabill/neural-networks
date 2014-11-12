@@ -49,21 +49,21 @@ public class Database<T extends DataItem> {
 
     private boolean[] makeFilterForRemovingRedundantDimensions(Map<Integer, List<T>> trainingDataset) {
         LOGGER.info("Making filter for removing redundant dimensions on dataset");
-        if(trainingDataset.isEmpty()) {
+        if (trainingDataset.isEmpty()) {
             throw new IllegalArgumentException("Training dataset is empty!");
         }
         for (Map.Entry<Integer, List<T>> list : trainingDataset.entrySet()) {
-            if(list.getValue().isEmpty()) {
+            if (list.getValue().isEmpty()) {
                 throw new IllegalArgumentException("One class of dataset is empty!");
             }
         }
         double[] tmpSnapshot = new double[trainingDataset.get(0).get(0).data.length];
         boolean[] isChanged = new boolean[trainingDataset.get(0).get(0).data.length];
-		System.arraycopy(trainingDataset.get(0).get(0).data, 0, tmpSnapshot, 0, tmpSnapshot.length);
+        System.arraycopy(trainingDataset.get(0).get(0).data, 0, tmpSnapshot, 0, tmpSnapshot.length);
         for (int i = 0; i < trainingDataset.size(); i++) {
             for (int j = 0; j < trainingDataset.get(i).size(); j++) {
                 for (int k = 0; k < tmpSnapshot.length; k++) {
-                    if(tmpSnapshot[k] != trainingDataset.get(i).get(j).data[k]) {
+                    if (tmpSnapshot[k] != trainingDataset.get(i).get(j).data[k]) {
                         isChanged[k] = true;
                     }
                 }
@@ -89,13 +89,13 @@ public class Database<T extends DataItem> {
             for (int j = dataSet.get(i).size() - 1; j >= 0; j--) {
                 double[] data = new double[sizeOfNewVector];
                 for (int k = 0, move = 0; k < filter.length; k++) {
-                    if(filter[k]) {
+                    if (filter[k]) {
                         data[move] = dataSet.get(i).get(j).data[k];
                         move++;
                     }
                 }
                 DataItem item = new DataItem(data);
-                tmpList.add((T)item);
+                tmpList.add((T) item);
                 dataSet.get(i).remove(j);
             }
             dataSet.remove(i);
@@ -333,7 +333,7 @@ public class Database<T extends DataItem> {
         private int actualClass;
 
         public TestSetIterator(Map<Integer, List<T>> map) {
-			iterators = new ArrayList<>(map.size());
+            iterators = new ArrayList<>(map.size());
             for (int i = 0; i < map.size(); i++) {
                 iterators.add(map.get(i).iterator());
             }

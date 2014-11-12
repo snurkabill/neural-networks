@@ -6,6 +6,6 @@ public class DataItem {
 
     public DataItem(double[] data) {
         this.data = new double[data.length];
-		System.arraycopy(data, 0, this.data, 0, data.length);
+        System.arraycopy(data, 0, this.data, 0, data.length);
     }
 }

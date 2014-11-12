@@ -9,7 +9,7 @@ public class Tuple {
 
     public Tuple(int... array) {
         this.array = new int[array.length];
-		System.arraycopy(array, 0, this.array, 0, array.length);
+        System.arraycopy(array, 0, this.array, 0, array.length);
         int sum = 0;
         for (int i = 0; i < array.length; i++) {
             sum += Math.pow(2, array.length - (i + 1)) * array[i];

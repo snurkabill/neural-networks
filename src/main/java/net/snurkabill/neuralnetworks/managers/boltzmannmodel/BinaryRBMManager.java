@@ -3,13 +3,13 @@ package net.snurkabill.neuralnetworks.managers.boltzmannmodel;
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.data.database.LabelledItem;
+import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
-import net.snurkabill.neuralnetworks.results.SupervisedTestResults;
+import net.snurkabill.neuralnetworks.results.SupervisedNetworkResults;
+import net.snurkabill.neuralnetworks.utilities.Utilities;
 
 import java.util.Iterator;
-import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
-import net.snurkabill.neuralnetworks.utilities.Utilities;
 
 public class BinaryRBMManager extends RestrictedBoltzmannMachineManager {
 
@@ -37,7 +37,7 @@ public class BinaryRBMManager extends RestrictedBoltzmannMachineManager {
             for (int j = item.data.length, k = 0; j < inputVector.length; j++, k++) {
                 inputVector[j] = targetValues[k];
             }
-			neuralNetwork.trainNetwork(inputVector);
+            neuralNetwork.trainNetwork(inputVector);
         }
     }
 
@@ -70,11 +70,11 @@ public class BinaryRBMManager extends RestrictedBoltzmannMachineManager {
                     for (int j = 0; j < results.length; j++) {
                         results[j] += outputVector[database.getSizeOfVector() + j];
                     }
-                    if((index = isOnlyValueTheBiggest(results)) >= 0 && i >= minimumAttemptsDuringTesting) {
-                       break;
+                    if ((index = isOnlyValueTheBiggest(results)) >= 0 && i >= minimumAttemptsDuringTesting) {
+                        break;
                     }
                 }
-				globalError += Utilities.calcError(targetValues, results);
+                globalError += Utilities.calcError(targetValues, results);
                 if (index == _class) {
                     success++;
                     successValuesCounter[_class]++;
@@ -102,7 +102,7 @@ public class BinaryRBMManager extends RestrictedBoltzmannMachineManager {
         int highestIndex = Integer.MIN_VALUE;
         double max = Double.NEGATIVE_INFINITY;
         for (int i = 0; i < values.length; i++) {
-            if(max == values[i]) { // POSSIBLE COMPARE PROBLEMS
+            if (max == values[i]) { // POSSIBLE COMPARE PROBLEMS
                 isOnlyValueTheBiggest = false;
             } else if (max < values[i]) {
                 max = values[i];
@@ -128,7 +128,7 @@ public class BinaryRBMManager extends RestrictedBoltzmannMachineManager {
 
     @Override
     protected void processResults() {
-        super.results.add(new SupervisedTestResults(super.learnedVectorsBeforeTest,
+        super.results.add(new SupervisedNetworkResults(super.learnedVectorsBeforeTest,
                 globalError, super.learningTimeBeforeTest, percentageSuccess));
     }
 

@@ -2,11 +2,7 @@ package net.snurkabill.neuralnetworks.pcatransform;
 
 import Jama.Matrix;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -17,7 +13,7 @@ public class DataReader {
     /**
      * Read data matrix from a CSV file. The first row (corresponding to the header) is ignored.
      * Some lines may be commented out by a '#' character.
-     *
+     * <p/>
      * This is a convenience wrapper for {@link #read(BufferedReader br, boolean ignoreLastColumn)}
      *
      * @param inStream         CSV file
@@ -26,7 +22,7 @@ public class DataReader {
      * @return data matrix
      */
     public static Matrix read(InputStream inStream, boolean ignoreLastColumn)
-        throws IOException {
+            throws IOException {
         DataInputStream in = new DataInputStream(inStream);
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         return read(br, ignoreLastColumn);
@@ -43,7 +39,7 @@ public class DataReader {
      * @return data matrix
      */
     public static Matrix read(BufferedReader br, boolean ignoreLastColumn)
-        throws IOException {
+            throws IOException {
 
         String line;
         int lineNo = 0;
@@ -83,5 +79,5 @@ public class DataReader {
         Matrix m = new Matrix(vectorsArray);
         return m;
     }
-    
+
 }

@@ -11,7 +11,7 @@ public class LastPartIndexer extends RandomIndexer {
         boolean[] indexes = new boolean[sizeOfVector];
         int treshold = indexes.length - this.getNumberOfUnknown();
         for (int i = 0; i < indexes.length; i++) {
-			indexes[i] = i >= treshold;
+            indexes[i] = i >= treshold;
         }
         return indexes;
     }

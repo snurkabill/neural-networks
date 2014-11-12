@@ -27,21 +27,27 @@ public class ReportMaker {
         BY_TIME("Milliseconds"),
         BY_ITERATIONS("Iterations");
         private final String string;
+
         private SortBy(String string) {
             this.string = string;
         }
+
         public String getString() {
             return string;
         }
-    };
+    }
+
+    ;
 
     public enum Picking {
         PICK_SUCCESS("Success"),
         PICK_ERROR("Error");
         private final String string;
+
         private Picking(String string) {
             this.string = string;
         }
+
         public String getString() {
             return string;
         }
@@ -56,17 +62,17 @@ public class ReportMaker {
             final XYSeries xy = new XYSeries(summary.getName());
             long distributedSum = 0;
             for (int i = 0; i < summary.getResults().size(); i++) {
-                if(sortby == SortBy.BY_ITERATIONS) {
+                if (sortby == SortBy.BY_ITERATIONS) {
                     distributedSum += summary.getResults().get(i).getNumOfTrainedItems();
                 } else if (sortby == SortBy.BY_TIME) {
                     distributedSum += summary.getResults().get(i).getMilliseconds();
                 } else {
                     throw new IllegalArgumentException("Not possible");
                 }
-                if(picking == Picking.PICK_ERROR) {
+                if (picking == Picking.PICK_ERROR) {
                     xy.add(distributedSum, summary.getResults().get(i).getGlobalError());
                 } else if (picking == Picking.PICK_SUCCESS) {
-                    xy.add(distributedSum, summary.getResults().get(i).getSuccess());
+                    xy.add(distributedSum, summary.getResults().get(i).getComparableSuccess());
                 } else {
                     throw new IllegalArgumentException("Not possible");
                 }

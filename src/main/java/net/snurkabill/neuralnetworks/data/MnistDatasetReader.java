@@ -1,6 +1,5 @@
 package net.snurkabill.neuralnetworks.data;
 
-import Jama.Matrix;
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ public class MnistDatasetReader implements Enumeration<MnistItem> {
 
     public MnistDatasetReader(File labelsFile, File imagesFile, int sizeOfDataset) throws IOException, FileNotFoundException {
         LOGGER.info("Unzipping files with {} samples ...", sizeOfDataset);
-        trainingSet  = new LinkedHashMap<>((int)((double)(sizeOfDataset / TEST_FILTER) * (TEST_FILTER - 1)) + 1, 1);
+        trainingSet = new LinkedHashMap<>((int) ((double) (sizeOfDataset / TEST_FILTER) * (TEST_FILTER - 1)) + 1, 1);
         testSet = new LinkedHashMap<>((sizeOfDataset / TEST_FILTER) + 1, 1);
         try (DataInputStream alabelsBuff = new DataInputStream(new GZIPInputStream(new FileInputStream(labelsFile)));
              DataInputStream aimagesBuf = new DataInputStream(new GZIPInputStream(new FileInputStream(imagesFile)))) {
@@ -78,12 +77,12 @@ public class MnistDatasetReader implements Enumeration<MnistItem> {
         LOGGER.info("Verified!");
     }
 
-	@Override
+    @Override
     public boolean hasMoreElements() {
         return current < count;
     }
 
-	@Override
+    @Override
     public MnistItem nextElement() {
         MnistItem item = new MnistItem();
         try {
