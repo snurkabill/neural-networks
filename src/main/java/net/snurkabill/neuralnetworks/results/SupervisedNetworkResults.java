@@ -1,10 +1,10 @@
 package net.snurkabill.neuralnetworks.results;
 
-public class SupervisedTestResults extends TestResults {
+public class SupervisedNetworkResults extends NetworkResults {
 
     private double successPercentage;
 
-    public SupervisedTestResults(int numOfTrainedItems, double globalError, long milliseconds, double successPercentage) {
+    public SupervisedNetworkResults(int numOfTrainedItems, double globalError, long milliseconds, double successPercentage) {
         super(numOfTrainedItems, globalError, milliseconds);
         this.successPercentage = successPercentage;
     }

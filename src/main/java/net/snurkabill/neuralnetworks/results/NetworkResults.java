@@ -1,12 +1,12 @@
 package net.snurkabill.neuralnetworks.results;
 
-public abstract class TestResults {
+public abstract class NetworkResults {
 
     private int numOfTrainedItems;
     private double globalError;
     private long milliseconds;
 
-    public TestResults(int numOfTrainedItems, double globalError, long milliseconds) {
+    public NetworkResults(int numOfTrainedItems, double globalError, long milliseconds) {
         this.numOfTrainedItems = numOfTrainedItems;
         this.globalError = globalError;
         this.milliseconds = milliseconds;

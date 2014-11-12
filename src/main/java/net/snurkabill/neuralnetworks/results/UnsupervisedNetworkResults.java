@@ -1,12 +1,12 @@
 package net.snurkabill.neuralnetworks.results;
 
-public class UnsupervisedTestResults extends TestResults {
+public class UnsupervisedNetworkResults extends NetworkResults {
 
     private double avgRightPercentageOfUnknownPart;
     private double percentageSizeOfUnknownSize;
 
-    public UnsupervisedTestResults(int numOfTestedItems, double globalError, long milliseconds,
-                                   double avgRightPercentageOfUnknownPart, double percentageSizeOfUnknownSize) {
+    public UnsupervisedNetworkResults(int numOfTestedItems, double globalError, long milliseconds,
+                                      double avgRightPercentageOfUnknownPart, double percentageSizeOfUnknownSize) {
         super(numOfTestedItems, globalError, milliseconds);
         this.percentageSizeOfUnknownSize = percentageSizeOfUnknownSize;
         this.avgRightPercentageOfUnknownPart = avgRightPercentageOfUnknownPart;
