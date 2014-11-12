@@ -40,5 +40,5 @@ public abstract class NetworkResults {
         return globalError / numOfTrainedItems;
     }
 
-    public abstract double getSuccess();
+    public abstract double getComparableSuccess();
 }

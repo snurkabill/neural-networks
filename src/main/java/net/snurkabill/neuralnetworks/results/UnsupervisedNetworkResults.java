@@ -29,7 +29,7 @@ public class UnsupervisedNetworkResults extends NetworkResults {
     }
 
     @Override
-    public double getSuccess() {
+    public double getComparableSuccess() {
         return avgRightPercentageOfUnknownPart;
     }
 }

@@ -18,7 +18,7 @@ public class SupervisedNetworkResults extends NetworkResults {
     }
 
     @Override
-    public double getSuccess() {
+    public double getComparableSuccess() {
         return successPercentage;
     }
 }
