@@ -8,7 +8,8 @@ import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
 import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
 import net.snurkabill.neuralnetworks.managers.MasterNetworkManager;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
-import net.snurkabill.neuralnetworks.managers.boltzmannmodel.BinaryRBMManager;
+import net.snurkabill.neuralnetworks.managers.boltzmannmodel.binary.SupervisedBinaryRBMManager;
+import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.PartialProbabilisticAssociationVectorValidator;
 import net.snurkabill.neuralnetworks.managers.feedforward.FeedForwardNetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.BinaryRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.OnlineFeedForwardNetwork;
@@ -68,7 +69,8 @@ public class MnistExampleFFNN {
                         (database.getSizeOfVector() + database.getNumberOfClasses()), 50,
                         new GaussianRndWeightsFactory(weightsScale, seed),
                         HeuristicRBM.createBasicHeuristicParams(), seed);
-        NetworkManager manager_rbm = new BinaryRBMManager(machine, database, seed, 10, 5, null);
+        NetworkManager manager_rbm = new SupervisedBinaryRBMManager(machine, database, seed, null,
+                new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
 
         HeuristicRBM heuristic = HeuristicRBM.createStartingHeuristicParams();
         heuristic.constructiveDivergenceIndex = 1;
@@ -77,7 +79,8 @@ public class MnistExampleFFNN {
                 (database.getSizeOfVector() + database.getNumberOfClasses()), 50,
                 new GaussianRndWeightsFactory(weightsScale, seed),
                 heuristic, seed);
-        NetworkManager manager_rbm2 = new BinaryRBMManager(machine, database, seed, 10, 5, null/*new BasicRBMHeuristicCalculator()*/);
+        NetworkManager manager_rbm2 = new SupervisedBinaryRBMManager(machine, database, seed,null,
+                new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
 
 		/*machine = new BinaryRestrictedBoltzmannMachine("RBM myHeuristic_low",
                 (database.getSizeOfVector() + database.getNumberOfClasses()), 150,
