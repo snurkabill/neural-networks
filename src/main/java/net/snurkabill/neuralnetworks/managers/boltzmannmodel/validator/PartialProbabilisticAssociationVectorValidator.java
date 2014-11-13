@@ -23,13 +23,13 @@ public class PartialProbabilisticAssociationVectorValidator extends Probabilisti
         for (int i = 0; i < sums.length; i++) {
             sums[i] = 0.0;
         }
-        double[] outputValues = machine.getOutputValues();
         for (int k = 0; k < iterations; k++) {
             machine.calculateNetwork(inputVector);
+            double[] outputVals = machine.getOutputValues();
             // going backwards due to  unknown part of pattern is on the end
             for (int i = inputVector.length - 1, j = 0; j < sizeOfUnknownPartOfVector; i--, j++) {
-                sums[i] += outputValues[i];
-                double diff = inputVector[i] - outputValues[i];
+                sums[sizeOfUnknownPartOfVector - (j + 1)] += outputVals[i];
+                double diff = inputVector[i] - outputVals[i];
                 distributiveError += diff * diff;
             }
         }

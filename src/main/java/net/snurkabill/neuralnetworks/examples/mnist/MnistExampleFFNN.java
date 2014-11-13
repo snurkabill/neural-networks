@@ -68,7 +68,7 @@ public class MnistExampleFFNN {
                 new BinaryRestrictedBoltzmannMachine("RBM basicHeuristic",
                         (database.getSizeOfVector() + database.getNumberOfClasses()), 50,
                         new GaussianRndWeightsFactory(weightsScale, seed),
-                        HeuristicRBM.createBasicHeuristicParams(), seed);
+                        HeuristicRBM.createStartingHeuristicParams(), seed);
         NetworkManager manager_rbm = new SupervisedBinaryRBMManager(machine, database, seed, null,
                 new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
 

@@ -28,6 +28,6 @@ public class SupervisedBenchmarker {
     protected void makeReport() {
         // TODO: move picking into contructor
         ReportMaker.chart(new File("results.png"), manager.getResults(), "FFNN",
-                ReportMaker.SortBy.BY_TIME, ReportMaker.Picking.PICK_SUCCESS);
+                ReportMaker.SortBy.BY_TIME, ReportMaker.Picking.PICK_ERROR);
     }
 }

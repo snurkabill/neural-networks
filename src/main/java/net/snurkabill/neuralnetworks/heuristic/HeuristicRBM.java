@@ -20,10 +20,10 @@ public class HeuristicRBM extends Heuristic {
     public static HeuristicRBM createStartingHeuristicParams() {
         HeuristicRBM heuristic = new HeuristicRBM();
         heuristic.constructiveDivergenceIndex = 1;
-        heuristic.numOfTrainingIterations = 5;
+        heuristic.numOfTrainingIterations = 3;
         heuristic.temperature = 1;
-        heuristic.learningRate = 0.2;
-        heuristic.momentum = 0.5;
+        heuristic.learningRate = 0.1;
+        heuristic.momentum = 0.3;
         return heuristic;
     }
 
