@@ -10,6 +10,8 @@ import java.util.Map;
 
 public class Utilities {
 
+    public static final double ERROR_MODIFIER = 0.5;
+
     public static double mean(final double[] input) {
         double m = 0.0;
         for (int i = 0; i < input.length; i++)
@@ -42,7 +44,7 @@ public class Utilities {
             double diff = expectedValues[i] - realValues[i];
             error += diff * diff;
         }
-        return 0.5 * error;
+        return ERROR_MODIFIER * error;
     }
 
     public static Matrix buildMatrix(Map<Integer, List<DataItem>> data) {

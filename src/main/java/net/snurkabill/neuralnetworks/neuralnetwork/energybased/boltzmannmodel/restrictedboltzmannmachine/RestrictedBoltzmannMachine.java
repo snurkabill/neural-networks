@@ -3,12 +3,12 @@ package net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.r
 import net.snurkabill.neuralnetworks.heuristic.Heuristic;
 import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.BoltzmannMachine;
+import net.snurkabill.neuralnetworks.utilities.Utilities;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 
 public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
 
     private static final int FIX_VISIBLE = 0;
-    private static final double ERROR_MODIFIER = 0.5;
 
     protected final int sizeOfVisibleVector;
     protected final int sizeOfHiddenVector;
@@ -215,7 +215,6 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
             throw new IllegalArgumentException("Heuristic " + heuristic + " is not instance of " +
                     HeuristicRBM.class.getName());
         }
-
     }
 
     @Override
@@ -223,12 +222,7 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
         if (targetValues.length != sizeOfVisibleVector) {
             throw new IllegalArgumentException();
         }
-        double sum = 0.0;
-        for (int i = 0; i < visibleNeurons.length; i++) {
-            double tmp = visibleNeurons[i] - targetValues[i];
-            sum += (tmp * tmp);
-        }
-        return ERROR_MODIFIER * sum;
+        return Utilities.calcError(targetValues, visibleNeurons);
     }
 
     @Override
