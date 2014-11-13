@@ -24,6 +24,7 @@ public class ProbabilisticAssociationVectorValidator implements RestrictedBoltzm
         for (int i = 0; i < iterations; i++) {
             distributiveError += machine.calcError(inputVector, inputVector);
         }
-        return distributiveError /= iterations;
+        distributiveError /= iterations;
+        return distributiveError;
     }
 }
