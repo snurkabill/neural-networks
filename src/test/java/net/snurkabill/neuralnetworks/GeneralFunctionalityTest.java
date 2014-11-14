@@ -17,7 +17,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -62,7 +61,7 @@ public class GeneralFunctionalityTest {
                 new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
         manager.supervisedTraining(1000);
         manager.testNetwork();
-        assertEquals(true, 50 < manager.getTestResults().getComparableSuccess());
+        assertEquals(true, 60 < manager.getTestResults().getComparableSuccess());
     }
 
     private Database createDatabase(int numOfElements) {

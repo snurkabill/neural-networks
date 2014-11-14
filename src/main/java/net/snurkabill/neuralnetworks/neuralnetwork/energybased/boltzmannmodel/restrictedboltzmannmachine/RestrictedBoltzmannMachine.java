@@ -18,6 +18,7 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
     protected final double[] visibleBias;
     protected final double[] hiddenBias;
     protected final double[][] weights;
+    private final double[][] deltaWeights;
 
     private HeuristicRBM heuristic;
 
@@ -34,9 +35,13 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
         this.visibleBias = new double[numOfVisible];
         this.hiddenNeurons = new double[numOfHidden];
         this.hiddenBias = new double[numOfHidden];
-        weights = new double[numOfVisible][];
+        this.weights = new double[numOfVisible][];
         for (int i = 0; i < numOfVisible; i++) {
-            weights[i] = new double[numOfHidden];
+            this.weights[i] = new double[numOfHidden];
+        }
+        this.deltaWeights = new double[numOfVisible][];
+        for (int i = 0; i < numOfVisible; i++) {
+            this.deltaWeights[i] = new double[numOfHidden];
         }
         wFactory.setWeights(weights);
         wFactory.setWeights(visibleBias);
@@ -114,7 +119,9 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
         }
         for (int i = 0; i < sizeOfVisibleVector; i++) {
             for (int j = 0; j < sizeOfHiddenVector; j++) {
-                weights[i][j] -= (heuristic.learningRate / super.temperature) * diffWeights[i][j];
+                deltaWeights[i][j] = (heuristic.learningRate / super.temperature) * diffWeights[i][j] + 
+						heuristic.momentum * deltaWeights[i][j];
+                weights[i][j] -= deltaWeights[i][j];
             }
         }
     }
