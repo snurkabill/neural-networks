@@ -1,7 +1,7 @@
 package net.snurkabill.neuralnetworks.examples.mnist;
 
 import net.snurkabill.neuralnetworks.benchmark.SupervisedBenchmarker;
-import net.snurkabill.neuralnetworks.data.MnistDatasetReader;
+import net.snurkabill.neuralnetworks.data.mnist.MnistDatasetReader;
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
@@ -38,7 +38,7 @@ public class MnistExampleFFNN {
 
     public static void basicBenchmark() throws IOException {
         long seed = 0;
-        MnistDatasetReader reader = getReader(FULL_MNIST_SIZE);
+        MnistDatasetReader reader = getReader(FULL_MNIST_SIZE, false);
         /*LOGGER.info("Building PCA");
         PCA pca = new PCA(Utilities.buildMatrix(reader.getTrainingData(), 10_000));
         LOGGER.info("Transforming Matrixces");
@@ -102,7 +102,7 @@ public class MnistExampleFFNN {
 
     public static void startExample() throws IOException {
         long seed = 0;
-        MnistDatasetReader reader = getReader(FULL_MNIST_SIZE);
+        MnistDatasetReader reader = getReader(FULL_MNIST_SIZE, false);
 
         List<Integer> topology = new ArrayList<>();
         topology.add(INPUT_SIZE);
@@ -141,13 +141,13 @@ public class MnistExampleFFNN {
         }
     }
 
-    public static MnistDatasetReader getReader(int numOfElements) {
+    public static MnistDatasetReader getReader(int numOfElements, boolean binary) {
         LOGGER.info("Unzipping files ...");
         File labels = new File(FILE_PATH + "train-labels-idx1-ubyte.gz");
         File images = new File(FILE_PATH + "train-images-idx3-ubyte.gz");
         MnistDatasetReader reader;
         try {
-            reader = new MnistDatasetReader(labels, images, numOfElements);
+            reader = new MnistDatasetReader(labels, images, numOfElements, binary);
             return reader;
         } catch (IOException ex) {
             throw new IllegalArgumentException(ex);

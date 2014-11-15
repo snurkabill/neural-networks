@@ -1,4 +1,4 @@
-package net.snurkabill.neuralnetworks.data;
+package net.snurkabill.neuralnetworks.data.mnist;
 
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ public class MnistDatasetReader implements Enumeration<MnistItem> {
     private int count = 0;
     private int current = 0;
 
-    public MnistDatasetReader(File labelsFile, File imagesFile, int sizeOfDataset) throws IOException, FileNotFoundException {
+    public MnistDatasetReader(File labelsFile, File imagesFile, int sizeOfDataset, boolean binary) throws IOException, FileNotFoundException {
         LOGGER.info("Unzipping files with {} samples ...", sizeOfDataset);
         trainingSet = new LinkedHashMap<>((int) ((double) (sizeOfDataset / TEST_FILTER) * (TEST_FILTER - 1)) + 1, 1);
         testSet = new LinkedHashMap<>((sizeOfDataset / TEST_FILTER) + 1, 1);
@@ -33,16 +33,21 @@ public class MnistDatasetReader implements Enumeration<MnistItem> {
             labelsBuf = alabelsBuff;
             imagesBuf = aimagesBuf;
             verify();
-            createTrainingSet(sizeOfDataset);
+            createTrainingSet(sizeOfDataset, binary);
         }
         System.gc();
     }
 
-    public final void createTrainingSet(int sizeOfDataset) {
+    public final void createTrainingSet(int sizeOfDataset, boolean binary) {
         LOGGER.info("Creating hash maps...");
         int elemCounter = 0;
         while (hasMoreElements() && current < sizeOfDataset) {
             MnistItem i = nextElement();
+            if(binary) {
+                for (int j = 0; j < i.data.length; j++) {
+                    i.data[j] = i.data[j] < 30 ? 0.0 : 1.0;
+                }
+            }
             if (elemCounter % TEST_FILTER == 0) {
                 List<DataItem> l = testSet.get(Integer.parseInt(i.label));
                 if (l == null)

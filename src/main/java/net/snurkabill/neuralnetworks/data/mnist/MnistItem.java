@@ -1,4 +1,4 @@
-package net.snurkabill.neuralnetworks.data;
+package net.snurkabill.neuralnetworks.data.mnist;
 
 /**
  * Container class that represents a Minst image and it's label

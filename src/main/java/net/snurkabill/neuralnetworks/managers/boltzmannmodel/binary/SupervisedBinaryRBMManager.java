@@ -31,9 +31,7 @@ public class SupervisedBinaryRBMManager extends RestrictedBoltzmannMachineManage
         double[] inputVector = new double[database.getSizeOfVector() + database.getNumberOfClasses()];
         for (int i = 0; i < numOfIterations; i++) {
             LabelledItem item = this.infiniteTrainingIterator.next();
-            for (int j = 0; j < item.data.length; j++) {
-                inputVector[j] = (item.data[j] < 30 ? 0 : 1);
-            }
+            System.arraycopy(item.data, 0, inputVector, 0, item.data.length);
             double[] targetValues = targetMaker.getTargetValues(item._class);
             for (int j = item.data.length, k = 0; j < inputVector.length; j++, k++) {
                 inputVector[j] = targetValues[k];
@@ -68,9 +66,7 @@ public class SupervisedBinaryRBMManager extends RestrictedBoltzmannMachineManage
 
     private double[] fillTestingVectorForReconstruction(double[] tmpItem) {
         double[] item = new double[database.getSizeOfVector() + database.getNumberOfClasses()];
-        for (int i = 0; i < tmpItem.length; i++) {
-            item[i] = (tmpItem[i] < 30 ? 0 : 1);
-        }
+        System.arraycopy(tmpItem, 0, item, 0, tmpItem.length);
         for (int i = 0, j = tmpItem.length; i < database.getNumberOfClasses(); i++, j++) {
             item[j] = 0;
         }
