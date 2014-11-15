@@ -1,4 +1,4 @@
-package net.snurkabill.neuralnetworks.managers.boltzmannmodel.binary;
+package net.snurkabill.neuralnetworks.managers.boltzmannmodel;
 
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.Database;
@@ -13,15 +13,13 @@ import net.snurkabill.neuralnetworks.utilities.Utilities;
 
 import java.util.Iterator;
 
-public class SupervisedBinaryRBMManager extends RestrictedBoltzmannMachineManager {
+public class SupervisedRBMManager extends RestrictedBoltzmannMachineManager {
 
-    private double avgRightPercentageOfUnknownPart;
-    private double percentageSizeOfUnknownSize;
     private PartialProbabilisticAssociationVectorValidator validator;
 
-    public SupervisedBinaryRBMManager(NeuralNetwork neuralNetwork, Database database, long seed,
-                                      HeuristicCalculator heuristicCalculator,
-                                      PartialProbabilisticAssociationVectorValidator validator) {
+    public SupervisedRBMManager(NeuralNetwork neuralNetwork, Database database, long seed,
+                                HeuristicCalculator heuristicCalculator,
+                                PartialProbabilisticAssociationVectorValidator validator) {
         super(neuralNetwork, database, seed, heuristicCalculator);
         this.validator = validator;
     }

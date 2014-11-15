@@ -5,7 +5,7 @@ import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
 import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
-import net.snurkabill.neuralnetworks.managers.boltzmannmodel.binary.SupervisedBinaryRBMManager;
+import net.snurkabill.neuralnetworks.managers.boltzmannmodel.SupervisedRBMManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.PartialProbabilisticAssociationVectorValidator;
 import net.snurkabill.neuralnetworks.managers.feedforward.FeedForwardNetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.BinaryRestrictedBoltzmannMachine;
@@ -39,7 +39,7 @@ public class GeneralFunctionalityTest {
         manager.supervisedTraining(1000);
         manager.testNetwork();
         assertEquals("Result:" + manager.getTestResults().getComparableSuccess(),
-                true, 60 < manager.getTestResults().getComparableSuccess());
+                true, 61.5 == manager.getTestResults().getComparableSuccess());
     }
 
     @Test
@@ -58,12 +58,12 @@ public class GeneralFunctionalityTest {
                         (database.getSizeOfVector() + database.getNumberOfClasses()), 50,
                         new GaussianRndWeightsFactory(weightsScale, seed),
                         heuristic, seed);
-        NetworkManager manager = new SupervisedBinaryRBMManager(machine, database, seed, null,
+        NetworkManager manager = new SupervisedRBMManager(machine, database, seed, null,
                 new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
-        manager.supervisedTraining(2000);
+        manager.supervisedTraining(1000);
         manager.testNetwork();
         assertEquals("Result:" + manager.getTestResults().getComparableSuccess(),
-                true, 80 < manager.getTestResults().getComparableSuccess());
+                true, 63.0 == manager.getTestResults().getComparableSuccess());
     }
 
     private Database createDatabase(int numOfElements, boolean binary) {

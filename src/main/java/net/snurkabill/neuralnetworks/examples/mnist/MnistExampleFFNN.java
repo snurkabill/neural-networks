@@ -8,7 +8,7 @@ import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
 import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
 import net.snurkabill.neuralnetworks.managers.MasterNetworkManager;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
-import net.snurkabill.neuralnetworks.managers.boltzmannmodel.binary.SupervisedBinaryRBMManager;
+import net.snurkabill.neuralnetworks.managers.boltzmannmodel.SupervisedRBMManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.PartialProbabilisticAssociationVectorValidator;
 import net.snurkabill.neuralnetworks.managers.feedforward.FeedForwardNetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.BinaryRestrictedBoltzmannMachine;
@@ -69,7 +69,7 @@ public class MnistExampleFFNN {
                         (database.getSizeOfVector() + database.getNumberOfClasses()), 50,
                         new GaussianRndWeightsFactory(weightsScale, seed),
                         HeuristicRBM.createStartingHeuristicParams(), seed);
-        NetworkManager manager_rbm = new SupervisedBinaryRBMManager(machine, database, seed, null,
+        NetworkManager manager_rbm = new SupervisedRBMManager(machine, database, seed, null,
                 new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
 
         HeuristicRBM heuristic = HeuristicRBM.createStartingHeuristicParams();
@@ -79,7 +79,7 @@ public class MnistExampleFFNN {
                 (database.getSizeOfVector() + database.getNumberOfClasses()), 50,
                 new GaussianRndWeightsFactory(weightsScale, seed),
                 heuristic, seed);
-        NetworkManager manager_rbm2 = new SupervisedBinaryRBMManager(machine, database, seed,null,
+        NetworkManager manager_rbm2 = new SupervisedRBMManager(machine, database, seed,null,
                 new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
 
 		/*machine = new BinaryRestrictedBoltzmannMachine("RBM myHeuristic_low",
