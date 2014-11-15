@@ -46,7 +46,6 @@ public class SupervisedRBMManager extends RestrictedBoltzmannMachineManager {
         int success = 0;
         int fail = 0;
         for (int _class = 0; _class < database.getNumberOfClasses(); _class++) {
-            targetMaker.getTargetValues(_class);
             Iterator<DataItem> testingIterator = database.getTestingIteratorOverClass(_class);
             for (; testingIterator.hasNext(); ) {
                 double[] item = this.fillTestingVectorForReconstruction(testingIterator.next().data);
