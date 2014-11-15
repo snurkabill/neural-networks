@@ -60,10 +60,10 @@ public class GeneralFunctionalityTest {
                         heuristic, seed);
         NetworkManager manager = new SupervisedBinaryRBMManager(machine, database, seed, null,
                 new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
-        manager.supervisedTraining(1000);
+        manager.supervisedTraining(2000);
         manager.testNetwork();
         assertEquals("Result:" + manager.getTestResults().getComparableSuccess(),
-                true, 60 < manager.getTestResults().getComparableSuccess());
+                true, 80 < manager.getTestResults().getComparableSuccess());
     }
 
     private Database createDatabase(int numOfElements, boolean binary) {
