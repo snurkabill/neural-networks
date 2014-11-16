@@ -6,6 +6,12 @@ public class HeuristicRBM extends Heuristic {
     public int numOfTrainingIterations;
     public int constructiveDivergenceIndex;
 
+    public HeuristicRBM() {
+        this.temperature = 1;
+        this.numOfTrainingIterations = 1;
+        this.constructiveDivergenceIndex = 1;
+    }
+
     @Deprecated
     public static HeuristicRBM createBasicHeuristicParams() {
         HeuristicRBM rbm = new HeuristicRBM();
