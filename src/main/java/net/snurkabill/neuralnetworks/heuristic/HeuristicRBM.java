@@ -1,12 +1,13 @@
 package net.snurkabill.neuralnetworks.heuristic;
 
-public class HeuristicRBM extends Heuristic {
+public class HeuristicRBM extends FFNNHeuristic {
 
     public double temperature;
     public int numOfTrainingIterations;
     public int constructiveDivergenceIndex;
 
     public HeuristicRBM() {
+        super();
         this.temperature = 1;
         this.numOfTrainingIterations = 1;
         this.constructiveDivergenceIndex = 1;
