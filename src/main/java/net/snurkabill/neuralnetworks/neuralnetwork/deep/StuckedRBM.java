@@ -1,4 +1,4 @@
-package net.snurkabill.neuralnetworks.neuralnetwork.deep.energybased;
+package net.snurkabill.neuralnetworks.neuralnetwork.deep;
 
 import net.snurkabill.neuralnetworks.neuralnetwork.deep.DeepNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
