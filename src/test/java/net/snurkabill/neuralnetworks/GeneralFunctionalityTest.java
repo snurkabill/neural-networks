@@ -3,11 +3,13 @@ package net.snurkabill.neuralnetworks;
 import net.snurkabill.neuralnetworks.data.mnist.MnistDatasetReader;
 import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
+import net.snurkabill.neuralnetworks.heuristic.HeuristicDBN;
 import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.SupervisedRBMManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.PartialProbabilisticAssociationVectorValidator;
 import net.snurkabill.neuralnetworks.managers.feedforward.FeedForwardNetworkManager;
+import net.snurkabill.neuralnetworks.neuralnetwork.deep.BinaryDeepBeliefNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.BinaryRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.OnlineFeedForwardNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.ParametrizedHyperbolicTangens;
@@ -65,6 +67,10 @@ public class GeneralFunctionalityTest {
         assertEquals("Result:" + manager.getTestResults().getComparableSuccess(),
                 true, 63.0 == manager.getTestResults().getComparableSuccess());
     }
+
+
+
+
 
     private Database createDatabase(int numOfElements, boolean binary) {
         File labels = new File("src/test/resources/mnist/train-labels-idx1-ubyte.gz");
