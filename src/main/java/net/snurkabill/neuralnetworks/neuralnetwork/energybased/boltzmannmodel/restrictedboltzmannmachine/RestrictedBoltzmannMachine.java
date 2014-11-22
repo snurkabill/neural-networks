@@ -151,7 +151,7 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
 
     public abstract double[] reconstructNext();
 
-    private void constrastiveDivergence(int index, double[] inputVals) {
+    protected void constrastiveDivergence(int index, double[] inputVals) {
         setVisibleNeurons(inputVals);
         calcHiddenNeurons();
         for (int i = 0; i < index; i++) {
@@ -159,12 +159,12 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
         }
     }
 
-    private void machineStepInverse() {
+    protected void machineStepInverse() {
         calcVisibleNeurons();
         calcHiddenNeurons();
     }
 
-    private void machineStep() {
+    protected void machineStep() {
         calcHiddenNeurons();
         calcVisibleNeurons();
     }
