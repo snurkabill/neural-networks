@@ -5,7 +5,7 @@ import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.re
 import net.snurkabill.neuralnetworks.utilities.Utilities;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 
-public class BinaryDeepBeliefNetwork extends BinaryRestrictedBoltzmannMachine {
+public class BinaryDeepBeliefNetwork extends BinaryRestrictedBoltzmannMachine implements DeepNetwork {
 
     private final StuckedRBM networkChimney;
     private final int sizeOfOutputVector;
@@ -23,8 +23,10 @@ public class BinaryDeepBeliefNetwork extends BinaryRestrictedBoltzmannMachine {
     }
 
     private void nullOutputPartOfVector() {
-        for (int i = this.getSizeOfInputVector() - 1; i >= this.getSizeOfInputVector() - sizeOfOutputVector; i--) {
+        for (int i = networkChimney.getSizeOfOutputVector(), j = 0;
+             i < visibleNeurons.length; i++, j++) {
             visibleNeurons[i] = 0.0;
+            temporaryOutputValues[j] = 0.0;
         }
     }
 
@@ -92,7 +94,7 @@ public class BinaryDeepBeliefNetwork extends BinaryRestrictedBoltzmannMachine {
     public void trainNetwork(double[] targetValues) {
         double[] fullTargetValues = new double [networkChimney.getSizeOfOutputVector() + sizeOfOutputVector];
         System.arraycopy(transformedInput, 0, fullTargetValues, 0, transformedInput.length);
-        System.arraycopy(targetValues, 0, fullTargetValues, transformedInput.length, targetValues.length);
+        System.arraycopy(targetValues, 0, fullTargetValues, transformedInput.length, sizeOfOutputVector);
         super.trainMachine(fullTargetValues);
     }
 }
