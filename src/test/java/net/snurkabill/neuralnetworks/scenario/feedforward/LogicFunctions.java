@@ -30,7 +30,7 @@ public class LogicFunctions {
             noise.addAll(createNoise());
         }
         testingSet.put(0, and);
-        testingSet.put(1, createNoise());
+        testingSet.put(1, noise);
         Database database = new Database(0, trainingSet, testingSet, "Database");
         List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 2, database.getNumberOfClasses());
         FFNNHeuristic heuristic = new FFNNHeuristic();
