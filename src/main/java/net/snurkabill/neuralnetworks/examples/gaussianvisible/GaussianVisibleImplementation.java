@@ -1,16 +1,21 @@
 package net.snurkabill.neuralnetworks.examples.gaussianvisible;
 
 import net.snurkabill.neuralnetworks.data.database.DataItem;
+import net.snurkabill.neuralnetworks.data.database.Database;
+import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
 import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
+import net.snurkabill.neuralnetworks.managers.NetworkManager;
+import net.snurkabill.neuralnetworks.managers.feedforward.FeedForwardNetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.BinaryRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.GaussianVisibleRestrictedBoltzmannMachine;
+import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.OnlineFeedForwardNetwork;
+import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.ParametrizedHyperbolicTangens;
 import net.snurkabill.neuralnetworks.weights.weightfactory.GaussianRndWeightsFactory;
+import net.snurkabill.neuralnetworks.weights.weightfactory.SmartGaussianRndWeightsFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * does not work :( :D
@@ -53,7 +58,7 @@ public class GaussianVisibleImplementation {
         heuristic.numOfTrainingIterations = 10;
 
         GaussianVisibleRestrictedBoltzmannMachine rbm = new GaussianVisibleRestrictedBoltzmannMachine("ProofOfConcept",
-                3, 1    , new GaussianRndWeightsFactory(0.001, 0), heuristic, 0);
+                3, 1, new GaussianRndWeightsFactory(0.001, 0), heuristic, 0);
 
         BinaryRestrictedBoltzmannMachine rbmBin = new BinaryRestrictedBoltzmannMachine("Binary",
                 3, 5, new GaussianRndWeightsFactory(0.000001, 0), heuristic, 0);
@@ -111,6 +116,78 @@ public class GaussianVisibleImplementation {
         LOGGER.info("Error after training: {} ", error);
         LOGGER.info("BinError after training: {} ", errorBinary);
 
+    }
+
+    private static List<DataItem> createNoise() {
+        return Arrays.asList(
+                new DataItem(new double[]{0.0, 1.0}),
+                new DataItem(new double[]{1.0, 0.0}),
+                new DataItem(new double[]{0.0, 0.0})
+        );
+    }
+
+    private static List<DataItem> createAnd() {
+        return Arrays.asList(
+                new DataItem(new double[]{1.0, 1.0}),
+                new DataItem(new double[]{1.0, 1.0}),
+                new DataItem(new double[]{1.0, 1.0})
+        );
+    }
+
+    public static void shitFuck() {
+        long seed = 0;
+        double weightsScale = 0.01;
+        Map<Integer, List<DataItem>> trainingSet = new HashMap<>();
+        Map<Integer, List<DataItem>> testingSet = new HashMap<>();
+
+        trainingSet.put(0, createAnd());
+        trainingSet.put(1, createNoise());
+
+        List<DataItem> and = new ArrayList<>();
+        List<DataItem> noise = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            and.addAll(createAnd());
+            noise.addAll(createNoise());
+        }
+        testingSet.put(0, and);
+        testingSet.put(1, createNoise());
+
+        Database database = new Database(0, trainingSet, testingSet, "Database");
+
+        List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 2, database.getNumberOfClasses());
+        FFNNHeuristic heuristic = new FFNNHeuristic();
+        heuristic.learningRate = 0.01;
+        heuristic.momentum = 0.1;
+        OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
+                new SmartGaussianRndWeightsFactory(new ParametrizedHyperbolicTangens(), seed),
+                heuristic, new ParametrizedHyperbolicTangens());
+        NetworkManager manager = new FeedForwardNetworkManager(network, database, null);
+
+        /*HeuristicDBN heuristic = new HeuristicDBN();
+        heuristic.momentum = 0.1;
+        heuristic.learningRate = 0.1;
+        heuristic.constructiveDivergenceIndex = 1;
+        heuristic.temperature = 1;
+        heuristic.numOfTrainingIterations = 5;
+        heuristic.numofRunsBaseRBMItself = 3;
+        heuristic.numOfRunsOfNetworkChimney = 3;
+        List<RestrictedBoltzmannMachine> machines = new ArrayList<>(2);
+        machines.add(new BinaryRestrictedBoltzmannMachine("InnerRBM", database.getSizeOfVector(), 10,
+                new GaussianRndWeightsFactory(weightsScale, seed), heuristic, seed));
+        machines.add(new BinaryRestrictedBoltzmannMachine("InnerRBM", 10, 10,
+                new GaussianRndWeightsFactory(weightsScale, seed), heuristic, seed));
+
+        StuckedRBM stuckedRBMs = new StuckedRBM(machines, "Stucked RBM");
+        StuckedRBMTrainer.train(stuckedRBMs, database, 10000, 10000);
+
+        BinaryDeepBeliefNetwork DBN = new BinaryDeepBeliefNetwork("DBN", database.getNumberOfClasses(), 2,
+                new GaussianRndWeightsFactory(weightsScale, seed), heuristic, 0, stuckedRBMs);
+
+        NetworkManager manager = new BinaryDeepBeliefNetworkManager(DBN, database, null);*/
+
+        manager.supervisedTraining(10000);
+        manager.testNetwork();
+        System.out.println("Results " + manager.getTestResults().getComparableSuccess());
     }
 
 }
