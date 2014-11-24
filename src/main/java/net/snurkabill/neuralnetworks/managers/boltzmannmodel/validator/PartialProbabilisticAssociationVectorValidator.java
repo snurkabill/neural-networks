@@ -14,7 +14,7 @@ public class PartialProbabilisticAssociationVectorValidator extends Probabilisti
     public PartialProbabilisticAssociationVectorValidator(int numberOfIterations, int sizeOfUnknownPartOfVector) {
         super(numberOfIterations);
         this.sizeOfUnknownPartOfVector = sizeOfUnknownPartOfVector;
-        this.sums = new double [this.sizeOfUnknownPartOfVector];
+        this.sums = new double[this.sizeOfUnknownPartOfVector];
     }
 
     @Override
@@ -44,9 +44,9 @@ public class PartialProbabilisticAssociationVectorValidator extends Probabilisti
         int classIndex = Integer.MIN_VALUE;
         double max = Double.NEGATIVE_INFINITY;
         for (int i = 0; i < sums.length; i++) {
-            if(max == sums[i]) { // POSSIBLE COMPARISON PROBLEMS - but we don't care since this is probabilistic model
+            if (max == sums[i]) { // POSSIBLE COMPARISON PROBLEMS - but we don't care since this is probabilistic model
                 isOnlyValueTheBiggest = false;
-            } else if(max < sums[i]) {
+            } else if (max < sums[i]) {
                 max = sums[i];
                 classIndex = i;
                 isOnlyValueTheBiggest = true;

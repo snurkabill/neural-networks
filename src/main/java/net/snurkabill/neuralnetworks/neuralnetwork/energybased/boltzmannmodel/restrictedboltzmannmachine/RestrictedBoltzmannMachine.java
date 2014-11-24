@@ -119,8 +119,8 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
         }
         for (int i = 0; i < sizeOfVisibleVector; i++) {
             for (int j = 0; j < sizeOfHiddenVector; j++) {
-                deltaWeights[i][j] = (heuristic.learningRate / super.temperature) * diffWeights[i][j] + 
-						heuristic.momentum * deltaWeights[i][j];
+                deltaWeights[i][j] = (heuristic.learningRate / super.temperature) * diffWeights[i][j] +
+                        heuristic.momentum * deltaWeights[i][j];
                 weights[i][j] -= deltaWeights[i][j];
             }
         }

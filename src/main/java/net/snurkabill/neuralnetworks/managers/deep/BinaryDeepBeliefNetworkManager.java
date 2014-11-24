@@ -1,54 +1,50 @@
-package net.snurkabill.neuralnetworks.managers.boltzmannmodel;
+package net.snurkabill.neuralnetworks.managers.deep;
 
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.data.database.LabelledItem;
 import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
-import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.PartialProbabilisticAssociationVectorValidator;
+import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.results.SupervisedNetworkResults;
+import net.snurkabill.neuralnetworks.utilities.Utilities;
 
 import java.util.Iterator;
 
-public class SupervisedRBMManager extends RestrictedBoltzmannMachineManager {
+public class BinaryDeepBeliefNetworkManager extends NetworkManager {
 
-    private PartialProbabilisticAssociationVectorValidator validator;
-
-    public SupervisedRBMManager(NeuralNetwork neuralNetwork, Database database, long seed,
-                                HeuristicCalculator heuristicCalculator,
-                                PartialProbabilisticAssociationVectorValidator validator) {
-        super(neuralNetwork, database, seed, heuristicCalculator);
-        this.validator = validator;
+    public BinaryDeepBeliefNetworkManager(NeuralNetwork neuralNetwork, Database database, HeuristicCalculator heuristicCalculator) {
+        super(neuralNetwork, database, heuristicCalculator);
     }
 
     @Override
     protected void train(int numOfIterations) {
-        double[] inputVector = new double[database.getSizeOfVector() + database.getNumberOfClasses()];
         for (int i = 0; i < numOfIterations; i++) {
             LabelledItem item = this.infiniteTrainingIterator.next();
-            System.arraycopy(item.data, 0, inputVector, 0, item.data.length);
             double[] targetValues = targetMaker.getTargetValues(item._class);
-            for (int j = item.data.length, k = 0; j < inputVector.length; j++, k++) {
-                inputVector[j] = targetValues[k];
-            }
-            neuralNetwork.trainNetwork(inputVector);
+            neuralNetwork.calculateNetwork(item.data);
+            neuralNetwork.trainNetwork(targetValues);
         }
     }
 
     @Override
     protected void test() {
+        double[] targetValues = targetMaker.nullTargetValues();
         RestrictedBoltzmannMachine machine = (RestrictedBoltzmannMachine) neuralNetwork;
         int[] successValuesCounter = new int[neuralNetwork.getSizeOfOutputVector()];
         globalError = 0.0;
         int success = 0;
         int fail = 0;
         for (int _class = 0; _class < database.getNumberOfClasses(); _class++) {
+            targetMaker.getTargetValues(_class);
             Iterator<DataItem> testingIterator = database.getTestingIteratorOverClass(_class);
             for (; testingIterator.hasNext(); ) {
-                double[] item = this.fillTestingVectorForReconstruction(testingIterator.next().data);
-                globalError += validator.validate(item, machine);
-                if (validator.getClassWithHighestProbability() == _class) {
+                DataItem item = testingIterator.next();
+                neuralNetwork.calculateNetwork(item.data);
+                //LOGGER.info("{}", neuralNetwork.getOutputValues());
+                globalError += Utilities.calcError(targetValues, neuralNetwork.getOutputValues());
+                if (getClassWithHighestProbability(neuralNetwork.getOutputValues()) == _class) {
                     success++;
                     successValuesCounter[_class]++;
                 } else fail++;
@@ -59,13 +55,20 @@ public class SupervisedRBMManager extends RestrictedBoltzmannMachineManager {
         globalError /= all;
     }
 
-    private double[] fillTestingVectorForReconstruction(double[] tmpItem) {
-        double[] item = new double[database.getSizeOfVector() + database.getNumberOfClasses()];
-        System.arraycopy(tmpItem, 0, item, 0, tmpItem.length);
-        for (int i = 0, j = tmpItem.length; i < database.getNumberOfClasses(); i++, j++) {
-            item[j] = 0;
+    public int getClassWithHighestProbability(double[] sums) {
+        boolean isOnlyValueTheBiggest = false;
+        int classIndex = Integer.MIN_VALUE;
+        double max = Double.NEGATIVE_INFINITY;
+        for (int i = 0; i < sums.length; i++) {
+            if (max == sums[i]) { // POSSIBLE COMPARISON PROBLEMS - but we don't care since this is probabilistic model
+                isOnlyValueTheBiggest = false;
+            } else if (max < sums[i]) {
+                max = sums[i];
+                classIndex = i;
+                isOnlyValueTheBiggest = true;
+            }
         }
-        return item;
+        return isOnlyValueTheBiggest ? classIndex : Integer.MIN_VALUE;
     }
 
     @Override
@@ -73,5 +76,4 @@ public class SupervisedRBMManager extends RestrictedBoltzmannMachineManager {
         super.results.add(new SupervisedNetworkResults(super.learnedVectorsBeforeTest,
                 globalError, super.learningTimeBeforeTest, percentageSuccess));
     }
-
 }

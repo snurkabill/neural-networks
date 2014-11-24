@@ -1,6 +1,5 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.deep;
 
-import net.snurkabill.neuralnetworks.neuralnetwork.deep.DeepNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +22,10 @@ public class StuckedRBM implements DeepNetwork {
             tmpName = tmpName.concat("->" + level.getSizeOfOutputVector());
         }
         this.name = name;
-        if(levels.size() == 1) {
+        if (levels.size() == 1) {
             throw new IllegalArgumentException("StuckedRBM does not support one level of RMBs, use one RBM instead for "
                     + "same effect");
-        } else if(levels.size() <= 0) {
+        } else if (levels.size() <= 0) {
             throw new IllegalArgumentException("Wrong number of levels");
         }
         this.levels = levels;
@@ -37,10 +36,10 @@ public class StuckedRBM implements DeepNetwork {
     }
 
     public void trainNetworkLevel(double[] inputVector, int level) {
-        if(level > this.indexOfLastLayer) {
+        if (level > this.indexOfLastLayer) {
             throw new IllegalArgumentException("Level (" + level + ") is too high");
         }
-        if(level < 0) {
+        if (level < 0) {
             throw new IllegalArgumentException("Level can't be negative");
         }
         LOGGER.debug("Training {}th level.", level);
@@ -65,7 +64,7 @@ public class StuckedRBM implements DeepNetwork {
     }
 
     private void checkInputVectorSize(double[] inputVector) {
-        if(inputVector.length != this.sizeOfInputVector) {
+        if (inputVector.length != this.sizeOfInputVector) {
             throw new IllegalArgumentException("Different size of inputVector");
         }
     }

@@ -18,8 +18,8 @@ public class BinaryDeepBeliefNetwork extends BinaryRestrictedBoltzmannMachine im
                 wFactory, heuristic, seed);
         this.networkChimney = networkChimney;
         this.sizeOfOutputVector = numberOfOutputValues;
-        temporaryOutputValues = new double [sizeOfOutputVector];
-        transformedInput = new double [networkChimney.getSizeOfOutputVector()];
+        temporaryOutputValues = new double[sizeOfOutputVector];
+        transformedInput = new double[networkChimney.getSizeOfOutputVector()];
     }
 
     private void nullOutputPartOfVector() {
@@ -31,7 +31,7 @@ public class BinaryDeepBeliefNetwork extends BinaryRestrictedBoltzmannMachine im
     }
 
     private double[] calculateNetworkChimney(double[] inputVector) {
-        int numOfIterations = ((HeuristicDBN)super.getHeuristic()).numOfRunsOfNetworkChimney;
+        int numOfIterations = ((HeuristicDBN) super.getHeuristic()).numOfRunsOfNetworkChimney;
         double[] outputFromChimney = new double[networkChimney.getSizeOfOutputVector()];
         for (int i = 0; i < numOfIterations; i++) {
             networkChimney.calculateNetwork(inputVector);
@@ -49,7 +49,7 @@ public class BinaryDeepBeliefNetwork extends BinaryRestrictedBoltzmannMachine im
     @Override
     public void calculateNetwork(double[] inputVector) {
         transformedInput = calculateNetworkChimney(inputVector);
-        int numOfIterations = ((HeuristicDBN)super.getHeuristic()).numofRunsBaseRBMItself;
+        int numOfIterations = ((HeuristicDBN) super.getHeuristic()).numofRunsBaseRBMItself;
         for (int i = 0; i < numOfIterations; i++) {
             System.arraycopy(transformedInput, 0, visibleNeurons, 0, networkChimney.getSizeOfOutputVector());
             nullOutputPartOfVector();
@@ -92,7 +92,7 @@ public class BinaryDeepBeliefNetwork extends BinaryRestrictedBoltzmannMachine im
 
     @Override
     public void trainNetwork(double[] targetValues) {
-        double[] fullTargetValues = new double [networkChimney.getSizeOfOutputVector() + sizeOfOutputVector];
+        double[] fullTargetValues = new double[networkChimney.getSizeOfOutputVector() + sizeOfOutputVector];
         System.arraycopy(transformedInput, 0, fullTargetValues, 0, transformedInput.length);
         System.arraycopy(targetValues, 0, fullTargetValues, transformedInput.length, sizeOfOutputVector);
         super.trainMachine(fullTargetValues);

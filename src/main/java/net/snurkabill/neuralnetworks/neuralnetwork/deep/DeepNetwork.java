@@ -1,5 +1,5 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.deep;
 
 
-public interface DeepNetwork  {
+public interface DeepNetwork {
 }

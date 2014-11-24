@@ -14,7 +14,7 @@ public class StuckedRBMTrainer {
     public static final Logger LOGGER = LoggerFactory.getLogger("StuckerRBM trainer");
 
     public static void train(StuckedRBM networkChimney, Database database, int... trainingIterationsPerLevel) {
-        if(trainingIterationsPerLevel.length != networkChimney.getNumOfLevels()) {
+        if (trainingIterationsPerLevel.length != networkChimney.getNumOfLevels()) {
             throw new IllegalArgumentException("Num of RBms is different than array with training iterations");
         }
         Iterator<DataItem> trainingIterator = database.getInfiniteTrainingIterator();
