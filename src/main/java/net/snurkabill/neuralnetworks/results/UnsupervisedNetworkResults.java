@@ -30,6 +30,6 @@ public class UnsupervisedNetworkResults extends NetworkResults {
 
     @Override
     public double getComparableSuccess() {
-        return avgRightPercentageOfUnknownPart;
+        return getGlobalError();
     }
 }
