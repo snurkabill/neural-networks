@@ -13,10 +13,16 @@ public class MasterNetworkManager {
     private final Logger LOGGER;
     private final List<NetworkManager> managers;
     private final Timer timer = new Timer();
+    private final String nameOfProblem;
 
     public MasterNetworkManager(String nameOfProblem, List<NetworkManager> singleNetworkManagers) {
         this.LOGGER = LoggerFactory.getLogger(MasterNetworkManager.class.getSimpleName() + ": " + nameOfProblem);
         this.managers = singleNetworkManagers;
+        this.nameOfProblem = nameOfProblem;
+    }
+
+    public String getNameOfProblem() {
+        return nameOfProblem;
     }
 
     public int getNumOfNetworks() {
