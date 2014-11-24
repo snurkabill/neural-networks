@@ -27,7 +27,9 @@ public class SupervisedBenchmarker {
 
     protected void makeReport() {
         // TODO: move picking into contructor
-        ReportMaker.chart(new File("results.png"), manager.getResults(), "FFNN",
-                ReportMaker.SortBy.BY_TIME, ReportMaker.Picking.PICK_ERROR);
+        ReportMaker.chart(new File("results_timeXsuccess.png"), manager.getResults(), manager.getNameOfProblem(),
+                ReportMaker.SortBy.BY_TIME, ReportMaker.Picking.PICK_SUCCESS);
+        ReportMaker.chart(new File("results_iterationsXsuccess.png"), manager.getResults(), manager.getNameOfProblem(),
+                ReportMaker.SortBy.BY_ITERATIONS, ReportMaker.Picking.PICK_SUCCESS);
     }
 }
