@@ -43,7 +43,7 @@ public class MnistDatasetReader implements Enumeration<MnistItem> {
         int elemCounter = 0;
         while (hasMoreElements() && current < sizeOfDataset) {
             MnistItem i = nextElement();
-            if(binary) {
+            if (binary) {
                 for (int j = 0; j < i.data.length; j++) {
                     i.data[j] = (i.data[j] < 1 ? 0 : 1);
                 }

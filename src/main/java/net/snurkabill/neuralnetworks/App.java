@@ -12,5 +12,7 @@ public class App {
 
     public static void main(String argv[]) throws IOException {
         MnistExampleFFNN.basicBenchmark();
+        //GaussianVisibleImplementation.shitFuck();
+        //IWannaKillMyself.and();
     }
 }
