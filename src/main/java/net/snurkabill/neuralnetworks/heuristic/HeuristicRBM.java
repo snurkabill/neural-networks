@@ -27,10 +27,10 @@ public class HeuristicRBM extends FFNNHeuristic {
     public static HeuristicRBM createStartingHeuristicParams() {
         HeuristicRBM heuristic = new HeuristicRBM();
         heuristic.constructiveDivergenceIndex = 1;
-        heuristic.numOfTrainingIterations = 3;
+        heuristic.numOfTrainingIterations = 1;
         heuristic.temperature = 1;
         heuristic.learningRate = 0.1;
-        heuristic.momentum = 0.3;
+        heuristic.momentum = 0.1;
         return heuristic;
     }
 
