@@ -30,25 +30,27 @@ public class MasterNetworkManager {
     }
 
     public void trainNetworks(int numOfIterations) {
-        LOGGER.info("------------------------------TRAINING-STARTED------------------------------");
+        LOGGER.info("================================================================================");
+        LOGGER.info("TRAINING STARTED");
         timer.startTimer();
         for (NetworkManager manager : managers) {
             manager.supervisedTraining(numOfIterations);
         }
         timer.stopTimer();
-        LOGGER.info("TOTAL TIME: {} seconds", timer.secondsSpent());
-        LOGGER.info("------------------------------TRAINING-STOPPED------------------------------");
+        LOGGER.info("TRAINING STOPPED; TOTAL TIME: {} seconds", timer.secondsSpent());
+        LOGGER.info("================================================================================");
     }
 
     public void testNetworks() {
-        LOGGER.info("------------------------------TESTING-STARTED-------------------------------");
+        LOGGER.info("================================================================================");
+        LOGGER.info("TESTING STARTED");
         timer.startTimer();
         for (NetworkManager manager : managers) {
             manager.testNetwork();
         }
         timer.stopTimer();
-        LOGGER.info("TOTAL TIME: {} seconds", timer.secondsSpent());
-        LOGGER.info("------------------------------TESTING-STOPPED-------------------------------");
+        LOGGER.info("TESTING STOPPED; TOTAL TIME: {} seconds", timer.secondsSpent());
+        LOGGER.info("================================================================================");
     }
 
     public List<ResultsSummary> getResults() {
