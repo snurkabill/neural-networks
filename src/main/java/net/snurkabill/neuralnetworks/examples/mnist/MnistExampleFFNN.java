@@ -61,7 +61,7 @@ public class MnistExampleFFNN {
                         database.getNumberOfClasses()));
 
         heuristic = HeuristicRBM.createStartingHeuristicParams();
-        heuristic.numOfTrainingIterations = 5;
+        heuristic.batchSize = 5;
         heuristic.constructiveDivergenceIndex = 3;
         machine = new BinaryRestrictedBoltzmannMachine("RBM heurCalculator",
                 (database.getSizeOfVector() + database.getNumberOfClasses()), 50,
@@ -81,7 +81,7 @@ public class MnistExampleFFNN {
                         database.getNumberOfClasses()));
 
         heuristic = HeuristicRBM.createStartingHeuristicParams();
-        heuristic.numOfTrainingIterations = 5;
+        heuristic.batchSize = 5;
         heuristic.constructiveDivergenceIndex = 3;
         machine = new BinaryRestrictedBoltzmannMachine("RBM myHeuristic",
                 (database.getSizeOfVector() + database.getNumberOfClasses()), 2000,

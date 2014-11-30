@@ -55,7 +55,7 @@ public class GaussianVisibleImplementation {
         heuristic.momentum = 0.1;
         heuristic.constructiveDivergenceIndex = 1;
         heuristic.temperature = 1;
-        heuristic.numOfTrainingIterations = 10;
+        heuristic.batchSize = 10;
 
         GaussianVisibleRestrictedBoltzmannMachine rbm = new GaussianVisibleRestrictedBoltzmannMachine("ProofOfConcept",
                 3, 1, new GaussianRndWeightsFactory(0.001, 0), heuristic, 0);
@@ -168,7 +168,7 @@ public class GaussianVisibleImplementation {
         heuristic.learningRate = 0.1;
         heuristic.constructiveDivergenceIndex = 1;
         heuristic.temperature = 1;
-        heuristic.numOfTrainingIterations = 5;
+        heuristic.batchSize = 5;
         heuristic.numofRunsBaseRBMItself = 3;
         heuristic.numOfRunsOfNetworkChimney = 3;
         List<RestrictedBoltzmannMachine> machines = new ArrayList<>(2);

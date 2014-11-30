@@ -51,7 +51,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         heuristic.learningRate = 0.1;
         heuristic.momentum = 0.1;
         heuristic.temperature = 1;
-        heuristic.numOfTrainingIterations = 1;
+        heuristic.batchSize = 1;
         heuristic.constructiveDivergenceIndex = 1;
         BinaryRestrictedBoltzmannMachine machine = new BinaryRestrictedBoltzmannMachine("RBM1",
                 database.getSizeOfVector(), 10,
@@ -63,7 +63,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         heuristic.learningRate = 0.1;
         heuristic.momentum = 0.1;
         heuristic.temperature = 1;
-        heuristic.numOfTrainingIterations = 3;
+        heuristic.batchSize = 3;
         heuristic.constructiveDivergenceIndex = 1;
         machine = new BinaryRestrictedBoltzmannMachine("RBM2", database.getSizeOfVector(), 10,
                 new GaussianRndWeightsFactory(0.01, seed), heuristic, seed);
@@ -74,7 +74,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         heuristic.learningRate = 0.1;
         heuristic.momentum = 0.1;
         heuristic.temperature = 1;
-        heuristic.numOfTrainingIterations = 10;
+        heuristic.batchSize = 10;
         heuristic.constructiveDivergenceIndex = 1;
         machine = new BinaryRestrictedBoltzmannMachine("RBM3", database.getSizeOfVector(), 10,
                 new GaussianRndWeightsFactory(0.01, seed), heuristic, seed);
@@ -85,7 +85,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         heuristic.learningRate = 0.1;
         heuristic.momentum = 0.1;
         heuristic.temperature = 1;
-        heuristic.numOfTrainingIterations = 50;
+        heuristic.batchSize = 50;
         heuristic.constructiveDivergenceIndex = 1;
         machine = new BinaryRestrictedBoltzmannMachine("RBM4", database.getSizeOfVector(), 10,
                 new GaussianRndWeightsFactory(0.01, seed), heuristic, seed);
@@ -96,7 +96,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         heuristic.learningRate = 0.1;
         heuristic.momentum = 0.1;
         heuristic.temperature = 1;
-        heuristic.numOfTrainingIterations = 100;
+        heuristic.batchSize = 100;
         heuristic.constructiveDivergenceIndex = 1;
         machine = new BinaryRestrictedBoltzmannMachine("RBM5", database.getSizeOfVector(), 10,
                 new GaussianRndWeightsFactory(0.01, seed), heuristic, seed);
