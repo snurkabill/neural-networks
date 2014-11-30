@@ -39,6 +39,7 @@ public abstract class NetworkManager {
         this.LOGGER = LoggerFactory.getLogger(neuralNetwork.getName());
         this.database = database;
         this.heuristicCalculator = heuristicCalculator;
+        checkVectorSizes();
         // TODO: general EVALUATOR!
         if (neuralNetwork instanceof BinaryRestrictedBoltzmannMachine) {
             this.targetMaker = new SeparableTargetValues(new SigmoidFunction(), database.getNumberOfClasses());
@@ -90,6 +91,8 @@ public abstract class NetworkManager {
     protected abstract void test();
 
     protected abstract void processResults();
+
+    protected abstract void checkVectorSizes();
 
     public NetworkResults getTestResults() {
         return this.results.get(this.results.size() - 1);

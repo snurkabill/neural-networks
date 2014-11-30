@@ -76,4 +76,14 @@ public class BinaryDeepBeliefNetworkManager extends NetworkManager {
         super.results.add(new SupervisedNetworkResults(super.learnedVectorsBeforeTest,
                 globalError, super.learningTimeBeforeTest, percentageSuccess));
     }
+
+    @Override
+    protected void checkVectorSizes() {
+        if (neuralNetwork.getSizeOfInputVector() != database.getSizeOfVector()) {
+            throw new IllegalArgumentException("Size of input vector is different from number of classes");
+        }
+        if (neuralNetwork.getSizeOfOutputVector() != database.getNumberOfClasses()) {
+            throw new IllegalArgumentException("Size of output vector is different from number of classes");
+        }
+    }
 }

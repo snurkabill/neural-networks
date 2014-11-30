@@ -16,12 +16,6 @@ public class FeedForwardNetworkManager extends NetworkManager {
     public FeedForwardNetworkManager(NeuralNetwork neuralNetwork, Database database,
                                      HeuristicCalculator heuristicCalculator) {
         super(neuralNetwork, database, heuristicCalculator);
-        if (neuralNetwork.getSizeOfOutputVector() != database.getNumberOfClasses()) {
-            throw new IllegalArgumentException("Size of output vector is different from number of classes");
-        }
-        if (neuralNetwork.getSizeOfInputVector() != database.getSizeOfVector()) {
-            throw new IllegalArgumentException("Size of input vector is different from vectors in database");
-        }
     }
 
     @Override
@@ -71,5 +65,15 @@ public class FeedForwardNetworkManager extends NetworkManager {
     protected void processResults() {
         super.results.add(new SupervisedNetworkResults(super.learnedVectorsBeforeTest,
                 globalError, super.learningTimeBeforeTest, percentageSuccess));
+    }
+
+    @Override
+    protected void checkVectorSizes() {
+        if (neuralNetwork.getSizeOfOutputVector() != database.getNumberOfClasses()) {
+            throw new IllegalArgumentException("Size of output vector is different from number of classes");
+        }
+        if (neuralNetwork.getSizeOfInputVector() != database.getSizeOfVector()) {
+            throw new IllegalArgumentException("Size of input vector is different from vectors in database");
+        }
     }
 }

@@ -74,4 +74,5 @@ public class SupervisedRBMManager extends RestrictedBoltzmannMachineManager {
                 globalError, super.learningTimeBeforeTest, percentageSuccess));
     }
 
+
 }
