@@ -36,7 +36,6 @@ public class MnistExampleFFNN {
     public static final int OUTPUT_SIZE = 10;
     public static final int[] hiddenLayers = {200};
 
-
     public static void hugeRBMBenchmark() throws IOException {
         long seed = 0;
         MnistDatasetReader reader = getReader(FULL_MNIST_SIZE, true);
@@ -125,37 +124,50 @@ public class MnistExampleFFNN {
                 FFNNHeuristic.createDefaultHeuristic(), new ParametrizedHyperbolicTangens());
         NetworkManager manager = new FeedForwardNetworkManager(network, database, null);
 
+        HeuristicRBM heuristic = HeuristicRBM.createStartingHeuristicParams();
         BinaryRestrictedBoltzmannMachine machine =
-                new BinaryRestrictedBoltzmannMachine("RBM basicHeuristic",
-                        (database.getSizeOfVector() + database.getNumberOfClasses()), 50,
+                new BinaryRestrictedBoltzmannMachine("RBM 1",
+                        (database.getSizeOfVector() + database.getNumberOfClasses()), 200,
                         new GaussianRndWeightsFactory(weightsScale, seed),
-                        HeuristicRBM.createStartingHeuristicParams(), seed);
+                        heuristic, seed);
         NetworkManager manager_rbm = new SupervisedRBMManager(machine, database, seed, null,
                 new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
 
-        /*HeuristicRBM heuristic = HeuristicRBM.createStartingHeuristicParams();
-        machine = new BinaryRestrictedBoltzmannMachine("RBM heurCalculator",
-                (database.getSizeOfVector() + database.getNumberOfClasses()), 100,
+        heuristic = HeuristicRBM.createStartingHeuristicParams();
+        heuristic.batchSize = 3;
+        heuristic.constructiveDivergenceIndex = 3;
+        machine = new BinaryRestrictedBoltzmannMachine("RBM 3",
+                (database.getSizeOfVector() + database.getNumberOfClasses()), 200,
                 new GaussianRndWeightsFactory(weightsScale, seed),
                 heuristic, seed);
         NetworkManager manager_rbm2 = new SupervisedRBMManager(machine, database, seed,null,
                 new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
-*/
-        /*machine = new BinaryRestrictedBoltzmannMachine("RBM myHeuristic_low",
-                (database.getSizeOfVector() + database.getNumberOfClasses()), 150,
-                        new GaussianRndWeightsFactory(weightsScale, seed), 
-                        HeuristicRBM.createBasicHeuristicParams(), seed);
-        NetworkManager manager_rbm3 = new BinaryRBMManager(machine, database, seed, 5, null);
-		
-		machine = new BinaryRestrictedBoltzmannMachine("RBM myHeuristic", 
+
+        heuristic = HeuristicRBM.createStartingHeuristicParams();
+        heuristic.batchSize = 10;
+        heuristic.learningRate = 0.05;
+        heuristic.constructiveDivergenceIndex = 3;
+        machine = new BinaryRestrictedBoltzmannMachine("RBM 10",
+                (database.getSizeOfVector() + database.getNumberOfClasses()), 200,
+                        new GaussianRndWeightsFactory(weightsScale, seed),
+                        heuristic, seed);
+        NetworkManager manager_rbm3 = new SupervisedRBMManager(machine, database, seed,null,
+                new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
+
+        heuristic = HeuristicRBM.createStartingHeuristicParams();
+        heuristic.batchSize = 50;
+        heuristic.learningRate = 0.2;
+        heuristic.constructiveDivergenceIndex = 3;
+		machine = new BinaryRestrictedBoltzmannMachine("RBM 50",
 				(database.getSizeOfVector() + database.getNumberOfClasses()), 200,
                         new GaussianRndWeightsFactory(weightsScale, seed), 
-                        HeuristicRBM.createBasicHeuristicParams(), seed);
-        NetworkManager manager_rbm4 = new BinaryRBMManager(machine, database, seed, 5, null);*/
+                        heuristic, seed);
+        NetworkManager manager_rbm4 = new SupervisedRBMManager(machine, database, seed,null,
+                new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
 
         MasterNetworkManager superManager = new MasterNetworkManager("MNIST",
-                Arrays.asList(manager, manager_rbm/*, manager_rbm2, manager_rbm3, manager_rbm4*/));
-        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(2, 1000, superManager);
+                Arrays.asList(manager, manager_rbm, manager_rbm2, manager_rbm3, manager_rbm4));
+        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(30, 10000, superManager);
         benchmarker.benchmark();
     }
 
