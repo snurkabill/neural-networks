@@ -19,8 +19,17 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
     protected final double[] hiddenBias;
     protected final double[][] weights;
     private final double[][] deltaWeights;
+    private final double[] deltaVisibleBias;
+    private final double[] deltaHiddenBias;
 
     private HeuristicRBM heuristic;
+    private int numOfVectorsInBatch;
+    private final double[][] diffWeights;
+    private final double[][] reconWeights;
+    private final double[] diffVisibleBiases;
+    private final double[] reconVisibleBiases;
+    private final double[] diffHiddenBiases;
+    private final double[] reconHiddenBiases;
 
     public RestrictedBoltzmannMachine(String name, int numOfVisible, int numOfHidden, WeightsFactory wFactory,
                                       HeuristicRBM heuristic, long seed) {
@@ -35,14 +44,16 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
         this.visibleBias = new double[numOfVisible];
         this.hiddenNeurons = new double[numOfHidden];
         this.hiddenBias = new double[numOfHidden];
-        this.weights = new double[numOfVisible][];
-        for (int i = 0; i < numOfVisible; i++) {
-            this.weights[i] = new double[numOfHidden];
-        }
-        this.deltaWeights = new double[numOfVisible][];
-        for (int i = 0; i < numOfVisible; i++) {
-            this.deltaWeights[i] = new double[numOfHidden];
-        }
+        this.diffWeights = new double[sizeOfVisibleVector][sizeOfHiddenVector];
+        this.reconWeights = new double[sizeOfVisibleVector][sizeOfHiddenVector];
+        this.weights = new double[sizeOfVisibleVector][sizeOfHiddenVector];
+        this.deltaWeights = new double[sizeOfVisibleVector][sizeOfHiddenVector];
+        this.diffVisibleBiases = new double[sizeOfVisibleVector];
+        this.reconVisibleBiases = new double[sizeOfVisibleVector];
+        this.diffHiddenBiases = new double[sizeOfHiddenVector];
+        this.reconHiddenBiases = new double[sizeOfHiddenVector];
+        this.deltaVisibleBias = new double[sizeOfVisibleVector];
+        this.deltaHiddenBias = new double[sizeOfHiddenVector];
         wFactory.setWeights(weights);
         wFactory.setWeights(visibleBias);
         wFactory.setWeights(hiddenBias);
@@ -105,24 +116,90 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
     protected abstract void calcHiddenNeurons();
 
     public void trainMachine(double[] inputVals) {
-        LOGGER.trace("Training machine started! InputVectorLength {}, sizeOfVisibleVector {}"
-                , inputVals.length, sizeOfVisibleVector);
-        if (inputVals.length != sizeOfVisibleVector) {
-            throw new IllegalArgumentException("Wrong size of inputVector");
-        }
-        double[][] diffWeights = runMachine(FIX_VISIBLE, inputVals);
-        double[][] reconWeights = runMachine(heuristic.constructiveDivergenceIndex, inputVals);
+        //double[] hiddenProbbabilities = new double[sizeOfHiddenVector];
+        // ================================================================================
+        // data
+        // ================================================================================
+        runMachine(FIX_VISIBLE, inputVals);
+
+        /*for (int i = 0; i < sizeOfHiddenVector; i++) {
+            hiddenProbbabilities[i] = calcProbabilityOfPositiveOutput(calcHiddenPotential(i));
+        }*/
         for (int i = 0; i < sizeOfVisibleVector; i++) {
             for (int j = 0; j < sizeOfHiddenVector; j++) {
-                diffWeights[i][j] -= reconWeights[i][j];
+                this.diffWeights[i][j] += visibleNeurons[i] * hiddenNeurons[j]; //hiddenProbbabilities[j];
+            }
+        }
+        for (int i = 0; i < sizeOfHiddenVector; i++) {
+            this.diffHiddenBiases[i] += hiddenNeurons[i];
+        }
+        // ================================================================================
+        // reconstruction
+        // ================================================================================
+        runMachine(heuristic.constructiveDivergenceIndex, inputVals);
+        /*for (int i = 0; i < sizeOfHiddenVector; i++) {
+            hiddenProbbabilities[i] = calcProbabilityOfPositiveOutput(calcHiddenPotential(i));
+        }*/
+        for (int i = 0; i < sizeOfVisibleVector; i++) {
+            for (int j = 0; j < sizeOfHiddenVector; j++) {
+                this.reconWeights[i][j] += visibleNeurons[i] * hiddenNeurons[j]; // hiddenProbbabilities[j];
             }
         }
         for (int i = 0; i < sizeOfVisibleVector; i++) {
-            for (int j = 0; j < sizeOfHiddenVector; j++) {
-                deltaWeights[i][j] = (heuristic.learningRate / super.temperature) * diffWeights[i][j] +
-                        heuristic.momentum * deltaWeights[i][j];
-                weights[i][j] -= deltaWeights[i][j];
+            this.reconVisibleBiases[i] += inputVals[i] - visibleNeurons[i];
+        }
+        for (int i = 0; i < sizeOfHiddenVector; i++) {
+            this.reconHiddenBiases[i] += hiddenNeurons[i];
+        }
+
+        numOfVectorsInBatch++;
+        if(numOfVectorsInBatch >= heuristic.batchSize) {
+            for (int i = 0; i < sizeOfVisibleVector; i++) {
+                for (int j = 0; j < sizeOfHiddenVector; j++) {
+                    this.diffWeights[i][j] /= heuristic.batchSize;
+                    this.reconWeights[i][j] /= heuristic.batchSize;
+                }
             }
+            for (int i = 0; i < sizeOfVisibleVector; i++) {
+                this.reconVisibleBiases[i] /= heuristic.batchSize;
+            }
+            for (int i = 0; i < sizeOfHiddenVector; i++) {
+                this.diffHiddenBiases[i] /= heuristic.batchSize;
+                this.reconHiddenBiases[i] /= heuristic.batchSize;
+            }
+            for (int i = 0; i < sizeOfVisibleVector; i++) {
+                for (int j = 0; j < sizeOfHiddenVector; j++) {
+                    deltaWeights[i][j] = (heuristic.learningRate / super.temperature) *
+                            (this.diffWeights[i][j] - this.reconWeights[i][j]) +
+                            heuristic.momentum * deltaWeights[i][j];
+                    weights[i][j] -= deltaWeights[i][j];
+                }
+            }
+            for (int i = 0; i < sizeOfVisibleVector; i++) {
+                deltaVisibleBias[i] = (heuristic.learningRate / super.temperature) * reconVisibleBiases[i] +
+                        heuristic.momentum * deltaVisibleBias[i];
+                visibleBias[i] -= deltaVisibleBias[i];
+            }
+            for (int i = 0; i < sizeOfHiddenVector; i++) {
+                deltaHiddenBias[i] = (heuristic.learningRate / super.temperature) *
+                        (diffHiddenBiases[i] - reconHiddenBiases[i]) +
+                        heuristic.momentum * deltaHiddenBias[i];
+                hiddenBias[i] -= deltaHiddenBias[i];
+            }
+            for (int i = 0; i < sizeOfVisibleVector; i++) {
+                for (int j = 0; j < sizeOfHiddenVector; j++) {
+                    this.diffWeights[i][j] = 0.0;
+                    this.reconWeights[i][j] = 0.0;
+                }
+            }
+            for (int i = 0; i < sizeOfVisibleVector; i++) {
+                reconVisibleBiases[i] = 0.0;
+            }
+            for (int i = 0; i < sizeOfHiddenVector; i++) {
+                reconHiddenBiases[i] = 0.0;
+                diffHiddenBiases[i] = 0.0;
+            }
+            numOfVectorsInBatch = 0;
         }
     }
 
@@ -130,34 +207,16 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
         this.trainMachine(visibleNeurons);
     }
 
-    private double[][] runMachine(int iterations, double[] inputVals) {
+    private void runMachine(int iterations, double[] inputVals) {
         LOGGER.trace("Machine runs {} iterations", iterations);
-        double[][] weightExpected = new double[sizeOfVisibleVector][sizeOfHiddenVector];
-        for (int i = 0; i < heuristic.numOfTrainingIterations; i++) {
-            constrastiveDivergence(iterations, inputVals);
-            for (int j = 0; j < sizeOfVisibleVector; j++) {
-                for (int k = 0; k < sizeOfHiddenVector; k++) {
-                    weightExpected[j][k] += visibleNeurons[j] * hiddenNeurons[k];
-                }
-            }
-        }
-        for (int i = 0; i < sizeOfVisibleVector; i++) {
-            for (int j = 0; j < sizeOfHiddenVector; j++) {
-                weightExpected[i][j] /= heuristic.numOfTrainingIterations;
-            }
-        }
-        return weightExpected;
-    }
-
-    public abstract double[] reconstructNext();
-
-    protected void constrastiveDivergence(int index, double[] inputVals) {
         setVisibleNeurons(inputVals);
         calcHiddenNeurons();
-        for (int i = 0; i < index; i++) {
+        for (int i = 0; i < iterations; i++) {
             machineStepInverse();
         }
     }
+
+    public abstract double[] reconstructNext();
 
     protected void machineStepInverse() {
         calcVisibleNeurons();
