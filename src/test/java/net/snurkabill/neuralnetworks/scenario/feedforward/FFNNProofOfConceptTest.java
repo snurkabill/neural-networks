@@ -15,7 +15,7 @@ import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
-public class ProofOfConceptTest extends LogicFunctions {
+public class FFNNProofOfConceptTest extends LogicFunctions {
 
     @Test
     public void and() {
@@ -93,7 +93,6 @@ public class ProofOfConceptTest extends LogicFunctions {
         testingSet.put(0, xor);
         testingSet.put(1, noise);
         Database database = new Database(0, trainingSet, testingSet, "Database");
-        // TODO: examine why the F**** xor needs 3 hidden neurons, this is wrong! :/
         List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 3, database.getNumberOfClasses());
         FFNNHeuristic heuristic = new FFNNHeuristic();
         heuristic.learningRate = 0.01;
