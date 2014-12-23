@@ -135,30 +135,27 @@ public class GeneralFunctionalityTest {
                 0.0, manager.getTestResults().getComparableSuccess(), 0.00001);
     }
 
-    @Ignore
     @Test
     public void learningBinaryDBN() {
         long seed = 0;
         double weightsScale = 0.01;
-        Database database = createDatabase(2000, true);
+        Database database = createDatabase(60_000, true);
         HeuristicDBN heuristic = new HeuristicDBN();
         heuristic.momentum = 0.1;
         heuristic.learningRate = 0.1;
         heuristic.constructiveDivergenceIndex = 1;
         heuristic.temperature = 1;
         heuristic.batchSize = 5;
-        heuristic.numofRunsBaseRBMItself = 3;
-        heuristic.numOfRunsOfNetworkChimney = 3;
         List<RestrictedBoltzmannMachine> machines = new ArrayList<>(2);
-        machines.add(new BinaryRestrictedBoltzmannMachine("InnerRBM", database.getSizeOfVector(), 300,
+        machines.add(new BinaryRestrictedBoltzmannMachine("InnerRBM", database.getSizeOfVector(), 500,
                 new GaussianRndWeightsFactory(weightsScale, seed), heuristic, seed));
-        machines.add(new BinaryRestrictedBoltzmannMachine("InnerRBM", 300, 200,
+        machines.add(new BinaryRestrictedBoltzmannMachine("InnerRBM2", 500, 500,
                 new GaussianRndWeightsFactory(weightsScale, seed), heuristic, seed));
 
         StuckedRBM stuckedRBMs = new StuckedRBM(machines, "Stucked RBM");
-        StuckedRBMTrainer.train(stuckedRBMs, database, 10000, 10000);
+        StuckedRBMTrainer.train(stuckedRBMs, database, 100000, 100000);
 
-        BinaryDeepBeliefNetwork DBN = new BinaryDeepBeliefNetwork("DBN", database.getNumberOfClasses(), 1000,
+        BinaryDeepBeliefNetwork DBN = new BinaryDeepBeliefNetwork("DBN", database.getNumberOfClasses(), 2000,
                 new GaussianRndWeightsFactory(weightsScale, seed), heuristic, 0, stuckedRBMs);
 
         NetworkManager manager = new BinaryDeepBeliefNetworkManager(DBN, database, null);

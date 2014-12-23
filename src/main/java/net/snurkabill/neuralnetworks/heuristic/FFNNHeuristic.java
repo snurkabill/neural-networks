@@ -9,7 +9,7 @@ public class FFNNHeuristic extends Heuristic {
     public double KILLING_ETA_COEFF;
 
     public FFNNHeuristic() {
-        this.learningRate = 1;
+        this.learningRate = 0.1;
     }
 
     public static FFNNHeuristic createDefaultHeuristic() {

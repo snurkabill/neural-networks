@@ -37,7 +37,7 @@ public class BinaryDeepBeliefNetwork extends BinaryRestrictedBoltzmannMachine im
             networkChimney.calculateNetwork(inputVector);
             double[] tmp = networkChimney.getOutputValues();
             for (int j = 0; j < outputFromChimney.length; j++) {
-                outputFromChimney[i] += tmp[i];
+                outputFromChimney[j] += tmp[j];
             }
         }
         for (int i = 0; i < outputFromChimney.length; i++) {
