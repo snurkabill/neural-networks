@@ -31,5 +31,9 @@ public class SupervisedBenchmarker {
                 ReportMaker.SortBy.BY_TIME, ReportMaker.Picking.PICK_SUCCESS);
         ReportMaker.chart(new File("results_iterationsXsuccess.png"), manager.getResults(), manager.getNameOfProblem(),
                 ReportMaker.SortBy.BY_ITERATIONS, ReportMaker.Picking.PICK_SUCCESS);
+        ReportMaker.chart(new File("results_timeXerror.png"), manager.getResults(), manager.getNameOfProblem(),
+                ReportMaker.SortBy.BY_TIME, ReportMaker.Picking.PICK_ERROR);
+        ReportMaker.chart(new File("results_iterationsXerror.png"), manager.getResults(), manager.getNameOfProblem(),
+                ReportMaker.SortBy.BY_ITERATIONS, ReportMaker.Picking.PICK_ERROR);
     }
 }
