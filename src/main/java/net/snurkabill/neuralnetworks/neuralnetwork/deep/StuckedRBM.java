@@ -22,10 +22,7 @@ public class StuckedRBM implements DeepNetwork {
             tmpName = tmpName.concat("->" + level.getSizeOfOutputVector());
         }
         this.name = name;
-        if (levels.size() == 1) {
-            throw new IllegalArgumentException("StuckedRBM does not support one level of RMBs, use one RBM instead for "
-                    + "same effect");
-        } else if (levels.size() <= 0) {
+        if (levels.size() <= 0) {
             throw new IllegalArgumentException("Wrong number of levels");
         }
         this.levels = levels;
