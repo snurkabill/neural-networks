@@ -23,7 +23,8 @@ public class Database<T extends DataItem> {
     private final String name;
     private final int sizeOfVector;
 
-    public Database(long seed, Map<Integer, List<T>> trainingSet, Map<Integer, List<T>> testingSet, String name) {
+    public Database(long seed, Map<Integer, List<T>> trainingSet, Map<Integer, List<T>> testingSet, String name,
+                    boolean applyFilter) {
         if (trainingSet.size() != testingSet.size()) {
             throw new IllegalArgumentException("TrainingSet has different size than testingSet");
         }
@@ -31,9 +32,12 @@ public class Database<T extends DataItem> {
         this.name = name;
         this.random = new Random();
         this.random.setSeed(seed);
-        boolean[] filter = makeFilterForRemovingRedundantDimensions(trainingSet);
+
+        boolean[] filter = makeFilterForRemovingRedundantDimensions(trainingSet, applyFilter);
         this.trainingSet = applyFilterOnDatasetForDimReduction(filter, trainingSet);
         this.testingSet = applyFilterOnDatasetForDimReduction(filter, testingSet);
+
+
         this.numberOfClasses = this.trainingSet.size();
         this.testingSetIterator = new HashMap<>(this.trainingSet.size(), 1);
         this.trainingSetIterator = new HashMap<>(this.trainingSet.size(), 1);
@@ -47,7 +51,7 @@ public class Database<T extends DataItem> {
         LOGGER.info("Database {} created!", name);
     }
 
-    private boolean[] makeFilterForRemovingRedundantDimensions(Map<Integer, List<T>> trainingDataset) {
+    private boolean[] makeFilterForRemovingRedundantDimensions(Map<Integer, List<T>> trainingDataset, boolean apply) {
         LOGGER.info("Making filter for removing redundant dimensions on dataset");
         if (trainingDataset.isEmpty()) {
             throw new IllegalArgumentException("Training dataset is empty!");
@@ -59,14 +63,20 @@ public class Database<T extends DataItem> {
         }
         double[] tmpSnapshot = new double[trainingDataset.get(0).get(0).data.length];
         boolean[] isChanged = new boolean[trainingDataset.get(0).get(0).data.length];
-        System.arraycopy(trainingDataset.get(0).get(0).data, 0, tmpSnapshot, 0, tmpSnapshot.length);
-        for (int i = 0; i < trainingDataset.size(); i++) {
-            for (int j = 0; j < trainingDataset.get(i).size(); j++) {
-                for (int k = 0; k < tmpSnapshot.length; k++) {
-                    if (tmpSnapshot[k] != trainingDataset.get(i).get(j).data[k]) {
-                        isChanged[k] = true;
+        if(apply) {
+            System.arraycopy(trainingDataset.get(0).get(0).data, 0, tmpSnapshot, 0, tmpSnapshot.length);
+            for (int i = 0; i < trainingDataset.size(); i++) {
+                for (int j = 0; j < trainingDataset.get(i).size(); j++) {
+                    for (int k = 0; k < tmpSnapshot.length; k++) {
+                        if (tmpSnapshot[k] != trainingDataset.get(i).get(j).data[k]) {
+                            isChanged[k] = true;
+                        }
                     }
                 }
+            }
+        } else {
+            for (int i = 0; i < isChanged.length; i++) {
+                isChanged[i] = true;
             }
         }
         LOGGER.info("Filter is done!");
@@ -254,7 +264,7 @@ public class Database<T extends DataItem> {
         }
         long time2 = System.currentTimeMillis();
         LOGGER.info("Loading database done, took: {}", time2 - time1);
-        return new Database(seed, trainingSet, testingSet, baseFile.getName());
+        return new Database(seed, trainingSet, testingSet, baseFile.getName(), false);
     }
 
     public synchronized Iterator<T> getTestingIteratorOverClass(int i) {

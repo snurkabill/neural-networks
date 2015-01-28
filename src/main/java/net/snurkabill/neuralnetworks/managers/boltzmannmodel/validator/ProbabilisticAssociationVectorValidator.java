@@ -1,8 +1,8 @@
 package net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator;
 
-import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
+import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.BoltzmannMachine;
 
-public class ProbabilisticAssociationVectorValidator implements RestrictedBoltzmannMachineValidator {
+public class ProbabilisticAssociationVectorValidator implements BoltzmannMachineValidator {
 
     protected int iterations;
 
@@ -19,7 +19,7 @@ public class ProbabilisticAssociationVectorValidator implements RestrictedBoltzm
     }
 
     @Override
-    public double validate(double[] inputVector, RestrictedBoltzmannMachine machine) {
+    public double validate(double[] inputVector, BoltzmannMachine machine) {
         double distributiveError = 0.0;
         for (int i = 0; i < iterations; i++) {
             distributiveError += machine.calcError(inputVector, inputVector);

@@ -1,12 +1,19 @@
 package net.snurkabill.neuralnetworks.examples.gaussianvisible;
 
+import net.snurkabill.neuralnetworks.benchmark.SupervisedBenchmarker;
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
 import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
+import net.snurkabill.neuralnetworks.managers.MasterNetworkManager;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
+import net.snurkabill.neuralnetworks.managers.boltzmannmodel.SupervisedRBMManager;
+import net.snurkabill.neuralnetworks.managers.boltzmannmodel.UnsupervisedRBMManager;
+import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.PartialProbabilisticAssociationVectorValidator;
+import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.ProbabilisticAssociationVectorValidator;
 import net.snurkabill.neuralnetworks.managers.feedforward.FeedForwardNetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.BinaryRestrictedBoltzmannMachine;
+import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.ContinuousRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.GaussianVisibleRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.OnlineFeedForwardNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.ParametrizedHyperbolicTangens;
@@ -118,20 +125,20 @@ public class GaussianVisibleImplementation {
 
     }
 
-    private static List<DataItem> createNoise() {
-        return Arrays.asList(
-                new DataItem(new double[]{0.0, 1.0}),
-                new DataItem(new double[]{1.0, 0.0}),
-                new DataItem(new double[]{0.0, 0.0})
-        );
+    private static List<DataItem> createNotAnd() {
+        List<DataItem> list = new ArrayList<>();
+        list.add(new DataItem(new double[]{0.0, 1.0}));
+        list.add(new DataItem(new double[]{1.0, 0.0}));
+        list.add(new DataItem(new double[]{0.0, 0.0}));
+        return list;
     }
 
     private static List<DataItem> createAnd() {
-        return Arrays.asList(
-                new DataItem(new double[]{1.0, 1.0}),
-                new DataItem(new double[]{1.0, 1.0}),
-                new DataItem(new double[]{1.0, 1.0})
-        );
+        List<DataItem> list = new ArrayList<>();
+        list.add(new DataItem(new double[]{1.0, 1.0}));
+        list.add(new DataItem(new double[]{1.0, 1.0}));
+        list.add(new DataItem(new double[]{1.0, 1.0}));
+        return list;
     }
 
     public static void shitFuck() {
@@ -139,20 +146,17 @@ public class GaussianVisibleImplementation {
         double weightsScale = 0.01;
         Map<Integer, List<DataItem>> trainingSet = new HashMap<>();
         Map<Integer, List<DataItem>> testingSet = new HashMap<>();
-
         trainingSet.put(0, createAnd());
-        trainingSet.put(1, createNoise());
-
+        trainingSet.put(1, createNotAnd());
         List<DataItem> and = new ArrayList<>();
         List<DataItem> noise = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10000; i++) {
             and.addAll(createAnd());
-            noise.addAll(createNoise());
+            noise.addAll(createNotAnd());
         }
         testingSet.put(0, and);
-        testingSet.put(1, createNoise());
-
-        Database database = new Database(0, trainingSet, testingSet, "Database");
+        testingSet.put(1, noise);
+        Database database = new Database(0, trainingSet, testingSet, "Database", true);
 
         List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 2, database.getNumberOfClasses());
         FFNNHeuristic heuristic = new FFNNHeuristic();
@@ -163,31 +167,30 @@ public class GaussianVisibleImplementation {
                 heuristic, new ParametrizedHyperbolicTangens());
         NetworkManager manager = new FeedForwardNetworkManager(network, database, null);
 
-        /*HeuristicDBN heuristic = new HeuristicDBN();
-        heuristic.momentum = 0.1;
-        heuristic.learningRate = 0.1;
-        heuristic.constructiveDivergenceIndex = 1;
-        heuristic.temperature = 1;
-        heuristic.batchSize = 5;
-        heuristic.numofRunsBaseRBMItself = 3;
-        heuristic.numOfRunsOfNetworkChimney = 3;
-        List<RestrictedBoltzmannMachine> machines = new ArrayList<>(2);
-        machines.add(new BinaryRestrictedBoltzmannMachine("InnerRBM", database.getSizeOfVector(), 10,
-                new GaussianRndWeightsFactory(weightsScale, seed), heuristic, seed));
-        machines.add(new BinaryRestrictedBoltzmannMachine("InnerRBM", 10, 10,
-                new GaussianRndWeightsFactory(weightsScale, seed), heuristic, seed));
+        ContinuousRestrictedBoltzmannMachine rbm = new ContinuousRestrictedBoltzmannMachine("contRBM",
+                database.getSizeOfVector(), 10, new GaussianRndWeightsFactory(0, 0),
+                HeuristicRBM.createStartingHeuristicParams(), 0);
 
-        StuckedRBM stuckedRBMs = new StuckedRBM(machines, "Stucked RBM");
-        StuckedRBMTrainer.train(stuckedRBMs, database, 10000, 10000);
+        NetworkManager manager2 = new UnsupervisedRBMManager(rbm, database, 0, null,
+                new ProbabilisticAssociationVectorValidator(5));
 
-        BinaryDeepBeliefNetwork DBN = new BinaryDeepBeliefNetwork("DBN", database.getNumberOfClasses(), 2,
-                new GaussianRndWeightsFactory(weightsScale, seed), heuristic, 0, stuckedRBMs);
+        manager2.supervisedTraining(10);
+        manager2.testNetwork();
+        System.out.println("Results " + manager2.getTestResults().getComparableSuccess());
 
-        NetworkManager manager = new BinaryDeepBeliefNetworkManager(DBN, database, null);*/
+        manager2.supervisedTraining(10);
+        manager2.testNetwork();
+        System.out.println("Results " + manager2.getTestResults().getComparableSuccess());
 
-        manager.supervisedTraining(10000);
+        manager2.supervisedTraining(1000);
+        manager2.testNetwork();
+        System.out.println("Results " + manager2.getTestResults().getComparableSuccess());
+
+        /*manager.supervisedTraining(10000);
         manager.testNetwork();
-        System.out.println("Results " + manager.getTestResults().getComparableSuccess());
+        System.out.println("Results " + manager.getTestResults().getComparableSuccess());*/
+
+
     }
 
 }

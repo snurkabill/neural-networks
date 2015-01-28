@@ -109,7 +109,7 @@ public class GeneralFunctionalityTest {
         testingSet.put(0, and);
         testingSet.put(1, noise);
 
-        Database database = new Database(0, trainingSet, testingSet, "Database");
+        Database database = new Database(0, trainingSet, testingSet, "Database", true);
 
         HeuristicDBN heuristic = new HeuristicDBN();
         heuristic.momentum = 0.1;
@@ -153,18 +153,17 @@ public class GeneralFunctionalityTest {
                 new GaussianRndWeightsFactory(weightsScale, seed), heuristic, seed));
 
         StuckedRBM stuckedRBMs = new StuckedRBM(machines, "Stucked RBM");
-        StuckedRBMTrainer.train(stuckedRBMs, database, 100000, 100000);
+        StuckedRBMTrainer.train(stuckedRBMs, database, 100, 100);
 
         BinaryDeepBeliefNetwork DBN = new BinaryDeepBeliefNetwork("DBN", database.getNumberOfClasses(), 2000,
                 new GaussianRndWeightsFactory(weightsScale, seed), heuristic, 0, stuckedRBMs);
 
         NetworkManager manager = new BinaryDeepBeliefNetworkManager(DBN, database, null);
-        manager.supervisedTraining(10000);
+        manager.supervisedTraining(100);
         manager.testNetwork();
         assertEquals("Result:" + manager.getTestResults().getComparableSuccess(),
                 true, 63.0 == manager.getTestResults().getComparableSuccess());
     }
-
 
     private Database createDatabase(int numOfElements, boolean binary) {
         File labels = new File("src/test/resources/mnist/train-labels-idx1-ubyte.gz");
@@ -172,7 +171,7 @@ public class GeneralFunctionalityTest {
         MnistDatasetReader reader;
         try {
             reader = new MnistDatasetReader(labels, images, numOfElements, binary);
-            return new Database(0, reader.getTrainingData(), reader.getTestingData(), "MNIST");
+            return new Database(0, reader.getTrainingData(), reader.getTestingData(), "MNIST", true);
         } catch (IOException ex) {
             throw new IllegalArgumentException(ex);
         }

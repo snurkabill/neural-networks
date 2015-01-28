@@ -6,6 +6,7 @@ import net.snurkabill.neuralnetworks.data.database.LabelledItem;
 import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.ProbabilisticAssociationVectorValidator;
 import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
+import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.BoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.results.UnsupervisedNetworkResults;
 
@@ -32,7 +33,7 @@ public class UnsupervisedRBMManager extends RestrictedBoltzmannMachineManager {
 
     @Override
     protected void test() {
-        RestrictedBoltzmannMachine machine = (RestrictedBoltzmannMachine) neuralNetwork;
+        BoltzmannMachine machine = (BoltzmannMachine) neuralNetwork;
         globalError = 0.0;
         int all = 0;
         for (int _class = 0; _class < database.getNumberOfClasses(); _class++) {
@@ -49,5 +50,12 @@ public class UnsupervisedRBMManager extends RestrictedBoltzmannMachineManager {
     protected void processResults() {
         super.results.add(new UnsupervisedNetworkResults(super.learnedVectorsBeforeTest,
                 globalError, super.learningTimeBeforeTest, 0, 0));
+    }
+
+    @Override
+    protected void checkVectorSizes() {
+        if (neuralNetwork.getSizeOfInputVector() != database.getSizeOfVector()) {
+            throw new IllegalArgumentException("Size of input vector is different from number of classes");
+        }
     }
 }

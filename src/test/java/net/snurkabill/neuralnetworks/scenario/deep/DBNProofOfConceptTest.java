@@ -39,7 +39,7 @@ public class DBNProofOfConceptTest extends LogicFunctions {
         }
         testingSet.put(0, and);
         testingSet.put(1, noise);
-        Database database = new Database(seed, trainingSet, testingSet, "Database");
+        Database database = new Database(seed, trainingSet, testingSet, "Database", true);
 
         double weightsScale = 0.1;
 

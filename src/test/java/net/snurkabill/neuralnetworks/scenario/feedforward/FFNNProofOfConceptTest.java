@@ -32,7 +32,7 @@ public class FFNNProofOfConceptTest extends LogicFunctions {
         }
         testingSet.put(0, and);
         testingSet.put(1, noise);
-        Database database = new Database(0, trainingSet, testingSet, "Database");
+        Database database = new Database(0, trainingSet, testingSet, "Database", true);
         List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 2, database.getNumberOfClasses());
         FFNNHeuristic heuristic = new FFNNHeuristic();
         heuristic.learningRate = 0.01;
@@ -62,7 +62,7 @@ public class FFNNProofOfConceptTest extends LogicFunctions {
         }
         testingSet.put(0, or);
         testingSet.put(1, noise);
-        Database database = new Database(0, trainingSet, testingSet, "Database");
+        Database database = new Database(0, trainingSet, testingSet, "Database", true);
         List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 2, database.getNumberOfClasses());
         FFNNHeuristic heuristic = new FFNNHeuristic();
         heuristic.learningRate = 0.01;
@@ -92,7 +92,7 @@ public class FFNNProofOfConceptTest extends LogicFunctions {
         }
         testingSet.put(0, xor);
         testingSet.put(1, noise);
-        Database database = new Database(0, trainingSet, testingSet, "Database");
+        Database database = new Database(0, trainingSet, testingSet, "Database", true);
         List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 3, database.getNumberOfClasses());
         FFNNHeuristic heuristic = new FFNNHeuristic();
         heuristic.learningRate = 0.01;

@@ -14,12 +14,4 @@ public abstract class RestrictedBoltzmannMachineManager extends NetworkManager {
         super(neuralNetwork, database, heuristicCalculator);
         this.seed = seed;
     }
-
-    @Override
-    protected void checkVectorSizes() {
-        if (neuralNetwork.getSizeOfInputVector() != database.getNumberOfClasses() + database.getSizeOfVector()) {
-            throw new IllegalArgumentException("Size of input vector is different from number of classes");
-        }
-    }
-
 }

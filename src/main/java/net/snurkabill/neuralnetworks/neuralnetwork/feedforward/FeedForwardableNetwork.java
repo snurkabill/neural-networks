@@ -145,6 +145,11 @@ public abstract class FeedForwardableNetwork extends NeuralNetwork {
     }
 
     @Override
+    public boolean isStochastic() {
+        return false;
+    }
+
+    @Override
     public String determineWorkingName() {
         String workingName = super.determineWorkingName();
         workingName.concat(" { ");

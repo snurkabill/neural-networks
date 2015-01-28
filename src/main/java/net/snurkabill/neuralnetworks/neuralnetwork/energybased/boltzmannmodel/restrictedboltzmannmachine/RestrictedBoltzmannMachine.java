@@ -26,7 +26,6 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
     private int numOfVectorsInBatch;
     private final double[][] diffWeights;
     private final double[][] reconWeights;
-    private final double[] diffVisibleBiases;
     private final double[] reconVisibleBiases;
     private final double[] diffHiddenBiases;
     private final double[] reconHiddenBiases;
@@ -48,7 +47,6 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
         this.reconWeights = new double[sizeOfVisibleVector][sizeOfHiddenVector];
         this.weights = new double[sizeOfVisibleVector][sizeOfHiddenVector];
         this.deltaWeights = new double[sizeOfVisibleVector][sizeOfHiddenVector];
-        this.diffVisibleBiases = new double[sizeOfVisibleVector];
         this.reconVisibleBiases = new double[sizeOfVisibleVector];
         this.diffHiddenBiases = new double[sizeOfHiddenVector];
         this.reconHiddenBiases = new double[sizeOfHiddenVector];
@@ -69,6 +67,18 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
         return weightsLayer;
     }
 
+    public double[][] getWeights() {
+        return weights;
+    }
+
+    public double[] getVisibleBiases() {
+        return visibleBias;
+    }
+
+    public double[] getHiddenBias() {
+        return hiddenBias;
+    }
+
     public double[] getVisibleNeurons() {
         return visibleNeurons;
     }
@@ -87,6 +97,14 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
         }
         LOGGER.trace("Setting visible neurons");
         System.arraycopy(visibleNeurons, 0, this.visibleNeurons, 0, sizeOfVisibleVector);
+    }
+
+    public void setHiddenNeurons(double[] hiddenNeurons) {
+        if (hiddenNeurons.length != sizeOfHiddenVector) {
+            throw new IllegalArgumentException("HiddenNeurons have different size!");
+        }
+        LOGGER.trace("Setting hidden neurons");
+        System.arraycopy(hiddenNeurons, 0, this.hiddenNeurons, 0, sizeOfHiddenVector);
     }
 
     public double[] getHiddenNeurons() {

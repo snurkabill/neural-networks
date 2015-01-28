@@ -120,7 +120,7 @@ public class OnlineDatabaseSampler {
     }
 
     public Database createDatabase(String name, long seed) {
-        return new Database(seed, trainingSet, testingSet, name);
+        return new Database(seed, trainingSet, testingSet, name, true);
     }
 
     public Database createDatabase(String name) {

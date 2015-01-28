@@ -4,7 +4,9 @@ package net.snurkabill.neuralnetworks.managers;
 import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
+import net.snurkabill.neuralnetworks.neuralnetwork.deep.DeepRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.BinaryRestrictedBoltzmannMachine;
+import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.ContinuousRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardableNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.SigmoidFunction;
 import net.snurkabill.neuralnetworks.results.NetworkResults;
@@ -41,7 +43,12 @@ public abstract class NetworkManager {
         this.heuristicCalculator = heuristicCalculator;
         checkVectorSizes();
         // TODO: general EVALUATOR!
+        // TODO: implement getTransferFunction into rbm!
         if (neuralNetwork instanceof BinaryRestrictedBoltzmannMachine) {
+            this.targetMaker = new SeparableTargetValues(new SigmoidFunction(), database.getNumberOfClasses());
+        } else if (neuralNetwork instanceof ContinuousRestrictedBoltzmannMachine) {
+            this.targetMaker = new SeparableTargetValues(new SigmoidFunction(), database.getNumberOfClasses());
+        } else if (neuralNetwork instanceof DeepRestrictedBoltzmannMachine) {
             this.targetMaker = new SeparableTargetValues(new SigmoidFunction(), database.getNumberOfClasses());
         } else {
             this.targetMaker = new SeparableTargetValues(((FeedForwardableNetwork) neuralNetwork).getTransferFunction(),

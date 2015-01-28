@@ -8,7 +8,7 @@ public abstract class NeuralNetwork {
 
     private final String name;
     protected final String workingName;
-    protected final Logger LOGGER;
+    protected transient final Logger LOGGER;
 
     public NeuralNetwork(String name) {
         this.name = name;
@@ -46,6 +46,8 @@ public abstract class NeuralNetwork {
     public abstract Heuristic getHeuristic();
 
     public abstract void setHeuristic(Heuristic heuristic);
+
+    public abstract boolean isStochastic();
 
     public String determineWorkingName() {
         return "Name: " + this.name;
