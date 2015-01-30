@@ -41,7 +41,8 @@ public abstract class NetworkManager {
         this.heuristicCalculator = heuristicCalculator;
         checkVectorSizes();
         // TODO: general EVALUATOR!
-        this.targetMaker = new SeparableTargetValues(new SigmoidFunction(), database.getNumberOfClasses());
+        this.targetMaker = new SeparableTargetValues(neuralNetwork.getTransferFunction(),
+				database.getNumberOfClasses());
         this.infiniteTrainingIterator = database.getInfiniteTrainingIterator();
     }
 
