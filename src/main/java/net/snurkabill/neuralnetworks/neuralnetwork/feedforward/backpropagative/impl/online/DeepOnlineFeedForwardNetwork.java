@@ -1,7 +1,7 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online;
 
 import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardableNetwork;
+import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.TransferFunctionCalculator;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 
@@ -9,11 +9,11 @@ import java.util.List;
 
 public class DeepOnlineFeedForwardNetwork extends OnlineFeedForwardNetwork {
 
-    private final FeedForwardableNetwork inputTransformation;
+    private final FeedForwardNetwork inputTransformation;
 
     public DeepOnlineFeedForwardNetwork(String name, List<Integer> topology, WeightsFactory wFactory,
                                         FFNNHeuristic heuristic, TransferFunctionCalculator transferFunction,
-                                        FeedForwardableNetwork inputTransformation) {
+                                        FeedForwardNetwork inputTransformation) {
         super(name, topology, wFactory, heuristic, transferFunction);
         this.inputTransformation = inputTransformation;
     }
