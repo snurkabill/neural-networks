@@ -18,6 +18,7 @@ public class SupervisedBenchmarker {
     }
 
     public void benchmark() {
+        manager.testNetworks();
         for (int i = 0; i < numOfRuns; i++) {
             manager.trainNetworks(sizeOfTrainingBatch);
             manager.testNetworks();
