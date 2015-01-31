@@ -1,13 +1,14 @@
 package net.snurkabill.neuralnetworks.weights.weightfactory;
 
 import net.snurkabill.neuralnetworks.neuralnetwork.deep.DeepBoltzmannMachine;
+import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.TransferFunctionCalculator;
 
 public class FineTuningWeightsFactory implements WeightsFactory {
 
     private final double[][][] weights;
 
     public FineTuningWeightsFactory(DeepBoltzmannMachine deepBoltzmannMachine, int numOfClassesInLinearClassifier,
-                                    long seed) {
+                                    long seed, TransferFunctionCalculator transferFunctionCalculator) {
         double[][][] dbmWeights = deepBoltzmannMachine.getWeights();
         int numOfLayers = dbmWeights.length + 1;
         this.weights = new double[numOfLayers][][]; // +1 for linearClassifier layer
@@ -22,7 +23,7 @@ public class FineTuningWeightsFactory implements WeightsFactory {
             weights[weights.length - 1][i] = new double[numOfClassesInLinearClassifier];
         }
 
-        WeightsFactory factory = new SmartGaussianRndWeightsFactory(deepBoltzmannMachine.getTransferFunction(), seed);
+        WeightsFactory factory = new SmartGaussianRndWeightsFactory(transferFunctionCalculator, seed);
         for (int i = 0; i < numOfClassesInLinearClassifier; i++) {
             factory.setWeights(this.weights[numOfLayers - 1][i]);
         }
