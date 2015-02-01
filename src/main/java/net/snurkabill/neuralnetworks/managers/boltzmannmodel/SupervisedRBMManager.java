@@ -74,5 +74,11 @@ public class SupervisedRBMManager extends RestrictedBoltzmannMachineManager {
                 globalError, super.learningTimeBeforeTest, percentageSuccess));
     }
 
+    @Override
+    protected void checkVectorSizes() {
+        if (neuralNetwork.getSizeOfInputVector() != database.getNumberOfClasses() + database.getSizeOfVector()) {
+            throw new IllegalArgumentException("Size of input vector is different from number of classes");
+        }
+    }
 
 }
