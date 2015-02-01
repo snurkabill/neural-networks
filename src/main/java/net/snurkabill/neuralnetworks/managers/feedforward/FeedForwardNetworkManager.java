@@ -6,10 +6,10 @@ import net.snurkabill.neuralnetworks.data.database.LabelledItem;
 import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardNetwork;
+import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.BackPropagative;
 import net.snurkabill.neuralnetworks.results.SupervisedNetworkResults;
 
 import java.util.Iterator;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.BackPropagative;
 
 public class FeedForwardNetworkManager extends NetworkManager {
 
@@ -25,7 +25,7 @@ public class FeedForwardNetworkManager extends NetworkManager {
             LabelledItem item = infiniteTrainingIterator.next();
             neuralNetwork.calculateNetwork(item.data);
             double[] targetValues = targetMaker.getTargetValues(item._class);
-            ((BackPropagative)neuralNetwork).trainNetwork(targetValues);
+            ((BackPropagative) neuralNetwork).trainNetwork(targetValues);
             learnedPatterns[item._class]++;
         }
         if (LOGGER.isDebugEnabled()) {

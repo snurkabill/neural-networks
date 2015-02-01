@@ -121,12 +121,12 @@ public class Database<T extends DataItem> {
         return testingSetIterator.get(i).next();
     }
 
-    public T getTrainingData(int i) {
+    private T getTrainingData(int i) {
         List<T> list = trainingSet.get(i);
         return list.get(random.nextInt(list.size()));
     }
 
-    public T getTestingData(int i) {
+    private T getTestingData(int i) {
         List<T> list = testingSet.get(i);
         return list.get(random.nextInt(list.size()));
     }
@@ -271,6 +271,30 @@ public class Database<T extends DataItem> {
 
     public synchronized InfiniteSimpleTrainSetIterator getInfiniteTrainingIterator() {
         return new InfiniteSimpleTrainSetIterator(trainingSet);
+    }
+
+    public synchronized InfiniteRandomTrainSetIterator getInfiniteRandomTrainingIterator() {
+        return new InfiniteRandomTrainSetIterator();
+    }
+
+    public class InfiniteRandomTrainSetIterator implements Iterator {
+
+        @Override
+        public boolean hasNext() {
+            return true;
+        }
+
+        @Override
+        public LabelledItem next() {
+            int randomNum = random.nextInt(trainingSet.size());
+            LabelledItem item = new LabelledItem(getTrainingData(randomNum), randomNum);
+            return item;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
     }
 
     public class InfiniteSimpleTrainSetIterator implements Iterator {
