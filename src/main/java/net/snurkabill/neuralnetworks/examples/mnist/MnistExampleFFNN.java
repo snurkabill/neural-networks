@@ -117,7 +117,7 @@ public class MnistExampleFFNN {
         }
         topology.add(database.getNumberOfClasses());
 
-        double weightsScale = 0.01;
+        double weightsScale = 1;
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
                 /*new GaussianRndWeightsFactory(weightsScale, seed)*/
                 new SmartGaussianRndWeightsFactory(new ParametrizedHyperbolicTangens(), seed),
@@ -125,13 +125,16 @@ public class MnistExampleFFNN {
         NetworkManager manager = new FeedForwardNetworkManager(network, database, null);
 
         HeuristicRBM heuristic = HeuristicRBM.createStartingHeuristicParams();
+        heuristic.batchSize = 30;
+        heuristic.learningRate = 0.1;
+        heuristic.momentum = 0.3;
         BinaryRestrictedBoltzmannMachine machine =
                 new BinaryRestrictedBoltzmannMachine("RBM 1",
                         (database.getSizeOfVector() + database.getNumberOfClasses()), 200,
                         new GaussianRndWeightsFactory(weightsScale, seed),
                         heuristic, seed);
         NetworkManager manager_rbm = new SupervisedRBMManager(machine, database, seed, null,
-                new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
+                new PartialProbabilisticAssociationVectorValidator(1, database.getNumberOfClasses()));
 
         /*heuristic = HeuristicRBM.createStartingHeuristicParams();
         heuristic.batchSize = 3;
@@ -166,8 +169,8 @@ public class MnistExampleFFNN {
                 new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
 */
         MasterNetworkManager superManager = new MasterNetworkManager("MNIST",
-                Arrays.asList(manager, manager_rbm/*, manager_rbm2, manager_rbm3, manager_rbm4*/));
-        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(2, 10000, superManager);
+                Arrays.asList(manager/*, manager_rbm, manager_rbm2, manager_rbm3, manager_rbm4*/));
+        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(10, 10000, superManager);
         benchmarker.benchmark();
     }
 

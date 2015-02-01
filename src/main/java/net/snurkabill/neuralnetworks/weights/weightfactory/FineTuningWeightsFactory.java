@@ -1,6 +1,5 @@
 package net.snurkabill.neuralnetworks.weights.weightfactory;
 
-import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.deep.DeepBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.TransferFunctionCalculator;
@@ -10,7 +9,7 @@ public class FineTuningWeightsFactory implements WeightsFactory {
     private final double[][][] weights;
 
     public FineTuningWeightsFactory(DeepBoltzmannMachine deepBoltzmannMachine, FeedForwardNetwork backNetwork) {
-        if(deepBoltzmannMachine.getForwardedValues().length != backNetwork.getWeights()[0].length - 1) {
+        if (deepBoltzmannMachine.getForwardedValues().length != backNetwork.getWeights()[0].length - 1) {
             throw new IllegalArgumentException("No compatibility!");
         }
         double[][][] dbmWeights = deepBoltzmannMachine.getWeights();

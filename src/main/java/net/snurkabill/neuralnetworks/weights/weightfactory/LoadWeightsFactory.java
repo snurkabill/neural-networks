@@ -1,7 +1,5 @@
 package net.snurkabill.neuralnetworks.weights.weightfactory;
 
-import net.snurkabill.neuralnetworks.neuralnetwork.deep.DeepBoltzmannMachine;
-
 import java.io.File;
 import java.util.List;
 

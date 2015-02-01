@@ -45,7 +45,7 @@ public abstract class NeuralNetwork {
 
     public abstract TransferFunctionCalculator getTransferFunction();
 
-	public abstract void trainNetwork(double[] targetValues);
+    public abstract void trainNetwork(double[] targetValues);
 
     public abstract Heuristic getHeuristic();
 
