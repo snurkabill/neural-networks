@@ -1,11 +1,5 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.deep;
 
-import net.snurkabill.neuralnetworks.heuristic.HeuristicDBN;
-import net.snurkabill.neuralnetworks.managers.deep.GreedyLayerWiseStackedDeepRBMTrainer;
-import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.BinaryRestrictedBoltzmannMachine;
-import net.snurkabill.neuralnetworks.utilities.Utilities;
-import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
-
 //public class BinaryDeepBeliefNetwork extends BinaryRestrictedBoltzmannMachine implements DeepNetwork {
 public class BinaryDeepBeliefNetwork {
     /*private final GreedyLayerWiseStackedDeepRBMTrainer networkChimney;

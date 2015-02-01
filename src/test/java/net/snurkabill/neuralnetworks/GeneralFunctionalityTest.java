@@ -4,27 +4,23 @@ import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.data.mnist.MnistDatasetReader;
 import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
-import net.snurkabill.neuralnetworks.heuristic.HeuristicDBN;
 import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.SupervisedRBMManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.PartialProbabilisticAssociationVectorValidator;
-import net.snurkabill.neuralnetworks.managers.deep.BinaryDeepBeliefNetworkManager;
-import net.snurkabill.neuralnetworks.managers.deep.GreedyLayerWiseStackedDeepRBMTrainer;
 import net.snurkabill.neuralnetworks.managers.feedforward.FeedForwardNetworkManager;
-import net.snurkabill.neuralnetworks.neuralnetwork.deep.BinaryDeepBeliefNetwork;
-import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.BinaryRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.OnlineFeedForwardNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.ParametrizedHyperbolicTangens;
 import net.snurkabill.neuralnetworks.weights.weightfactory.GaussianRndWeightsFactory;
 import net.snurkabill.neuralnetworks.weights.weightfactory.SmartGaussianRndWeightsFactory;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -33,7 +29,7 @@ public class GeneralFunctionalityTest {
     @Test
     public void learningFeedForward() {
         long seed = 0;
-        Database database = createDatabase(2000, false);
+        Database database = createDatabase(2000, false, seed);
         List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 200, database.getNumberOfClasses());
         FFNNHeuristic heuristic = new FFNNHeuristic();
         heuristic.learningRate = 0.01;
@@ -45,14 +41,14 @@ public class GeneralFunctionalityTest {
         manager.supervisedTraining(1000);
         manager.testNetwork();
         assertEquals("Result:" + manager.getTestResults().getComparableSuccess(),
-                true, 61.5 == manager.getTestResults().getComparableSuccess());
+                true, 68.5 == manager.getTestResults().getComparableSuccess());
     }
 
     @Test
     public void learningBinaryRBM() {
         long seed = 0;
         double weightsScale = 0.01;
-        Database database = createDatabase(2000, true);
+        Database database = createDatabase(2000, true, seed);
         HeuristicRBM heuristic = new HeuristicRBM();
         heuristic.momentum = 0.1;
         heuristic.learningRate = 0.1;
@@ -69,7 +65,8 @@ public class GeneralFunctionalityTest {
         manager.supervisedTraining(1000);
         manager.testNetwork();
         assertEquals("Result:" + manager.getTestResults().getComparableSuccess(),
-                true, 63.0 == manager.getTestResults().getComparableSuccess());
+                //true, 63.0 == manager.getTestResults().getComparableSuccess());
+                true, 54.0 == manager.getTestResults().getComparableSuccess());
     }
 
     private List<DataItem> createNoise() {
@@ -88,13 +85,13 @@ public class GeneralFunctionalityTest {
         return list;
     }
 
-    private Database createDatabase(int numOfElements, boolean binary) {
+    private Database createDatabase(int numOfElements, boolean binary, long seed) {
         File labels = new File("src/test/resources/mnist/train-labels-idx1-ubyte.gz");
         File images = new File("src/test/resources/mnist/train-images-idx3-ubyte.gz");
         MnistDatasetReader reader;
         try {
             reader = new MnistDatasetReader(labels, images, numOfElements, binary);
-            return new Database(0, reader.getTrainingData(), reader.getTestingData(), "MNIST");
+            return new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST");
         } catch (IOException ex) {
             throw new IllegalArgumentException(ex);
         }

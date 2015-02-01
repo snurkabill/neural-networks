@@ -3,7 +3,6 @@ package net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.
 import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
 import net.snurkabill.neuralnetworks.neuralnetwork.FeedForwardable;
 import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.TransferFunctionCalculator;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 
@@ -22,7 +21,7 @@ public class DeepOnlineFeedForwardNetwork extends OnlineFeedForwardNetwork {
 
     @Override
     public int getSizeOfInputVector() {
-        return ((NeuralNetwork)inputTransformation).getSizeOfInputVector();
+        return ((NeuralNetwork) inputTransformation).getSizeOfInputVector();
     }
 
     @Override

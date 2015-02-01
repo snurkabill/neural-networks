@@ -162,7 +162,7 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine implem
         }
 
         numOfVectorsInBatch++;
-        if(numOfVectorsInBatch >= heuristic.batchSize) {
+        if (numOfVectorsInBatch >= heuristic.batchSize) {
             for (int i = 0; i < sizeOfVisibleVector; i++) {
                 for (int j = 0; j < sizeOfHiddenVector; j++) {
                     this.diffWeights[i][j] /= heuristic.batchSize;

@@ -1,5 +1,6 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.deep;
 
+import net.snurkabill.neuralnetworks.heuristic.Heuristic;
 import net.snurkabill.neuralnetworks.neuralnetwork.FeedForwardable;
 import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
@@ -8,7 +9,6 @@ import net.snurkabill.neuralnetworks.utilities.DeepNetUtils;
 import net.snurkabill.neuralnetworks.utilities.Utilities;
 
 import java.util.List;
-import net.snurkabill.neuralnetworks.heuristic.Heuristic;
 
 public class DeepBoltzmannMachine extends NeuralNetwork implements DeepNetwork, FeedForwardable {
 
@@ -83,7 +83,7 @@ public class DeepBoltzmannMachine extends NeuralNetwork implements DeepNetwork, 
 
     @Override
     public void getOutputValues(double[] outputValues) {
-        if(outputValues.length != this.sizeOfInputVector) {
+        if (outputValues.length != this.sizeOfInputVector) {
             throw new IllegalArgumentException("Wrong dimension of vector");
         }
         double[] output = machines.get(0).getVisibleNeurons();
@@ -95,19 +95,19 @@ public class DeepBoltzmannMachine extends NeuralNetwork implements DeepNetwork, 
         return machines.get(0).getTransferFunction();
     }
 
-	@Override
-	public void trainNetwork(double[] targetValues) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
+    @Override
+    public void trainNetwork(double[] targetValues) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
-	@Override
-	public Heuristic getHeuristic() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
+    @Override
+    public Heuristic getHeuristic() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
-	@Override
-	public void setHeuristic(Heuristic heuristic) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
+    @Override
+    public void setHeuristic(Heuristic heuristic) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }
