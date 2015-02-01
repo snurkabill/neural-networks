@@ -2,13 +2,13 @@ package net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative;
 
 import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
 import net.snurkabill.neuralnetworks.heuristic.Heuristic;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardableNetwork;
+import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.TransferFunctionCalculator;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 
 import java.util.List;
 
-public abstract class BackPropagative extends FeedForwardableNetwork {
+public abstract class BackPropagative extends FeedForwardNetwork {
 
     protected FFNNHeuristic heuristic;
 

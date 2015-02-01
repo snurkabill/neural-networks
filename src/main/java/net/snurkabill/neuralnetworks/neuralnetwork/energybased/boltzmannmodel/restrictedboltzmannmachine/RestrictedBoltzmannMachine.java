@@ -2,11 +2,12 @@ package net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.r
 
 import net.snurkabill.neuralnetworks.heuristic.Heuristic;
 import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
+import net.snurkabill.neuralnetworks.neuralnetwork.FeedForwardable;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.BoltzmannMachine;
 import net.snurkabill.neuralnetworks.utilities.Utilities;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 
-public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
+public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine implements FeedForwardable {
 
     private static final int FIX_VISIBLE = 0;
 
@@ -87,6 +88,14 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
         }
         LOGGER.trace("Setting visible neurons");
         System.arraycopy(visibleNeurons, 0, this.visibleNeurons, 0, sizeOfVisibleVector);
+    }
+
+    public void setHiddenNeurons(double[] hiddenNeurons) {
+        if (hiddenNeurons.length != sizeOfHiddenVector) {
+            throw new IllegalArgumentException("HiddenNeurons have different size!");
+        }
+        LOGGER.trace("Setting hidden neurons");
+        System.arraycopy(hiddenNeurons, 0, this.hiddenNeurons, 0, sizeOfHiddenVector);
     }
 
     public double[] getHiddenNeurons() {
@@ -285,15 +294,32 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine {
 
     @Override
     protected double calcOutputVectorError(double[] targetValues) {
-        if (targetValues.length != sizeOfVisibleVector) {
-            throw new IllegalArgumentException();
-        }
         return Utilities.calcError(targetValues, visibleNeurons);
     }
 
     @Override
     public void trainNetwork(double[] targetValues) {
         this.trainMachine(targetValues);
+    }
+
+    @Override
+    public void feedForward(double[] inputVector) {
+        this.setVisibleNeurons(inputVector);
+        this.activateHiddenNeurons();
+    }
+
+    @Override
+    public double[] getForwardedValues() {
+        return this.getHiddenNeurons();
+    }
+
+    public double[][] getWeights() {
+        double[][] weightsSnapshot = new double[this.sizeOfVisibleVector + 1][this.sizeOfHiddenVector];
+        for (int i = 0; i < this.sizeOfVisibleVector; i++) {
+            System.arraycopy(this.weights[i], 0, weightsSnapshot[i], 0, this.sizeOfHiddenVector);
+        }
+        System.arraycopy(hiddenBias, 0, weightsSnapshot[sizeOfVisibleVector], 0, this.sizeOfHiddenVector);
+        return weightsSnapshot;
     }
 
     @Override

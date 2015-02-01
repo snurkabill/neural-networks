@@ -50,4 +50,11 @@ public class UnsupervisedRBMManager extends RestrictedBoltzmannMachineManager {
         super.results.add(new UnsupervisedNetworkResults(super.learnedVectorsBeforeTest,
                 globalError, super.learningTimeBeforeTest, 0, 0));
     }
+
+    @Override
+    protected void checkVectorSizes() {
+        if (neuralNetwork.getSizeOfInputVector() != database.getSizeOfVector()) {
+            throw new IllegalArgumentException("Size of input vector is different from number of classes");
+        }
+    }
 }

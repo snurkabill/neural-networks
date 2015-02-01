@@ -29,6 +29,7 @@ public class PartialProbabilisticAssociationVectorValidator extends Probabilisti
             // going backwards due to  unknown part of pattern is on the end
             for (int i = inputVector.length - 1, j = 0; j < sizeOfUnknownPartOfVector; i--, j++) {
                 sums[sizeOfUnknownPartOfVector - (j + 1)] += outputVals[i];
+                // TODO: fix me, correct way would be calculate erro from Utilities.calcError(sums and inputVector);
                 double diff = inputVector[i] - outputVals[i];
                 distributiveError += diff * diff;
             }

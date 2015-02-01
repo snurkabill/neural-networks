@@ -1,19 +1,20 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.deep;
 
 import net.snurkabill.neuralnetworks.heuristic.HeuristicDBN;
+import net.snurkabill.neuralnetworks.managers.deep.GreedyLayerWiseStackedDeepRBMTrainer;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.BinaryRestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.utilities.Utilities;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 
-public class BinaryDeepBeliefNetwork extends BinaryRestrictedBoltzmannMachine implements DeepNetwork {
-
-    private final StuckedRBM networkChimney;
+//public class BinaryDeepBeliefNetwork extends BinaryRestrictedBoltzmannMachine implements DeepNetwork {
+public class BinaryDeepBeliefNetwork {
+    /*private final GreedyLayerWiseStackedDeepRBMTrainer networkChimney;
     private final int sizeOfOutputVector;
     private final double[] temporaryOutputValues;
     private double[] transformedInput;
 
     public BinaryDeepBeliefNetwork(String name, int numberOfOutputValues, int numOfHidden, WeightsFactory wFactory,
-                                   HeuristicDBN heuristic, long seed, StuckedRBM networkChimney) {
+                                   HeuristicDBN heuristic, long seed, GreedyLayerWiseStackedDeepRBMTrainer networkChimney) {
         super(name, networkChimney.getSizeOfOutputVector() + numberOfOutputValues, numOfHidden,
                 wFactory, heuristic, seed);
         this.networkChimney = networkChimney;
@@ -96,5 +97,5 @@ public class BinaryDeepBeliefNetwork extends BinaryRestrictedBoltzmannMachine im
         System.arraycopy(transformedInput, 0, fullTargetValues, 0, transformedInput.length);
         System.arraycopy(targetValues, 0, fullTargetValues, transformedInput.length, sizeOfOutputVector);
         super.trainMachine(fullTargetValues);
-    }
+    }*/
 }

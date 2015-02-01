@@ -1,6 +1,7 @@
 package net.snurkabill.neuralnetworks.neuralnetwork;
 
 import net.snurkabill.neuralnetworks.heuristic.Heuristic;
+import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.TransferFunctionCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ public abstract class NeuralNetwork {
 
     public abstract void calculateNetwork(double[] inputVector);
 
+    // TODO: implement method right here
     protected abstract double calcOutputVectorError(double[] targetValues);
 
     public abstract int getSizeOfOutputVector();
@@ -41,7 +43,9 @@ public abstract class NeuralNetwork {
 
     public abstract void getOutputValues(double[] outputValues);
 
-    public abstract void trainNetwork(double[] targetValues);
+    public abstract TransferFunctionCalculator getTransferFunction();
+
+	public abstract void trainNetwork(double[] targetValues);
 
     public abstract Heuristic getHeuristic();
 

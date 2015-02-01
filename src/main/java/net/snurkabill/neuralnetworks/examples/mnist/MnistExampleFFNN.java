@@ -30,7 +30,7 @@ import java.util.Map;
 public class MnistExampleFFNN {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("MnistExample FFNN");
-    public static final String FILE_PATH = "../src/main/resources/mnist/";
+    public static final String FILE_PATH = "src/main/resources/mnist/";
     public static final int FULL_MNIST_SIZE = 60_000;
     public static final int INPUT_SIZE = 784;
     public static final int OUTPUT_SIZE = 10;
@@ -133,7 +133,7 @@ public class MnistExampleFFNN {
         NetworkManager manager_rbm = new SupervisedRBMManager(machine, database, seed, null,
                 new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
 
-        heuristic = HeuristicRBM.createStartingHeuristicParams();
+        /*heuristic = HeuristicRBM.createStartingHeuristicParams();
         heuristic.batchSize = 3;
         heuristic.constructiveDivergenceIndex = 3;
         machine = new BinaryRestrictedBoltzmannMachine("RBM 3",
@@ -164,10 +164,10 @@ public class MnistExampleFFNN {
                         heuristic, seed);
         NetworkManager manager_rbm4 = new SupervisedRBMManager(machine, database, seed,null,
                 new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
-
+*/
         MasterNetworkManager superManager = new MasterNetworkManager("MNIST",
-                Arrays.asList(manager, manager_rbm, manager_rbm2, manager_rbm3, manager_rbm4));
-        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(30, 10000, superManager);
+                Arrays.asList(manager, manager_rbm/*, manager_rbm2, manager_rbm3, manager_rbm4*/));
+        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(2, 10000, superManager);
         benchmarker.benchmark();
     }
 

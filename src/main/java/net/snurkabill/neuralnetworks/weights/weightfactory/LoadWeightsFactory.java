@@ -1,25 +1,27 @@
 package net.snurkabill.neuralnetworks.weights.weightfactory;
 
+import net.snurkabill.neuralnetworks.neuralnetwork.deep.DeepBoltzmannMachine;
+
 import java.io.File;
 import java.util.List;
 
-public class PretrainedWeightsFactory implements WeightsFactory {
+public class LoadWeightsFactory implements WeightsFactory {
 
     private double weights[][][];
 
-    public PretrainedWeightsFactory(File file) {
+    public LoadWeightsFactory(File file) {
         //TODO : load weights
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    public PretrainedWeightsFactory(List<double[][]> wInput) {
+    public LoadWeightsFactory(List<double[][]> wInput) {
         this.weights = new double[wInput.size()][][];
         for (int i = 0; i < wInput.size(); i++) {
             this.weights[i] = wInput.get(i);
         }
     }
 
-    public PretrainedWeightsFactory(double[][][] wInput) {
+    public LoadWeightsFactory(double[][][] wInput) {
         this.weights = wInput;
     }
 

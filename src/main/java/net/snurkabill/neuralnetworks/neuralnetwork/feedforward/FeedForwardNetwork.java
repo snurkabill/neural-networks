@@ -1,12 +1,13 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.feedforward;
 
+import net.snurkabill.neuralnetworks.neuralnetwork.FeedForwardable;
 import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.TransferFunctionCalculator;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 
 import java.util.List;
 
-public abstract class FeedForwardableNetwork extends NeuralNetwork {
+public abstract class FeedForwardNetwork extends NeuralNetwork implements FeedForwardable {
 
     private static final double ERROR_MODIFIER = 0.5;
 
@@ -19,8 +20,8 @@ public abstract class FeedForwardableNetwork extends NeuralNetwork {
     protected final double[][] neuronOutputValues;
     protected final double[][][] weights;
 
-    public FeedForwardableNetwork(String name, List<Integer> topology, WeightsFactory wFactory,
-                                  TransferFunctionCalculator transferFunction) {
+    public FeedForwardNetwork(String name, List<Integer> topology, WeightsFactory wFactory,
+                              TransferFunctionCalculator transferFunction) {
         super(name);
         if (topology.size() <= 1) {
             throw new IllegalArgumentException("Wrong topology of FFNN");
@@ -54,6 +55,7 @@ public abstract class FeedForwardableNetwork extends NeuralNetwork {
         LOGGER.info("Created Feed forwardable neural network {}", topology.toString());
     }
 
+    @Override
     public void feedForward(double[] inputVector) {
         System.arraycopy(inputVector, 0, neuronOutputValues[0], 0, sizeOfInputVector);
         feedForward();
@@ -71,6 +73,7 @@ public abstract class FeedForwardableNetwork extends NeuralNetwork {
         }
     }
 
+    @Override
     public TransferFunctionCalculator getTransferFunction() {
         return this.transferFunction;
     }
@@ -120,6 +123,11 @@ public abstract class FeedForwardableNetwork extends NeuralNetwork {
     }
 
     @Override
+    public double[] getForwardedValues() {
+        return getOutputValues();
+    }
+
+    @Override
     public void getOutputValues(double[] outputValues) {
         if (outputValues.length != sizeOfOutputVector) {
             throw new IllegalArgumentException();
@@ -142,6 +150,10 @@ public abstract class FeedForwardableNetwork extends NeuralNetwork {
     @Override
     public int getSizeOfInputVector() {
         return this.sizeOfInputVector;
+    }
+
+    public double[][][] getWeights() {
+        return this.weights;
     }
 
     @Override

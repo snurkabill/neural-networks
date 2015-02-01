@@ -5,15 +5,15 @@ import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.data.database.LabelledItem;
 import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
-import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardableNetwork;
+import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardNetwork;
 import net.snurkabill.neuralnetworks.results.SupervisedNetworkResults;
 
 import java.util.Iterator;
+import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.BackPropagative;
 
 public class FeedForwardNetworkManager extends NetworkManager {
 
-    public FeedForwardNetworkManager(NeuralNetwork neuralNetwork, Database database,
+    public FeedForwardNetworkManager(BackPropagative neuralNetwork, Database database,
                                      HeuristicCalculator heuristicCalculator) {
         super(neuralNetwork, database, heuristicCalculator);
     }
@@ -25,7 +25,7 @@ public class FeedForwardNetworkManager extends NetworkManager {
             LabelledItem item = infiniteTrainingIterator.next();
             neuralNetwork.calculateNetwork(item.data);
             double[] targetValues = targetMaker.getTargetValues(item._class);
-            neuralNetwork.trainNetwork(targetValues);
+            ((BackPropagative)neuralNetwork).trainNetwork(targetValues);
             learnedPatterns[item._class]++;
         }
         if (LOGGER.isDebugEnabled()) {
@@ -37,7 +37,7 @@ public class FeedForwardNetworkManager extends NetworkManager {
 
     @Override
     protected void test() {
-        FeedForwardableNetwork network = (FeedForwardableNetwork) super.neuralNetwork;
+        FeedForwardNetwork network = (FeedForwardNetwork) super.neuralNetwork;
         double[] targetValues = targetMaker.nullTargetValues();
         int[] successValuesCounter = new int[neuralNetwork.getSizeOfOutputVector()];
         globalError = 0.0;

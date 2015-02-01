@@ -4,8 +4,6 @@ package net.snurkabill.neuralnetworks.managers;
 import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
-import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.BinaryRestrictedBoltzmannMachine;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardableNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.SigmoidFunction;
 import net.snurkabill.neuralnetworks.results.NetworkResults;
 import net.snurkabill.neuralnetworks.results.ResultsSummary;
@@ -17,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.snurkabill.neuralnetworks.neuralnetwork.deep.DeepBoltzmannMachine;
 
 public abstract class NetworkManager {
 
@@ -32,6 +31,7 @@ public abstract class NetworkManager {
     protected int learnedVectorsBeforeTest;
     protected long learningTimeBeforeTest;
     private final HeuristicCalculator heuristicCalculator;
+	private boolean wasAlreadyTested;
 
     public NetworkManager(NeuralNetwork neuralNetwork, Database database,
                           HeuristicCalculator heuristicCalculator) {
@@ -41,16 +41,16 @@ public abstract class NetworkManager {
         this.heuristicCalculator = heuristicCalculator;
         checkVectorSizes();
         // TODO: general EVALUATOR!
-        if (neuralNetwork instanceof BinaryRestrictedBoltzmannMachine) {
-            this.targetMaker = new SeparableTargetValues(new SigmoidFunction(), database.getNumberOfClasses());
-        } else {
-            this.targetMaker = new SeparableTargetValues(((FeedForwardableNetwork) neuralNetwork).getTransferFunction(),
-                    database.getNumberOfClasses());
-        }
+        this.targetMaker = new SeparableTargetValues(neuralNetwork.getTransferFunction(),
+				database.getNumberOfClasses());
         this.infiniteTrainingIterator = database.getInfiniteTrainingIterator();
     }
 
     public void supervisedTraining(int numOfIterations) {
+		if((neuralNetwork instanceof DeepBoltzmannMachine)) {
+			LOGGER.warn("Neural network {} is already trained and can't be trained anymore, skipping");
+			return;
+		}
         if (numOfIterations < database.getNumberOfClasses()) {
             LOGGER.warn("Count of iterations for training([{}]) is smaller than number of classes of division([{}]). " +
                             "Uneffective training possible: setting numOfIterations to numberOfClasses", numOfIterations,
@@ -73,12 +73,16 @@ public abstract class NetworkManager {
     }
 
     public void testNetwork() {
+		if((neuralNetwork instanceof DeepBoltzmannMachine) && wasAlreadyTested) {
+			this.results.add(results.get(0)); // hardly coded! .... I don't like this
+		}
         timer.startTimer();
         test();
         timer.stopTimer();
         processResults();
         this.learnedVectorsBeforeTest = 0;
         this.learningTimeBeforeTest = 0;
+		this.wasAlreadyTested = true;
         LOGGER.info("Testing {} samples took {} seconds, {} samples/sec",
                 database.getTestSetSize(), timer.secondsSpent(), timer.samplesPerSec(database.getTestSetSize()));
         if (heuristicCalculator != null) {

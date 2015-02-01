@@ -3,25 +3,86 @@ package net.snurkabill.neuralnetworks.examples.mnist;
 import net.snurkabill.neuralnetworks.benchmark.SupervisedBenchmarker;
 import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.data.mnist.MnistDatasetReader;
+import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
 import net.snurkabill.neuralnetworks.heuristic.HeuristicDBN;
 import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
 import net.snurkabill.neuralnetworks.managers.MasterNetworkManager;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
+import net.snurkabill.neuralnetworks.managers.boltzmannmodel.SupervisedRBMManager;
+import net.snurkabill.neuralnetworks.managers.boltzmannmodel.UnsupervisedRBMManager;
+import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.PartialProbabilisticAssociationVectorValidator;
+import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.ProbabilisticAssociationVectorValidator;
 import net.snurkabill.neuralnetworks.managers.deep.BinaryDeepBeliefNetworkManager;
-import net.snurkabill.neuralnetworks.managers.deep.StuckedRBMTrainer;
+import net.snurkabill.neuralnetworks.managers.deep.GreedyLayerWiseStackedDeepRBMTrainer;
+import net.snurkabill.neuralnetworks.managers.feedforward.FeedForwardNetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.deep.BinaryDeepBeliefNetwork;
-import net.snurkabill.neuralnetworks.neuralnetwork.deep.StuckedRBM;
+import net.snurkabill.neuralnetworks.neuralnetwork.deep.DeepBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.BinaryRestrictedBoltzmannMachine;
+import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.DeepOnlineFeedForwardNetwork;
+import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.ParametrizedHyperbolicTangens;
+import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.SigmoidFunction;
+import net.snurkabill.neuralnetworks.weights.weightfactory.FineTuningWeightsFactory;
 import net.snurkabill.neuralnetworks.weights.weightfactory.GaussianRndWeightsFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.OnlineFeedForwardNetwork;
+import net.snurkabill.neuralnetworks.weights.weightfactory.LoadWeightsFactory;
+import net.snurkabill.neuralnetworks.weights.weightfactory.SmartGaussianRndWeightsFactory;
 
 public class DeepBeliefNetworkConcept extends MnistExampleFFNN {
 
-    public static void showMePowerOfDBN() {
+	public static void deepBoltzmannMachine() {
+		long seed = 10;
+        double weightsScale = 0.0;
+        MnistDatasetReader reader = getReader(FULL_MNIST_SIZE, true);
+        Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST");
+
+        List<Integer> topology = new ArrayList<>();
+        topology.add(database.getSizeOfVector());
+        topology.add(200);
+        topology.add(database.getNumberOfClasses());
+
+        HeuristicRBM heuristic = new HeuristicRBM();
+        heuristic.batchSize = 30;
+        heuristic.learningRate = 0.05;
+        heuristic.momentum = 0.0;
+        List<RestrictedBoltzmannMachine> rbms = new ArrayList<>();
+        rbms.add(new BinaryRestrictedBoltzmannMachine("1. level", topology.get(0), topology.get(1),
+                new GaussianRndWeightsFactory(weightsScale, seed), heuristic, seed));
+
+        GreedyLayerWiseStackedDeepRBMTrainer.train(rbms, Arrays.asList(50000), database);
+
+        DeepBoltzmannMachine dbm = new DeepBoltzmannMachine("dbm", rbms);
+
+        DeepOnlineFeedForwardNetwork lastLayerTrainer = new DeepOnlineFeedForwardNetwork("deep",
+                Arrays.asList(topology.get(1), topology.get(2)),
+                new SmartGaussianRndWeightsFactory(new ParametrizedHyperbolicTangens(), seed), FFNNHeuristic.createDefaultHeuristic(),
+                new ParametrizedHyperbolicTangens(), dbm);
+        NetworkManager manager = new FeedForwardNetworkManager(lastLayerTrainer, database, null);
+        manager.supervisedTraining(100000);
+        manager.testNetwork();
+        LOGGER.info("Deep online results: {}", manager.getTestResults().getComparableSuccess());
+
+        OnlineFeedForwardNetwork fineTuning = new OnlineFeedForwardNetwork("GreedyLayerWisePretrained-sigm", topology,
+                new FineTuningWeightsFactory(dbm, lastLayerTrainer),
+                FFNNHeuristic.createDefaultHeuristic(), new ParametrizedHyperbolicTangens());
+        NetworkManager manager3 = new FeedForwardNetworkManager(fineTuning, database, null);
+
+        OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
+                new SmartGaussianRndWeightsFactory(new ParametrizedHyperbolicTangens(), seed),
+                FFNNHeuristic.createDefaultHeuristic(), new ParametrizedHyperbolicTangens());
+        NetworkManager manager2 = new FeedForwardNetworkManager(network, database, null);
+
+        MasterNetworkManager master = new MasterNetworkManager("fine tunning", Arrays.asList(manager3, manager2));
+        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(100, 1000, master);
+        benchmarker.benchmark();
+	}
+	
+    /*public static void showMePowerOfDBN() {
         long seed = 0;
         double weightsScale = 0.001;
         MnistDatasetReader reader = getReader(FULL_MNIST_SIZE, true);
@@ -35,9 +96,9 @@ public class DeepBeliefNetworkConcept extends MnistExampleFFNN {
         rbms.add(new BinaryRestrictedBoltzmannMachine("2. level", 500, 500,
                 new GaussianRndWeightsFactory(weightsScale, seed), new HeuristicRBM(), seed));
 
-        StuckedRBM inputTransfer = new StuckedRBM(rbms, "NetworkChimney");
+        GreedyLayerWiseStackedDeepRBMTrainer inputTransfer = new GreedyLayerWiseStackedDeepRBMTrainer(rbms, "NetworkChimney");
 
-        StuckedRBMTrainer.train(inputTransfer, database, 2000, 2000);
+        net.snurkabill.neuralnetworks.managers.deep.StuckedRBMTrainer.train(inputTransfer, database, 2000, 2000);
 
         BinaryDeepBeliefNetwork theBeast = new BinaryDeepBeliefNetwork("theBeast", database.getNumberOfClasses(),
                 1000, new GaussianRndWeightsFactory(weightsScale, seed), new HeuristicDBN(), seed, inputTransfer);
@@ -52,6 +113,6 @@ public class DeepBeliefNetworkConcept extends MnistExampleFFNN {
         benchmarker.benchmark();
 
 
-    }
+    }*/
 
 }
