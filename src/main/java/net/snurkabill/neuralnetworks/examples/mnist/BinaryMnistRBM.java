@@ -1,0 +1,123 @@
+package net.snurkabill.neuralnetworks.examples.mnist;
+
+import net.snurkabill.neuralnetworks.data.database.DataItem;
+import net.snurkabill.neuralnetworks.data.database.Database;
+import net.snurkabill.neuralnetworks.data.mnist.MnistDatasetReader;
+import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
+import net.snurkabill.neuralnetworks.managers.NetworkManager;
+import net.snurkabill.neuralnetworks.managers.boltzmannmodel.UnsupervisedRBMManager;
+import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.ProbabilisticAssociationVectorValidator;
+import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.BinaryRestrictedBoltzmannMachine;
+import net.snurkabill.neuralnetworks.weights.weightfactory.GaussianRndWeightsFactory;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
+
+public class BinaryMnistRBM extends Canvas {
+    static int border = 10; // 10px
+
+    static int count = 0;
+
+    BinaryRestrictedBoltzmannMachine machine;
+    NetworkManager manager_rbm;
+
+    public BinaryMnistRBM() {
+
+        long seed = 0;
+        double weightsScale = 0.001;
+        MnistDatasetReader reader = MnistExampleFFNN.getReader(MnistExampleFFNN.FULL_MNIST_SIZE, true);
+        Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST");
+
+        HeuristicRBM heuristic = HeuristicRBM.createStartingHeuristicParams();
+        heuristic.batchSize = 30;
+        heuristic.learningRate = 0.1;
+        heuristic.momentum = 0.1;
+        machine = new BinaryRestrictedBoltzmannMachine("RBM 1",
+                        (database.getSizeOfVector()), 100,
+                        new GaussianRndWeightsFactory(weightsScale, seed),
+                        heuristic, seed);
+        manager_rbm = new UnsupervisedRBMManager(machine, database, seed, null,
+                new ProbabilisticAssociationVectorValidator(1));
+    }
+
+    void learn() {
+        manager_rbm.supervisedTraining(1000);
+    }
+
+    public void update() {
+        learn();
+        repaint();
+    }
+
+    public void paint(Graphics graphics__) {
+
+        BufferedImage in = new BufferedImage(28, 28, BufferedImage.TYPE_INT_RGB);
+
+        WritableRaster r = in.getRaster();
+        graphics__.drawImage(in, border, border, null);
+
+        int offset = border;
+            int buf = 28 + border + border;
+            for (int i = 0; i < machine.getWeights().length; i++) {
+                if (i % 10 == 0) {
+                    offset = border;
+                    buf += border + 56;
+                }
+
+                long[] start = new long[28 * 28];
+                for (int j = 0; j < start.length; j++)
+                    start[j] = machine.getWeights()[j][i] > 0 ?
+                            (Math.round(machine.getWeights()[i][j] * 255)) << 8 :
+                            ((Math.round(Math.abs(machine.getWeights()[i][j] * 255)) << 16));
+
+                BufferedImage out = new BufferedImage(28, 28, BufferedImage.TYPE_INT_RGB);
+
+                r = out.getRaster();
+                r.setDataElements(0, 0, 28, 28, start);
+
+                //Resize
+                BufferedImage newImage = new BufferedImage(56, 56, BufferedImage.TYPE_INT_RGB);
+
+                Graphics2D g2 = newImage.createGraphics();
+                try {
+                    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                            RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                    g2.clearRect(0, 0, 56, 56);
+                    g2.drawImage(out, 0, 0, 56, 56, null);
+                } finally {
+                    g2.dispose();
+                }
+                graphics__.drawImage(newImage, buf, offset, null);
+
+                offset += border + 28 * 2;
+            }
+        }
+
+
+    public static void start() {
+        JFrame frame = new JFrame("MINST Draw");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+
+        BinaryMnistRBM cnvs = new BinaryMnistRBM();
+
+        cnvs.setSize(1024, 768);
+        frame.add(cnvs);
+
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+
+        while (true) {
+            cnvs.update();
+            try {
+                count++;
+                if (count > 1000)
+                    Thread.sleep(2000);
+            } catch (InterruptedException e) {
+            }
+        }
+    }
+}

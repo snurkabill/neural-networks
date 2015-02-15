@@ -3,6 +3,8 @@ package net.snurkabill.neuralnetworks.examples.RBMProofOfConcept;
 import net.snurkabill.neuralnetworks.benchmark.SupervisedBenchmarker;
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.Database;
+import net.snurkabill.neuralnetworks.data.mnist.MnistDatasetReader;
+import net.snurkabill.neuralnetworks.examples.mnist.MnistExampleFFNN;
 import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
 import net.snurkabill.neuralnetworks.heuristic.Heuristic;
 import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
@@ -81,9 +83,9 @@ public class RBMTest {
         for (int i = 0; i < 100; i++) {
             manager.supervisedTraining(1000);
           //  manager2.supervisedTraining(1000);
-            manager.testNetwork();
+          //  manager.testNetwork();
           //  manager2.testNetwork();
-            LOGGER.info("Error: {}", manager.getTestResults().getComparableSuccess());
+//            LOGGER.info("Error: {}", manager.getTestResults().getComparableSuccess());
         }
         /*for (int i = 0; i < 100; i++) {
             LOGGER.info("Reconstructed: {}", rbm.reconstructNext());
@@ -97,7 +99,7 @@ public class RBMTest {
         DeepOnlineFeedForwardNetwork lastLayerTrainer = new DeepOnlineFeedForwardNetwork("deep",
                 Arrays.asList(topology.get(1), topology.get(2)),
                 new SmartGaussianRndWeightsFactory(new SigmoidFunction(), seed),linearHeuristics,
-                new SigmoidFunction(), dbm, 10);
+                new ParametrizedHyperbolicTangens(), dbm, 10);
         NetworkManager linearManager = new FeedForwardNetworkManager(lastLayerTrainer, database, null);
         linearManager.supervisedTraining(100_00);
         linearManager.testNetwork();
@@ -105,7 +107,7 @@ public class RBMTest {
 
         OnlineFeedForwardNetwork fineTuning = new OnlineFeedForwardNetwork("pretrained linear classifier", topology,
                 new FineTuningWeightsFactory(dbm, lastLayerTrainer),
-                FFNNHeuristic.createDefaultHeuristic(), new SigmoidFunction());
+                FFNNHeuristic.createDefaultHeuristic(), new ParametrizedHyperbolicTangens());
         NetworkManager manager3 = new FeedForwardNetworkManager(fineTuning, database, null);
 
         /*OnlineFeedForwardNetwork fineTuning2 = new OnlineFeedForwardNetwork("training whole machinery", topology,
@@ -121,8 +123,6 @@ public class RBMTest {
         MasterNetworkManager master = new MasterNetworkManager("fine tunning", Arrays.asList(manager3, /*manager4,*/ manager5));
         SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(1000, 1, master);
         benchmarker.benchmark();
-
-
     }
 }
 
