@@ -54,48 +54,78 @@ public class DeepBeliefNetworkConcept extends MnistExampleFFNN {
         trainingSet.put(1, noise);
         and = new ArrayList<>();
         noise = new ArrayList<>();
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1; i++) {
             and.addAll(createXor());
             noise.addAll(createNotXor());
         }
         testingSet.put(0, and);
         testingSet.put(1, noise);
         Database database = new Database(0, trainingSet, testingSet, "Database");
+        List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 8, database.getNumberOfClasses());
 
         HeuristicRBM heuristicRbm = new HeuristicRBM();
         heuristicRbm.batchSize = 2;
         heuristicRbm.learningRate = 0.1;
         heuristicRbm.momentum = 0.0;
+        heuristicRbm.temperature = 1;
         List<RestrictedBoltzmannMachine> rbms = new ArrayList<>();
-        rbms.add(new BinaryRestrictedBoltzmannMachine("1. level", database.getSizeOfVector(), 20,
+        rbms.add(new BinaryRestrictedBoltzmannMachine("1. level", database.getSizeOfVector(), topology.get(1),
+                new GaussianRndWeightsFactory(100, 0), heuristicRbm, 0));
+        List<RestrictedBoltzmannMachine> rbms2 = new ArrayList<>();
+        rbms2.add(new BinaryRestrictedBoltzmannMachine("2. level", database.getSizeOfVector(), topology.get(1),
                 new GaussianRndWeightsFactory(100, 0), heuristicRbm, 0));
 
-        NetworkManager rbmManager = new UnsupervisedRBMManager(rbms.get(0), database, 0, null,
-                new ProbabilisticAssociationVectorValidator(100));
+        DeepBoltzmannMachine dbm = new DeepBoltzmannMachine("dbm1", rbms);
+        DeepBoltzmannMachine dbm2 = new DeepBoltzmannMachine("dbm2", rbms2);
 
-        //GreedyLayerWiseStackedDeepRBMTrainer.train(rbms, Arrays.asList(1000000), database);
+        /*NetworkManager rbmManager = new UnsupervisedRBMManager(rbms.get(0), database, 0, null,
+                new ProbabilisticAssociationVectorValidator(1000));
+*/
+        //GreedyLayerWiseStackedDeepRBMTrainer.train(rbms, Arrays.asList(100000), database);
 
         FFNNHeuristic heuristic = new FFNNHeuristic();
         heuristic.learningRate = 0.01;
         heuristic.momentum = 0.0;
 
-        List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 3, database.getNumberOfClasses());
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("xor-networkSigm", topology,
                 new GaussianRndWeightsFactory(10, 0), heuristic,
                 new SigmoidFunction());
-
+        NetworkManager manager = new FeedForwardNetworkManager(network, database, null);
         OnlineFeedForwardNetwork network2 = new OnlineFeedForwardNetwork("xor-networkTanh", topology,
                 new GaussianRndWeightsFactory(10, 0), heuristic,
                 new ParametrizedHyperbolicTangens());
-
-        NetworkManager manager = new FeedForwardNetworkManager(network, database, null);
         NetworkManager manager2 = new FeedForwardNetworkManager(network2, database, null);
-        MasterNetworkManager master = new MasterNetworkManager("xor problem", Arrays.asList(/*manager, manager2,*/
-                rbmManager));
-        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(100, 100000, master);
-        benchmarker.benchmark();
 
-        System.out.println("ahoj");
+
+        DeepOnlineFeedForwardNetwork lastLayerTrainer = new DeepOnlineFeedForwardNetwork("PretrainedLinearClassifier",
+                Arrays.asList(topology.get(1), topology.get(2)),
+                new GaussianRndWeightsFactory(0.001, 0), FFNNHeuristic.createDefaultHeuristic(),
+                new ParametrizedHyperbolicTangens(), dbm, 10);
+        NetworkManager manager3 = new FeedForwardNetworkManager(lastLayerTrainer, database, null);
+        manager.supervisedTraining(1000);
+        manager.testNetwork();
+        LOGGER.info("Deep online results: {}", manager.getTestResults().getComparableSuccess());
+
+        OnlineFeedForwardNetwork fineTuning = new OnlineFeedForwardNetwork("pretrained linear classifier", topology,
+                new FineTuningWeightsFactory(dbm, lastLayerTrainer),
+                FFNNHeuristic.createDefaultHeuristic(), new ParametrizedHyperbolicTangens());
+        NetworkManager manager4 = new FeedForwardNetworkManager(fineTuning, database, null);
+
+        OnlineFeedForwardNetwork fineTuning2 = new OnlineFeedForwardNetwork("training whole machinery", topology,
+                new FineTuningWeightsFactory(dbm2, database.getNumberOfClasses(), 0, 0.001),
+                FFNNHeuristic.createDefaultHeuristic(), new ParametrizedHyperbolicTangens());
+        NetworkManager manager5 = new FeedForwardNetworkManager(fineTuning2, database, null);
+
+        OnlineFeedForwardNetwork network10 = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
+                new SmartGaussianRndWeightsFactory(new ParametrizedHyperbolicTangens(), 0),
+                FFNNHeuristic.createDefaultHeuristic(), new ParametrizedHyperbolicTangens());
+        NetworkManager manager6 = new FeedForwardNetworkManager(network10, database, null);
+
+
+        MasterNetworkManager master = new MasterNetworkManager("xor problem", Arrays.asList(manager, manager2,
+                manager3, manager4, manager5, manager6));
+        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(100, 100, master);
+        benchmarker.benchmark();
     }
 
     public static void errorFunctionOnRBMs() {
@@ -141,8 +171,6 @@ public class DeepBeliefNetworkConcept extends MnistExampleFFNN {
         List<Integer> topology = new ArrayList<>();
         topology.add(database.getSizeOfVector());
         topology.add(100);
-        topology.add(100);
-        topology.add(50);
         topology.add(database.getNumberOfClasses());
 
         HeuristicRBM heuristic = new HeuristicRBM();
@@ -152,42 +180,36 @@ public class DeepBeliefNetworkConcept extends MnistExampleFFNN {
         List<RestrictedBoltzmannMachine> rbms = new ArrayList<>();
         rbms.add(new BinaryRestrictedBoltzmannMachine("1. level", topology.get(0), topology.get(1),
                 new GaussianRndWeightsFactory(weightsScale, seed), heuristic, seed));
-        rbms.add(new BinaryRestrictedBoltzmannMachine("2. level", topology.get(1), topology.get(2),
-                new GaussianRndWeightsFactory(weightsScale, seed), heuristic, seed));
-        rbms.add(new BinaryRestrictedBoltzmannMachine("3. level", topology.get(2), topology.get(3),
-                new GaussianRndWeightsFactory(weightsScale, seed), heuristic, seed));
 
         List<RestrictedBoltzmannMachine> rbms2 = new ArrayList<>();
         rbms2.add(new BinaryRestrictedBoltzmannMachine("1. level", topology.get(0), topology.get(1),
                 new GaussianRndWeightsFactory(weightsScale, seed), heuristic, seed));
-        rbms2.add(new BinaryRestrictedBoltzmannMachine("2. level", topology.get(1), topology.get(2),
-                new GaussianRndWeightsFactory(weightsScale, seed), heuristic, seed));
-        rbms2.add(new BinaryRestrictedBoltzmannMachine("3. level", topology.get(2), topology.get(3),
-                new GaussianRndWeightsFactory(weightsScale, seed), heuristic, seed));
 
-        GreedyLayerWiseStackedDeepRBMTrainer.train(rbms, Arrays.asList(10000, 10000, 10000), database);
-        GreedyLayerWiseStackedDeepRBMTrainer.train(rbms2, Arrays.asList(10000, 10000, 10000), database);
+        GreedyLayerWiseStackedDeepRBMTrainer.train(rbms, Arrays.asList(10000), database);
+        GreedyLayerWiseStackedDeepRBMTrainer.train(rbms2, Arrays.asList(10000), database);
 
         DeepBoltzmannMachine dbm = new DeepBoltzmannMachine("dbm", rbms);
         DeepBoltzmannMachine dbm2 = new DeepBoltzmannMachine("dbm", rbms2);
 
+        FFNNHeuristic linearHeuristics = FFNNHeuristic.createDefaultHeuristic();
+        linearHeuristics.learningRate = 0.01;
         DeepOnlineFeedForwardNetwork lastLayerTrainer = new DeepOnlineFeedForwardNetwork("deep",
-                Arrays.asList(topology.get(3), topology.get(4)),
-                new SmartGaussianRndWeightsFactory(new ParametrizedHyperbolicTangens(), seed), FFNNHeuristic.createDefaultHeuristic(),
-                new ParametrizedHyperbolicTangens(), dbm);
+                Arrays.asList(topology.get(1), topology.get(2)),
+                new SmartGaussianRndWeightsFactory(new SigmoidFunction(), seed),linearHeuristics,
+                new SigmoidFunction(), dbm, 10);
         NetworkManager manager = new FeedForwardNetworkManager(lastLayerTrainer, database, null);
-        manager.supervisedTraining(100000);
+        manager.supervisedTraining(100_00);
         manager.testNetwork();
         LOGGER.info("Deep online results: {}", manager.getTestResults().getComparableSuccess());
 
         OnlineFeedForwardNetwork fineTuning = new OnlineFeedForwardNetwork("pretrained linear classifier", topology,
                 new FineTuningWeightsFactory(dbm, lastLayerTrainer),
-                FFNNHeuristic.createDefaultHeuristic(), new ParametrizedHyperbolicTangens());
+                FFNNHeuristic.createDefaultHeuristic(), new SigmoidFunction());
         NetworkManager manager3 = new FeedForwardNetworkManager(fineTuning, database, null);
 
         OnlineFeedForwardNetwork fineTuning2 = new OnlineFeedForwardNetwork("training whole machinery", topology,
-                new FineTuningWeightsFactory(dbm2, database.getNumberOfClasses(), seed, new ParametrizedHyperbolicTangens()),
-                FFNNHeuristic.createDefaultHeuristic(), new ParametrizedHyperbolicTangens());
+                new FineTuningWeightsFactory(dbm2, database.getNumberOfClasses(), seed, 0.001),
+                FFNNHeuristic.createDefaultHeuristic(), new SigmoidFunction());
         NetworkManager manager4 = new FeedForwardNetworkManager(fineTuning2, database, null);
 
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
@@ -196,7 +218,7 @@ public class DeepBeliefNetworkConcept extends MnistExampleFFNN {
         NetworkManager manager2 = new FeedForwardNetworkManager(network, database, null);
 
         MasterNetworkManager master = new MasterNetworkManager("fine tunning", Arrays.asList(manager3, manager2, manager4));
-        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(100, 1000, master);
+        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(30, 1000, master);
         benchmarker.benchmark();
     }
 

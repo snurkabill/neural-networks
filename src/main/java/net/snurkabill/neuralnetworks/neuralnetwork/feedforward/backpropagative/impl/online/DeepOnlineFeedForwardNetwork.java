@@ -11,12 +11,16 @@ import java.util.List;
 public class DeepOnlineFeedForwardNetwork extends OnlineFeedForwardNetwork {
 
     private final FeedForwardable inputTransformation;
+    private final double[] binomialDistribution;
+    private final int binomialSamplingIterations;
 
     public DeepOnlineFeedForwardNetwork(String name, List<Integer> topology, WeightsFactory wFactory,
                                         FFNNHeuristic heuristic, TransferFunctionCalculator transferFunction,
-                                        FeedForwardable inputTransformation) {
+                                        FeedForwardable inputTransformation, int binomialSamplingIterations) {
         super(name, topology, wFactory, heuristic, transferFunction);
         this.inputTransformation = inputTransformation;
+        this.binomialDistribution = new double[inputTransformation.getForwardedValues().length];
+        this.binomialSamplingIterations = binomialSamplingIterations;
     }
 
     @Override
@@ -26,9 +30,21 @@ public class DeepOnlineFeedForwardNetwork extends OnlineFeedForwardNetwork {
 
     @Override
     public void feedForward(double[] inputVector) {
-        inputTransformation.feedForward(inputVector);
-        double[] transformedInputVector = inputTransformation.getForwardedValues();
-        System.arraycopy(transformedInputVector, 0, neuronOutputValues[0], 0, transformedInputVector.length);
+        for (int i = 0; i < binomialDistribution.length; i++) {
+            binomialDistribution[i] = 0;
+        }
+        for (int i = 0; i < binomialSamplingIterations; i++) {
+            inputTransformation.feedForward(inputVector);
+            double[] transformedInputVector = inputTransformation.getForwardedValues();
+            for (int j = 0; j < binomialDistribution.length; j++) {
+                binomialDistribution[j] += transformedInputVector[j];
+            }
+        }
+        for (int i = 0; i < binomialDistribution.length; i++) {
+            binomialDistribution[i] /= binomialSamplingIterations;
+            //binomialDistribution[i] = (1 - binomialDistribution[i]);
+        }
+        System.arraycopy(binomialDistribution, 0, neuronOutputValues[0], 0, binomialDistribution.length);
         feedForward();
     }
 

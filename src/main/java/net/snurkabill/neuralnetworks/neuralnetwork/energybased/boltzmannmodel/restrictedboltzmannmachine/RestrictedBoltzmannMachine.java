@@ -247,6 +247,20 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine implem
         return this.getVisibleNeurons();
     }
 
+    public void multiplyWeights(double multiplicator) {
+        for (int i = 0; i < weights.length; i++) {
+            for (int j = 0; j < weights[i].length; j++) {
+                weights[i][j] *= multiplicator;
+            }
+        }
+        for (int i = 0; i < visibleBias.length; i++) {
+            visibleBias[i] *= multiplicator;
+        }
+        for (int i = 0; i < hiddenBias.length; i++) {
+            hiddenBias[i] *= multiplicator;
+        }
+    }
+
     @Override
     public void calculateNetwork(double[] inputVector) {
         this.setVisibleNeurons(inputVector);
