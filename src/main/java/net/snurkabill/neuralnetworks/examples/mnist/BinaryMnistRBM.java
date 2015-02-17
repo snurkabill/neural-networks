@@ -20,15 +20,15 @@ public class BinaryMnistRBM extends Canvas {
 
     static int count = 0;
 
-    BinaryRestrictedBoltzmannMachine machine;
+    final BinaryRestrictedBoltzmannMachine machine;
     NetworkManager manager_rbm;
 
     public BinaryMnistRBM() {
 
         long seed = 0;
         double weightsScale = 0.001;
-        MnistDatasetReader reader = MnistExampleFFNN.getReader(MnistExampleFFNN.FULL_MNIST_SIZE, true);
-        Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST");
+        MnistDatasetReader reader = MnistExampleFFNN.getReader(2000, true);
+        Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST", false);
 
         HeuristicRBM heuristic = HeuristicRBM.createStartingHeuristicParams();
         heuristic.batchSize = 30;
@@ -58,19 +58,20 @@ public class BinaryMnistRBM extends Canvas {
         WritableRaster r = in.getRaster();
         graphics__.drawImage(in, border, border, null);
 
-        int offset = border;
+        double weights[][] = machine.getWeights();
+
+            int offset = border;
             int buf = 28 + border + border;
-            for (int i = 0; i < machine.getWeights().length; i++) {
+            for (int i = 0; i < weights[0].length; i++) {
                 if (i % 10 == 0) {
                     offset = border;
-                    buf += border + 56;
+                    buf += border + /*56*/ 28;
                 }
-
-                long[] start = new long[28 * 28];
+                int[] start = new int[28 * 28];
                 for (int j = 0; j < start.length; j++)
-                    start[j] = machine.getWeights()[j][i] > 0 ?
-                            (Math.round(machine.getWeights()[i][j] * 255)) << 8 :
-                            ((Math.round(Math.abs(machine.getWeights()[i][j] * 255)) << 16));
+                    start[j] = weights[j][i] > 0.0 ?
+                                (int)(Math.round(weights[j][i] * 255)) << 8 :
+                                (int)((Math.round(Math.abs(weights[j][i] * 255)) << 16));
 
                 BufferedImage out = new BufferedImage(28, 28, BufferedImage.TYPE_INT_RGB);
 
@@ -78,14 +79,14 @@ public class BinaryMnistRBM extends Canvas {
                 r.setDataElements(0, 0, 28, 28, start);
 
                 //Resize
-                BufferedImage newImage = new BufferedImage(56, 56, BufferedImage.TYPE_INT_RGB);
+                BufferedImage newImage = new BufferedImage(/*56*/ 28, /*56*/ 28, BufferedImage.TYPE_INT_RGB);
 
                 Graphics2D g2 = newImage.createGraphics();
                 try {
                     g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                             RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                    g2.clearRect(0, 0, 56, 56);
-                    g2.drawImage(out, 0, 0, 56, 56, null);
+                    g2.clearRect(0, 0, /*56*/ 28, /*56*/ 28);
+                    g2.drawImage(out, 0, 0, /*56*/ 28, /*56*/ 28, null);
                 } finally {
                     g2.dispose();
                 }

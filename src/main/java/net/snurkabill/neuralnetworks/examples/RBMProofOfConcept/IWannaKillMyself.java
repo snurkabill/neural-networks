@@ -41,7 +41,7 @@ public class IWannaKillMyself {
         }
         testingSet.put(0, and);
 
-        Database database = new Database(0, trainingSet, testingSet, "Database");
+        Database database = new Database(0, trainingSet, testingSet, "Database", true);
 
         List<NetworkManager> managers = new ArrayList<>();
 

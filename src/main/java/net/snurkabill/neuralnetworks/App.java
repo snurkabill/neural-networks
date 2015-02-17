@@ -20,9 +20,9 @@ public class App {
 
         //DeepBeliefNetworkConcept.errorFunctionOnRBMs();
         //DeepBeliefNetworkConcept.deepXor();
-        DeepBeliefNetworkConcept.deepBoltzmannMachine();
+        //DeepBeliefNetworkConcept.deepBoltzmannMachine();
 
-            //MnistExampleFFNN.basicBenchmark();
+        MnistExampleFFNN.basicBenchmark();
         //GaussianVisibleImplementation.shitFuck();
         //IWannaKillMyself.and();
     }

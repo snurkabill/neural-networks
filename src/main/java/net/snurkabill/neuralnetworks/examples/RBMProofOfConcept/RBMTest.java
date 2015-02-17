@@ -60,7 +60,7 @@ public class RBMTest {
             trainingSet.put(i, data.get(i));
             testingSet.put(i, data2.get(i));
         }
-        Database database = new Database(0, trainingSet, testingSet, "testingDatabaseRBM");
+        Database database = new Database(0, trainingSet, testingSet, "testingDatabaseRBM", true);
 
         List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 1, database.getNumberOfClasses());
 

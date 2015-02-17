@@ -152,7 +152,7 @@ public class GaussianVisibleImplementation {
         testingSet.put(0, and);
         testingSet.put(1, createNoise());
 
-        Database database = new Database(0, trainingSet, testingSet, "Database");
+        Database database = new Database(0, trainingSet, testingSet, "Database", false);
 
         List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 2, database.getNumberOfClasses());
         FFNNHeuristic heuristic = new FFNNHeuristic();
