@@ -23,7 +23,8 @@ public class Database<T extends DataItem> {
     private final String name;
     private final int sizeOfVector;
 
-    public Database(long seed, Map<Integer, List<T>> trainingSet, Map<Integer, List<T>> testingSet, String name) {
+    public Database(long seed, Map<Integer, List<T>> trainingSet, Map<Integer, List<T>> testingSet,
+                    String name, boolean applyFilter) {
         if (trainingSet.size() != testingSet.size()) {
             throw new IllegalArgumentException("TrainingSet has different size than testingSet");
         }
@@ -31,7 +32,13 @@ public class Database<T extends DataItem> {
         this.name = name;
         this.random = new Random();
         this.random.setSeed(seed);
-        boolean[] filter = makeFilterForRemovingRedundantDimensions(trainingSet);
+        boolean[] filter = applyFilter ? makeFilterForRemovingRedundantDimensions(trainingSet) :
+                new boolean[trainingSet.get(0).get(0).data.length];
+        if(!applyFilter) {
+            for (int i = 0; i < filter.length; i++) {
+                filter[i] = true;
+            }
+        }
         this.trainingSet = applyFilterOnDatasetForDimReduction(filter, trainingSet);
         this.testingSet = applyFilterOnDatasetForDimReduction(filter, testingSet);
         this.numberOfClasses = this.trainingSet.size();
@@ -254,7 +261,7 @@ public class Database<T extends DataItem> {
         }
         long time2 = System.currentTimeMillis();
         LOGGER.info("Loading database done, took: {}", time2 - time1);
-        return new Database(seed, trainingSet, testingSet, baseFile.getName());
+        return new Database(seed, trainingSet, testingSet, baseFile.getName(), false);
     }
 
     public synchronized Iterator<T> getTestingIteratorOverClass(int i) {

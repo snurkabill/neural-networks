@@ -68,7 +68,6 @@ public class FineTuningWeightsFactory implements WeightsFactory {
             weights[weights.length - 1][i] = new double[numOfClassesInLinearClassifier];
         }
 
-        //WeightsFactory factory = new SmartGaussianRndWeightsFactory(transferFunctionCalculator, seed);
         WeightsFactory factory = new GaussianRndWeightsFactory(weightsScale, seed);
         for (int i = 0; i < weights[weights.length - 1].length; i++) {
             factory.setWeights(this.weights[numOfLayers - 1][i]);

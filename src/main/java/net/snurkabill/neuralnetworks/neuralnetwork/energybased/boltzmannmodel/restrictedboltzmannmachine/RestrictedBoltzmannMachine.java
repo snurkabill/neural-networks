@@ -181,19 +181,19 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine implem
                     deltaWeights[i][j] = (heuristic.learningRate / super.temperature) *
                             (this.diffWeights[i][j] - this.reconWeights[i][j]) +
                             heuristic.momentum * deltaWeights[i][j];
-                    weights[i][j] -= deltaWeights[i][j];
+                    weights[i][j] += deltaWeights[i][j];
                 }
             }
             for (int i = 0; i < sizeOfVisibleVector; i++) {
                 deltaVisibleBias[i] = (heuristic.learningRate / super.temperature) * reconVisibleBiases[i] +
                         heuristic.momentum * deltaVisibleBias[i];
-                visibleBias[i] -= deltaVisibleBias[i];
+                visibleBias[i] += deltaVisibleBias[i];
             }
             for (int i = 0; i < sizeOfHiddenVector; i++) {
                 deltaHiddenBias[i] = (heuristic.learningRate / super.temperature) *
                         (diffHiddenBiases[i] - reconHiddenBiases[i]) +
                         heuristic.momentum * deltaHiddenBias[i];
-                hiddenBias[i] -= deltaHiddenBias[i];
+                hiddenBias[i] += deltaHiddenBias[i];
             }
             for (int i = 0; i < sizeOfVisibleVector; i++) {
                 for (int j = 0; j < sizeOfHiddenVector; j++) {
@@ -245,6 +245,20 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine implem
     public double[] activateVisibleNeurons() {
         calcVisibleNeurons();
         return this.getVisibleNeurons();
+    }
+
+    public void multiplyWeights(double multiplicator) {
+        for (int i = 0; i < weights.length; i++) {
+            for (int j = 0; j < weights[i].length; j++) {
+                weights[i][j] *= multiplicator;
+            }
+        }
+        for (int i = 0; i < visibleBias.length; i++) {
+            visibleBias[i] *= multiplicator;
+        }
+        for (int i = 0; i < hiddenBias.length; i++) {
+            hiddenBias[i] *= multiplicator;
+        }
     }
 
     @Override
