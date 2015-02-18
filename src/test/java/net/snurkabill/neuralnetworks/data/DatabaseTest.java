@@ -61,7 +61,7 @@ public class DatabaseTest {
 
     @BeforeClass
     public static void beforeClass() {
-        database = new Database(0, createTrainingSet(), createTestingSet(), "testingBase");
+        database = new Database(0, createTrainingSet(), createTestingSet(), "testingBase", true);
     }
 
     @Test
@@ -146,7 +146,7 @@ public class DatabaseTest {
             }
             testingSet.put(i, tmpList);
         }
-        Database tmpDatabase = new Database(0, null, testingSet, "testingPerformance");
+        Database tmpDatabase = new Database(0, null, testingSet, "testingPerformance", true);
 
         Iterator<DataItem> iterator = tmpDatabase.getTestingIterator();
 

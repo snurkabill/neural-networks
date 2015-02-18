@@ -91,7 +91,7 @@ public class GeneralFunctionalityTest {
         MnistDatasetReader reader;
         try {
             reader = new MnistDatasetReader(labels, images, numOfElements, binary);
-            return new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST");
+            return new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST", true);
         } catch (IOException ex) {
             throw new IllegalArgumentException(ex);
         }
