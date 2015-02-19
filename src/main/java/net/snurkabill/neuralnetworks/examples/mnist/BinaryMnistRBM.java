@@ -26,16 +26,18 @@ public class BinaryMnistRBM extends Canvas {
     public BinaryMnistRBM() {
 
         long seed = 0;
-        double weightsScale = 0.001;
-        MnistDatasetReader reader = MnistExampleFFNN.getReader(2000, true);
+        double weightsScale = 0.01;
+        MnistDatasetReader reader = MnistExampleFFNN.getReader(MnistExampleFFNN.FULL_MNIST_SIZE, true);
         Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST", false);
 
         HeuristicRBM heuristic = HeuristicRBM.createStartingHeuristicParams();
-        heuristic.batchSize = 30;
-        heuristic.learningRate = 0.1;
-        heuristic.momentum = 0.1;
+        heuristic.learningRate = 0.01;
+        heuristic.constructiveDivergenceIndex = 1;
+        heuristic.batchSize = 50;
+        heuristic.momentum = 0.2;
+        heuristic.temperature = 1;
         machine = new BinaryRestrictedBoltzmannMachine("RBM 1",
-                        (database.getSizeOfVector()), 100,
+                        (database.getSizeOfVector()), 200,
                         new GaussianRndWeightsFactory(weightsScale, seed),
                         heuristic, seed);
         manager_rbm = new UnsupervisedRBMManager(machine, database, seed, null,
@@ -65,7 +67,7 @@ public class BinaryMnistRBM extends Canvas {
             for (int i = 0; i < weights[0].length; i++) {
                 if (i % 10 == 0) {
                     offset = border;
-                    buf += border + /*56*/ 28;
+                    buf += border + 56;
                 }
                 int[] start = new int[28 * 28];
                 for (int j = 0; j < start.length; j++)
@@ -79,14 +81,14 @@ public class BinaryMnistRBM extends Canvas {
                 r.setDataElements(0, 0, 28, 28, start);
 
                 //Resize
-                BufferedImage newImage = new BufferedImage(/*56*/ 28, /*56*/ 28, BufferedImage.TYPE_INT_RGB);
+                BufferedImage newImage = new BufferedImage(56, 56, BufferedImage.TYPE_INT_RGB);
 
                 Graphics2D g2 = newImage.createGraphics();
                 try {
                     g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                             RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                    g2.clearRect(0, 0, /*56*/ 28, /*56*/ 28);
-                    g2.drawImage(out, 0, 0, /*56*/ 28, /*56*/ 28, null);
+                    g2.clearRect(0, 0, 56, 56);
+                    g2.drawImage(out, 0, 0, 56, 56, null);
                 } finally {
                     g2.dispose();
                 }
@@ -113,10 +115,11 @@ public class BinaryMnistRBM extends Canvas {
 
         while (true) {
             cnvs.update();
+
             try {
                 count++;
                 if (count > 1000)
-                    Thread.sleep(2000);
+                    Thread.sleep(200000);
             } catch (InterruptedException e) {
             }
         }

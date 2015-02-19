@@ -117,49 +117,57 @@ public class MnistExampleFFNN {
         NetworkManager manager = new FeedForwardNetworkManager(network, database, null);
 
         HeuristicRBM heuristic = HeuristicRBM.createStartingHeuristicParams();
-        heuristic.learningRate = 0.2;
-        heuristic.constructiveDivergenceIndex = 1;
-        heuristic.batchSize = 1;
-        BinaryRestrictedBoltzmannMachine machine =
-                new BinaryRestrictedBoltzmannMachine("RBM 1",
-                        (database.getSizeOfVector()), 50,
-                        new GaussianRndWeightsFactory(0, seed),
-                        heuristic, seed);
-        NetworkManager manager_rbm = new UnsupervisedRBMManager(machine, database, seed, null,
-                new ProbabilisticAssociationVectorValidator(10));
-
-        heuristic = HeuristicRBM.createStartingHeuristicParams();
-        heuristic.learningRate = 0.2;
-        heuristic.constructiveDivergenceIndex = 1;
-        heuristic.batchSize = 2;
-        machine = new BinaryRestrictedBoltzmannMachine("RBM 3",
-                (database.getSizeOfVector()), 50,
-                new GaussianRndWeightsFactory(weightsScale, seed),
-                heuristic, seed);
-        NetworkManager manager_rbm2 = new UnsupervisedRBMManager(machine, database, seed, null,
-                new ProbabilisticAssociationVectorValidator(10));
-
-        heuristic = HeuristicRBM.createStartingHeuristicParams();
-        heuristic.learningRate = 0.2;
-        heuristic.constructiveDivergenceIndex = 1;
-        heuristic.batchSize = 5;
-        machine = new BinaryRestrictedBoltzmannMachine("RBM 10",
-                (database.getSizeOfVector()), 50,
-                        new GaussianRndWeightsFactory(weightsScale, seed),
-                        heuristic, seed);
-        NetworkManager manager_rbm3 = new UnsupervisedRBMManager(machine, database, seed, null,
-                new ProbabilisticAssociationVectorValidator(10));
-
-        heuristic = HeuristicRBM.createStartingHeuristicParams();
-        heuristic.learningRate = 0.2;
+        heuristic.learningRate = 0.1;
         heuristic.constructiveDivergenceIndex = 1;
         heuristic.batchSize = 10;
+        heuristic.momentum = 0.1;
+        heuristic.temperature = 1;
+        BinaryRestrictedBoltzmannMachine machine =
+                new BinaryRestrictedBoltzmannMachine("RBM 1",
+                        (database.getSizeOfVector()), 200,
+                        new GaussianRndWeightsFactory(0.01, seed),
+                        heuristic, seed);
+        NetworkManager manager_rbm = new UnsupervisedRBMManager(machine, database, seed, null,
+                new ProbabilisticAssociationVectorValidator(3));
+
+        heuristic = HeuristicRBM.createStartingHeuristicParams();
+        heuristic.learningRate = 0.1;
+        heuristic.constructiveDivergenceIndex = 1;
+        heuristic.batchSize = 10;
+        heuristic.momentum = 0.1;
+        heuristic.temperature = 1;
+        machine = new BinaryRestrictedBoltzmannMachine("RBM 3",
+                (database.getSizeOfVector()), 200,
+                new GaussianRndWeightsFactory(0.01, seed),
+                heuristic, seed);
+        NetworkManager manager_rbm2 = new UnsupervisedRBMManager(machine, database, seed, null,
+                new ProbabilisticAssociationVectorValidator(3));
+
+        heuristic = HeuristicRBM.createStartingHeuristicParams();
+        heuristic.learningRate = 0.1;
+        heuristic.constructiveDivergenceIndex = 1;
+        heuristic.batchSize = 10;
+        heuristic.momentum = 0.1;
+        heuristic.temperature = 0.2;
+        machine = new BinaryRestrictedBoltzmannMachine("RBM 10",
+                (database.getSizeOfVector()), 200,
+                        new GaussianRndWeightsFactory(0.01, seed),
+                        heuristic, seed);
+        NetworkManager manager_rbm3 = new UnsupervisedRBMManager(machine, database, seed, null,
+                new ProbabilisticAssociationVectorValidator(3));
+
+        heuristic = HeuristicRBM.createStartingHeuristicParams();
+        heuristic.learningRate = 0.1;
+        heuristic.constructiveDivergenceIndex = 1;
+        heuristic.batchSize = 10;
+        heuristic.momentum = 0.1;
+        heuristic.temperature = 0.05;
 		machine = new BinaryRestrictedBoltzmannMachine("RBM 50",
-				(database.getSizeOfVector()), 50,
-                        new GaussianRndWeightsFactory(weightsScale, seed), 
+				(database.getSizeOfVector()), 200,
+                        new GaussianRndWeightsFactory(0.01, seed),
                         heuristic, seed);
         NetworkManager manager_rbm4 = new UnsupervisedRBMManager(machine, database, seed, null,
-                new ProbabilisticAssociationVectorValidator(10));
+                new ProbabilisticAssociationVectorValidator(3));
 
         MasterNetworkManager superManager = new MasterNetworkManager("MNIST",
                 Arrays.asList(/*manager,*/ manager_rbm, manager_rbm2, manager_rbm3, manager_rbm4));

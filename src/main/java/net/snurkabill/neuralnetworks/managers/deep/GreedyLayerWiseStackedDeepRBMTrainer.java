@@ -8,13 +8,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Random;
 
 public class GreedyLayerWiseStackedDeepRBMTrainer {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("GreedyLayerWiseStackedDeepTrainer");
 
     public static List<RestrictedBoltzmannMachine> train(List<RestrictedBoltzmannMachine> machines,
-                                                         List<Integer> iterationsForLevels, Database database) {
+                                                         List<Integer> iterationsForLevels,
+                                                         List<Integer> binomialIterationsSampling,
+                                                         Database database, long seed) {
         DeepNetUtils.checkMachineList(machines);
         if (iterationsForLevels == null) {
             throw new IllegalArgumentException("List of machines is null");
@@ -28,17 +31,32 @@ public class GreedyLayerWiseStackedDeepRBMTrainer {
         if (database.getSizeOfVector() != machines.get(0).getVisibleNeurons().length) {
             throw new IllegalStateException("First RBM has different size of input vector than database has");
         }
+        Random random = new Random(seed);
         LOGGER.info("Training {} RBMs started. Total iterations: {}", machines.size(), iterationsForLevels);
         Timer totalTime = new Timer();
         totalTime.startTimer();
         for (int i = 0; i < machines.size(); i++) {
-            LOGGER.info("Training {}. layer", i);
+            LOGGER.info("Training {}th layer", i);
             Timer layerTimer = new Timer();
             layerTimer.startTimer();
-            for (int j = 0; j < iterationsForLevels.get(i); j++) {
+            for (int iteration = 0; iteration < iterationsForLevels.get(i); iteration++) {
                 machines.get(0).setVisibleNeurons(database.getRandomizedTrainingData().data);
-                for (int k = 0; k < i; k++) {
-                    machines.get(k + 1).setVisibleNeurons(machines.get(k).activateHiddenNeurons());
+                double binomialSampling[] = new double [machines.get(i).getSizeOfVisibleVector()];
+                for (int j = 0; j < binomialIterationsSampling.get(i); j++) {
+                    for (int k = 0; k < i; k++) {
+                        machines.get(k + 1).setVisibleNeurons(machines.get(k).activateHiddenNeurons());
+                    }
+                    double[] iterationsValues = machines.get(i).getVisibleNeurons();
+                    for (int k = 0; k < machines.get(i).getSizeOfVisibleVector(); k++) {
+                        binomialSampling[k] += iterationsValues[k];
+                    }
+                }
+                for (int j = 0; j < binomialSampling.length; j++) {
+                    binomialSampling[j] /= binomialIterationsSampling.get(i);
+                }
+                double[] finalizeVector = machines.get(i).getVisibleNeurons();
+                for (int j = 0; j < finalizeVector.length; j++) {
+                    finalizeVector[j] = random.nextDouble() < binomialSampling[j] ? 1 : 0;
                 }
                 machines.get(i).trainMachine();
             }
