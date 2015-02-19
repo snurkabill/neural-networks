@@ -1,6 +1,5 @@
 package net.snurkabill.neuralnetworks.examples.mnist;
 
-import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.data.mnist.MnistDatasetReader;
 import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
@@ -37,9 +36,9 @@ public class BinaryMnistRBM extends Canvas {
         heuristic.momentum = 0.2;
         heuristic.temperature = 1;
         machine = new BinaryRestrictedBoltzmannMachine("RBM 1",
-                        (database.getSizeOfVector()), 200,
-                        new GaussianRndWeightsFactory(weightsScale, seed),
-                        heuristic, seed);
+                (database.getSizeOfVector()), 200,
+                new GaussianRndWeightsFactory(weightsScale, seed),
+                heuristic, seed);
         manager_rbm = new UnsupervisedRBMManager(machine, database, seed, null,
                 new ProbabilisticAssociationVectorValidator(1));
     }
@@ -62,41 +61,41 @@ public class BinaryMnistRBM extends Canvas {
 
         double weights[][] = machine.getWeights();
 
-            int offset = border;
-            int buf = 28 + border + border;
-            for (int i = 0; i < weights[0].length; i++) {
-                if (i % 10 == 0) {
-                    offset = border;
-                    buf += border + 56;
-                }
-                int[] start = new int[28 * 28];
-                for (int j = 0; j < start.length; j++)
-                    start[j] = weights[j][i] > 0.0 ?
-                                (int)(Math.round(weights[j][i] * 255)) << 8 :
-                                (int)((Math.round(Math.abs(weights[j][i] * 255)) << 16));
-
-                BufferedImage out = new BufferedImage(28, 28, BufferedImage.TYPE_INT_RGB);
-
-                r = out.getRaster();
-                r.setDataElements(0, 0, 28, 28, start);
-
-                //Resize
-                BufferedImage newImage = new BufferedImage(56, 56, BufferedImage.TYPE_INT_RGB);
-
-                Graphics2D g2 = newImage.createGraphics();
-                try {
-                    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                            RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                    g2.clearRect(0, 0, 56, 56);
-                    g2.drawImage(out, 0, 0, 56, 56, null);
-                } finally {
-                    g2.dispose();
-                }
-                graphics__.drawImage(newImage, buf, offset, null);
-
-                offset += border + 28 * 2;
+        int offset = border;
+        int buf = 28 + border + border;
+        for (int i = 0; i < weights[0].length; i++) {
+            if (i % 10 == 0) {
+                offset = border;
+                buf += border + 56;
             }
+            int[] start = new int[28 * 28];
+            for (int j = 0; j < start.length; j++)
+                start[j] = weights[j][i] > 0.0 ?
+                        (int) (Math.round(weights[j][i] * 255)) << 8 :
+                        (int) ((Math.round(Math.abs(weights[j][i] * 255)) << 16));
+
+            BufferedImage out = new BufferedImage(28, 28, BufferedImage.TYPE_INT_RGB);
+
+            r = out.getRaster();
+            r.setDataElements(0, 0, 28, 28, start);
+
+            //Resize
+            BufferedImage newImage = new BufferedImage(56, 56, BufferedImage.TYPE_INT_RGB);
+
+            Graphics2D g2 = newImage.createGraphics();
+            try {
+                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                        RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                g2.clearRect(0, 0, 56, 56);
+                g2.drawImage(out, 0, 0, 56, 56, null);
+            } finally {
+                g2.dispose();
+            }
+            graphics__.drawImage(newImage, buf, offset, null);
+
+            offset += border + 28 * 2;
         }
+    }
 
 
     public static void start() {

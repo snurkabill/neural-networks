@@ -34,7 +34,7 @@ public class Database<T extends DataItem> {
         this.random.setSeed(seed);
         boolean[] filter = applyFilter ? makeFilterForRemovingRedundantDimensions(trainingSet) :
                 new boolean[trainingSet.get(0).get(0).data.length];
-        if(!applyFilter) {
+        if (!applyFilter) {
             for (int i = 0; i < filter.length; i++) {
                 filter[i] = true;
             }

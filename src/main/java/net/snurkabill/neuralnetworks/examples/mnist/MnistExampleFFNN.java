@@ -151,8 +151,8 @@ public class MnistExampleFFNN {
         heuristic.temperature = 0.2;
         machine = new BinaryRestrictedBoltzmannMachine("RBM 10",
                 (database.getSizeOfVector()), 200,
-                        new GaussianRndWeightsFactory(0.01, seed),
-                        heuristic, seed);
+                new GaussianRndWeightsFactory(0.01, seed),
+                heuristic, seed);
         NetworkManager manager_rbm3 = new UnsupervisedRBMManager(machine, database, seed, null,
                 new ProbabilisticAssociationVectorValidator(3));
 
@@ -162,10 +162,10 @@ public class MnistExampleFFNN {
         heuristic.batchSize = 10;
         heuristic.momentum = 0.1;
         heuristic.temperature = 0.05;
-		machine = new BinaryRestrictedBoltzmannMachine("RBM 50",
-				(database.getSizeOfVector()), 200,
-                        new GaussianRndWeightsFactory(0.01, seed),
-                        heuristic, seed);
+        machine = new BinaryRestrictedBoltzmannMachine("RBM 50",
+                (database.getSizeOfVector()), 200,
+                new GaussianRndWeightsFactory(0.01, seed),
+                heuristic, seed);
         NetworkManager manager_rbm4 = new UnsupervisedRBMManager(machine, database, seed, null,
                 new ProbabilisticAssociationVectorValidator(3));
 

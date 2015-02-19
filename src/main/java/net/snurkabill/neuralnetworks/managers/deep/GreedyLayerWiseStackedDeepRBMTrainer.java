@@ -41,7 +41,7 @@ public class GreedyLayerWiseStackedDeepRBMTrainer {
             layerTimer.startTimer();
             for (int iteration = 0; iteration < iterationsForLevels.get(i); iteration++) {
                 machines.get(0).setVisibleNeurons(database.getRandomizedTrainingData().data);
-                double binomialSampling[] = new double [machines.get(i).getSizeOfVisibleVector()];
+                double binomialSampling[] = new double[machines.get(i).getSizeOfVisibleVector()];
                 for (int j = 0; j < binomialIterationsSampling.get(i); j++) {
                     for (int k = 0; k < i; k++) {
                         machines.get(k + 1).setVisibleNeurons(machines.get(k).activateHiddenNeurons());

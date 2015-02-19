@@ -3,10 +3,7 @@ package net.snurkabill.neuralnetworks.examples.RBMProofOfConcept;
 import net.snurkabill.neuralnetworks.benchmark.SupervisedBenchmarker;
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.Database;
-import net.snurkabill.neuralnetworks.data.mnist.MnistDatasetReader;
-import net.snurkabill.neuralnetworks.examples.mnist.MnistExampleFFNN;
 import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
-import net.snurkabill.neuralnetworks.heuristic.Heuristic;
 import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
 import net.snurkabill.neuralnetworks.managers.MasterNetworkManager;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
@@ -39,8 +36,8 @@ public class RBMTest {
 
         List<double[]> vectors = new ArrayList<>();
         //vectors.add(new double[] {1, 1, 1, 1, 1, 0, 0, 0, 0, 0});
-        vectors.add(new double[] {1, 0});
-        vectors.add(new double[] {0, 1});
+        vectors.add(new double[]{1, 0});
+        vectors.add(new double[]{0, 1});
 
         Map<Integer, List<?>> trainingSet = new HashMap<>();
         Map<Integer, List<?>> testingSet = new HashMap<>();
@@ -82,23 +79,23 @@ public class RBMTest {
                 new ProbabilisticAssociationVectorValidator(10));*/
         for (int i = 0; i < 100; i++) {
             manager.supervisedTraining(1000);
-          //  manager2.supervisedTraining(1000);
-          //  manager.testNetwork();
-          //  manager2.testNetwork();
+            //  manager2.supervisedTraining(1000);
+            //  manager.testNetwork();
+            //  manager2.testNetwork();
 //            LOGGER.info("Error: {}", manager.getTestResults().getComparableSuccess());
         }
         /*for (int i = 0; i < 100; i++) {
             LOGGER.info("Reconstructed: {}", rbm.reconstructNext());
         }*/
 
-        DeepBoltzmannMachine dbm = new DeepBoltzmannMachine("dbm", Arrays.asList((RestrictedBoltzmannMachine)rbm));
+        DeepBoltzmannMachine dbm = new DeepBoltzmannMachine("dbm", Arrays.asList((RestrictedBoltzmannMachine) rbm));
         //DeepBoltzmannMachine dbm2 = new DeepBoltzmannMachine("dbm", Arrays.asList((RestrictedBoltzmannMachine)rbm2));
 
         FFNNHeuristic linearHeuristics = FFNNHeuristic.createDefaultHeuristic();
         linearHeuristics.learningRate = 0.01;
         DeepOnlineFeedForwardNetwork lastLayerTrainer = new DeepOnlineFeedForwardNetwork("deep",
                 Arrays.asList(topology.get(1), topology.get(2)),
-                new SmartGaussianRndWeightsFactory(new SigmoidFunction(), seed),linearHeuristics,
+                new SmartGaussianRndWeightsFactory(new SigmoidFunction(), seed), linearHeuristics,
                 new ParametrizedHyperbolicTangens(), dbm, 10);
         NetworkManager linearManager = new FeedForwardNetworkManager(lastLayerTrainer, database, null);
         linearManager.supervisedTraining(100_00);
