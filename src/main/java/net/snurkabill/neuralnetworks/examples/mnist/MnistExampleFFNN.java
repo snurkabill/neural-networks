@@ -32,7 +32,7 @@ import java.util.Map;
 public class MnistExampleFFNN {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("MnistExample FFNN");
-    public static final String FILE_PATH = "src/main/resources/mnist/";
+    public static final String FILE_PATH = "src/main/resources/examples/mnist/data/";
     public static final int FULL_MNIST_SIZE = 60_000;
     public static final int INPUT_SIZE = 784;
     public static final int OUTPUT_SIZE = 10;
