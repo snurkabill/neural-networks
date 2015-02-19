@@ -3,7 +3,7 @@ package net.snurkabill.neuralnetworks.heuristic;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-@XStreamAlias("Heuristic")
+@XStreamAlias("basicHeuristic")
 public abstract class BasicHeuristic {
 
     private String name;
