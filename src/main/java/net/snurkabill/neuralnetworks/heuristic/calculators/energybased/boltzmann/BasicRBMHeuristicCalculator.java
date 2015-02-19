@@ -1,7 +1,7 @@
 package net.snurkabill.neuralnetworks.heuristic.calculators.energybased.boltzmann;
 
-import net.snurkabill.neuralnetworks.heuristic.Heuristic;
-import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
+import net.snurkabill.neuralnetworks.heuristic.BasicHeuristic;
+import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
 import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 import net.snurkabill.neuralnetworks.results.NetworkResults;
 
@@ -11,9 +11,9 @@ public class BasicRBMHeuristicCalculator implements HeuristicCalculator {
 
 
     @Override
-    public Heuristic calculateNewHeuristic(List<NetworkResults> results) {
+    public BasicHeuristic calculateNewHeuristic(List<NetworkResults> results) {
         NetworkResults lastOne = results.get(results.size() - 1);
-        HeuristicRBM heuristic = HeuristicRBM.createStartingHeuristicParams();
+        BoltzmannMachineHeuristic heuristic = BoltzmannMachineHeuristic.createStartingHeuristicParams();
         System.out.println("Successs: " + lastOne.getComparableSuccess());
         if (lastOne.getComparableSuccess() > 30) {
             heuristic.constructiveDivergenceIndex = 1;

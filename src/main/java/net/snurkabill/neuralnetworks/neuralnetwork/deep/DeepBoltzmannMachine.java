@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.deep;
 
-import net.snurkabill.neuralnetworks.heuristic.Heuristic;
+import net.snurkabill.neuralnetworks.heuristic.BasicHeuristic;
 import net.snurkabill.neuralnetworks.neuralnetwork.FeedForwardable;
 import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
@@ -101,12 +101,12 @@ public class DeepBoltzmannMachine extends NeuralNetwork implements DeepNetwork, 
     }
 
     @Override
-    public Heuristic getHeuristic() {
+    public BasicHeuristic getHeuristic() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void setHeuristic(Heuristic heuristic) {
+    public void setHeuristic(BasicHeuristic heuristic) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

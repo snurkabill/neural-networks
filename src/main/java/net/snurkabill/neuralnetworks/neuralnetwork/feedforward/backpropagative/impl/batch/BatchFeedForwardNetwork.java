@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.batch;
 
-import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
+import net.snurkabill.neuralnetworks.heuristic.FeedForwardHeuristic;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.BackPropagative;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.TransferFunctionCalculator;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
@@ -14,7 +14,7 @@ public class BatchFeedForwardNetwork extends BackPropagative {
     private int trainedBeforeLearning;
 
     public BatchFeedForwardNetwork(String name, List<Integer> topology, WeightsFactory wFactory,
-                                   FFNNHeuristic heuristic,
+                                   FeedForwardHeuristic heuristic,
                                    TransferFunctionCalculator transferFunction, int sizeOfBatch) {
         super(name, topology, wFactory, heuristic, transferFunction);
         this.sizeOfBatch = sizeOfBatch;

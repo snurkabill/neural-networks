@@ -1,7 +1,7 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine;
 
-import net.snurkabill.neuralnetworks.heuristic.Heuristic;
-import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
+import net.snurkabill.neuralnetworks.heuristic.BasicHeuristic;
+import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
 import net.snurkabill.neuralnetworks.neuralnetwork.FeedForwardable;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.BoltzmannMachine;
 import net.snurkabill.neuralnetworks.utilities.Utilities;
@@ -23,7 +23,7 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine implem
     private final double[] deltaVisibleBias;
     private final double[] deltaHiddenBias;
 
-    private HeuristicRBM heuristic;
+    private BoltzmannMachineHeuristic heuristic;
     private int numOfVectorsInBatch;
     private final double[][] diffWeights;
     private final double[][] reconWeights;
@@ -33,7 +33,7 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine implem
     private final double[] reconHiddenBiases;
 
     public RestrictedBoltzmannMachine(String name, int numOfVisible, int numOfHidden, WeightsFactory wFactory,
-                                      HeuristicRBM heuristic, long seed) {
+                                      BoltzmannMachineHeuristic heuristic, long seed) {
         super(name, seed);
         if (numOfVisible <= 0 || numOfHidden <= 0) {
             throw new IllegalArgumentException("Wrong size of RBM");
@@ -290,19 +290,19 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine implem
     }
 
     @Override
-    public Heuristic getHeuristic() {
+    public BasicHeuristic getHeuristic() {
         return this.heuristic;
     }
 
     @Override
-    public void setHeuristic(Heuristic heuristic) {
+    public void setHeuristic(BasicHeuristic heuristic) {
         //TODO: check heuristic values
-        if (heuristic instanceof HeuristicRBM) {
-            this.heuristic = (HeuristicRBM) heuristic;
+        if (heuristic instanceof BoltzmannMachineHeuristic) {
+            this.heuristic = (BoltzmannMachineHeuristic) heuristic;
             super.setTemperature(this.heuristic.temperature);
         } else {
             throw new IllegalArgumentException("Heuristic " + heuristic + " is not instance of " +
-                    HeuristicRBM.class.getName());
+                    BoltzmannMachineHeuristic.class.getName());
         }
     }
 

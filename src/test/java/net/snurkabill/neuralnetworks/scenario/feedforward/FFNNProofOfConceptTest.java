@@ -2,7 +2,7 @@ package net.snurkabill.neuralnetworks.scenario.feedforward;
 
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.Database;
-import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
+import net.snurkabill.neuralnetworks.heuristic.FeedForwardHeuristic;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.managers.feedforward.FeedForwardNetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.OnlineFeedForwardNetwork;
@@ -34,7 +34,7 @@ public class FFNNProofOfConceptTest extends LogicFunctions {
         testingSet.put(1, noise);
         Database database = new Database(0, trainingSet, testingSet, "Database", true);
         List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 2, database.getNumberOfClasses());
-        FFNNHeuristic heuristic = new FFNNHeuristic();
+        FeedForwardHeuristic heuristic = new FeedForwardHeuristic();
         heuristic.learningRate = 0.01;
         heuristic.momentum = 0.1;
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
@@ -64,7 +64,7 @@ public class FFNNProofOfConceptTest extends LogicFunctions {
         testingSet.put(1, noise);
         Database database = new Database(0, trainingSet, testingSet, "Database", true);
         List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 2, database.getNumberOfClasses());
-        FFNNHeuristic heuristic = new FFNNHeuristic();
+        FeedForwardHeuristic heuristic = new FeedForwardHeuristic();
         heuristic.learningRate = 0.01;
         heuristic.momentum = 0.1;
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
@@ -94,7 +94,7 @@ public class FFNNProofOfConceptTest extends LogicFunctions {
         testingSet.put(1, noise);
         Database database = new Database(0, trainingSet, testingSet, "Database", true);
         List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 3, database.getNumberOfClasses());
-        FFNNHeuristic heuristic = new FFNNHeuristic();
+        FeedForwardHeuristic heuristic = new FeedForwardHeuristic();
         heuristic.learningRate = 0.01;
         heuristic.momentum = 0.1;
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,

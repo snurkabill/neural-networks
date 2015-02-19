@@ -1,13 +1,13 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl;
 
-import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
+import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 
 public class BinaryRestrictedBoltzmannMachine extends RestrictedBoltzmannMachine {
 
     public BinaryRestrictedBoltzmannMachine(String name, int numOfVisible, int numOfHidden, WeightsFactory wFactory,
-                                            HeuristicRBM heuristicParams, long seed) {
+                                            BoltzmannMachineHeuristic heuristicParams, long seed) {
         super(name, numOfVisible, numOfHidden, wFactory, heuristicParams, seed);
     }
 

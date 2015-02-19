@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online;
 
-import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
+import net.snurkabill.neuralnetworks.heuristic.FeedForwardHeuristic;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.BackPropagative;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.TransferFunctionCalculator;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
@@ -10,7 +10,7 @@ import java.util.List;
 public class OnlineFeedForwardNetwork extends BackPropagative {
 
     public OnlineFeedForwardNetwork(String name, List<Integer> topology, WeightsFactory wFactory,
-                                    FFNNHeuristic heuristic, TransferFunctionCalculator transferFunction) {
+                                    FeedForwardHeuristic heuristic, TransferFunctionCalculator transferFunction) {
         super(name, topology, wFactory, heuristic, transferFunction);
     }
 

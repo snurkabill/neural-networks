@@ -2,7 +2,7 @@ package net.snurkabill.neuralnetworks.scenario.energybased;
 
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.Database;
-import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
+import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.UnsupervisedRBMManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.ProbabilisticAssociationVectorValidator;
@@ -47,7 +47,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
 
         List<NetworkManager> managers = new ArrayList<>();
 
-        HeuristicRBM heuristic = new HeuristicRBM();
+        BoltzmannMachineHeuristic heuristic = new BoltzmannMachineHeuristic();
         heuristic.learningRate = 0.1;
         heuristic.momentum = 0.1;
         heuristic.temperature = 1;
@@ -59,7 +59,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         managers.add(new UnsupervisedRBMManager(machine, database, 0, null,
                 new ProbabilisticAssociationVectorValidator(10)));
 
-        heuristic = new HeuristicRBM();
+        heuristic = new BoltzmannMachineHeuristic();
         heuristic.learningRate = 0.1;
         heuristic.momentum = 0.1;
         heuristic.temperature = 1;
@@ -70,7 +70,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         managers.add(new UnsupervisedRBMManager(machine, database, 0, null,
                 new ProbabilisticAssociationVectorValidator(10)));
 
-        heuristic = new HeuristicRBM();
+        heuristic = new BoltzmannMachineHeuristic();
         heuristic.learningRate = 0.1;
         heuristic.momentum = 0.1;
         heuristic.temperature = 1;
@@ -81,7 +81,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         managers.add(new UnsupervisedRBMManager(machine, database, 0, null,
                 new ProbabilisticAssociationVectorValidator(10)));
 
-        heuristic = new HeuristicRBM();
+        heuristic = new BoltzmannMachineHeuristic();
         heuristic.learningRate = 0.1;
         heuristic.momentum = 0.1;
         heuristic.temperature = 1;
@@ -92,7 +92,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         managers.add(new UnsupervisedRBMManager(machine, database, 0, null,
                 new ProbabilisticAssociationVectorValidator(10)));
 
-        heuristic = new HeuristicRBM();
+        heuristic = new BoltzmannMachineHeuristic();
         heuristic.learningRate = 0.1;
         heuristic.momentum = 0.1;
         heuristic.temperature = 1;

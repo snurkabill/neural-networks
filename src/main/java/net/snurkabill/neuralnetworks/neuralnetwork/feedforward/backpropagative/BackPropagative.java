@@ -1,7 +1,7 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative;
 
-import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
-import net.snurkabill.neuralnetworks.heuristic.Heuristic;
+import net.snurkabill.neuralnetworks.heuristic.BasicHeuristic;
+import net.snurkabill.neuralnetworks.heuristic.FeedForwardHeuristic;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.TransferFunctionCalculator;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
@@ -10,14 +10,14 @@ import java.util.List;
 
 public abstract class BackPropagative extends FeedForwardNetwork {
 
-    protected FFNNHeuristic heuristic;
+    protected FeedForwardHeuristic heuristic;
 
     protected final double[][] gradients;
     protected final double[][][] deltaWeights;
     protected final double[][][] weightsEta;
 
     public BackPropagative(String name, List<Integer> topology, WeightsFactory wFactory,
-                           FFNNHeuristic heuristic, TransferFunctionCalculator transferFunction) {
+                           FeedForwardHeuristic heuristic, TransferFunctionCalculator transferFunction) {
         super(name, topology, wFactory, transferFunction);
         this.gradients = new double[this.topology.length][];
         for (int i = 0; i < this.topology.length; i++) {
@@ -62,16 +62,16 @@ public abstract class BackPropagative extends FeedForwardNetwork {
     }
 
     @Override
-    public Heuristic getHeuristic() {
+    public BasicHeuristic getHeuristic() {
         return heuristic;
     }
 
     @Override
-    public void setHeuristic(Heuristic heuristic) {
-        if (heuristic instanceof FFNNHeuristic) {
-            this.heuristic = (FFNNHeuristic) heuristic;
+    public void setHeuristic(BasicHeuristic heuristic) {
+        if (heuristic instanceof FeedForwardHeuristic) {
+            this.heuristic = (FeedForwardHeuristic) heuristic;
         } else {
-            throw new IllegalArgumentException("Heuristic is not instance of: " + FFNNHeuristic.class.getName());
+            throw new IllegalArgumentException("Heuristic is not instance of: " + FeedForwardHeuristic.class.getName());
         }
     }
 
@@ -120,7 +120,7 @@ public abstract class BackPropagative extends FeedForwardNetwork {
                     } else {
                         weightsEta[i - 1][k][j] *= heuristic.KILLING_ETA_COEFF;
                     }
-                    weights[i - 1][k][j] = heuristic.WEIGHT_DECAY
+                    weights[i - 1][k][j] = heuristic.l2RegularizationConstant
                             * (weights[i - 1][k][j] + deltaWeights[i - 1][k][j]);
                 }
             }
@@ -150,7 +150,7 @@ public abstract class BackPropagative extends FeedForwardNetwork {
             for (int j = 0; j < topology[i]; j++) {
                 for (int k = 0; k < neuronOutputValues[i - 1].length; k++) {
                     calcDeltaWeight(i - 1, j, k);
-                    weights[i - 1][k][j] = heuristic.WEIGHT_DECAY
+                    weights[i - 1][k][j] = heuristic.l2RegularizationConstant
                             * (weights[i - 1][k][j] + deltaWeights[i - 1][k][j]);
                 }
             }

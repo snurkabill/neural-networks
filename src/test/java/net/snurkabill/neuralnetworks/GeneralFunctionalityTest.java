@@ -1,10 +1,10 @@
 package net.snurkabill.neuralnetworks;
 
-import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.data.mnist.MnistDatasetReader;
-import net.snurkabill.neuralnetworks.heuristic.FFNNHeuristic;
-import net.snurkabill.neuralnetworks.heuristic.HeuristicRBM;
+import net.snurkabill.neuralnetworks.heuristic.BasicHeuristic;
+import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
+import net.snurkabill.neuralnetworks.heuristic.FeedForwardHeuristic;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.SupervisedRBMManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.PartialProbabilisticAssociationVectorValidator;
@@ -18,7 +18,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,17 +30,14 @@ public class GeneralFunctionalityTest {
         long seed = 0;
         Database database = createDatabase(2000, false, seed);
         List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 200, database.getNumberOfClasses());
-        FFNNHeuristic heuristic = new FFNNHeuristic();
-        heuristic.learningRate = 0.01;
-        heuristic.momentum = 0.1;
+        BasicHeuristic heuristic = new FeedForwardHeuristic().setLearningRate(0.01).setMomentum(0.1);
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
                 new SmartGaussianRndWeightsFactory(new ParametrizedHyperbolicTangens(), seed),
-                heuristic, new ParametrizedHyperbolicTangens());
+                (FeedForwardHeuristic) heuristic, new ParametrizedHyperbolicTangens());
         NetworkManager manager = new FeedForwardNetworkManager(network, database, null);
         manager.supervisedTraining(1000);
         manager.testNetwork();
-        assertEquals("Result:" + manager.getTestResults().getComparableSuccess(),
-                true, 68.5 == manager.getTestResults().getComparableSuccess());
+        assertEquals(68.5, manager.getTestResults().getComparableSuccess(), 0.0001);
     }
 
     @Test
@@ -49,7 +45,7 @@ public class GeneralFunctionalityTest {
         long seed = 0;
         double weightsScale = 0.01;
         Database database = createDatabase(2000, true, seed);
-        HeuristicRBM heuristic = new HeuristicRBM();
+        BoltzmannMachineHeuristic heuristic = new BoltzmannMachineHeuristic();
         heuristic.momentum = 0.1;
         heuristic.learningRate = 0.1;
         heuristic.constructiveDivergenceIndex = 1;
@@ -64,25 +60,7 @@ public class GeneralFunctionalityTest {
                 new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
         manager.supervisedTraining(1000);
         manager.testNetwork();
-        assertEquals("Result:" + manager.getTestResults().getComparableSuccess(),
-                //true, 63.0 == manager.getTestResults().getComparableSuccess());
-                true, 54.0 == manager.getTestResults().getComparableSuccess());
-    }
-
-    private List<DataItem> createNoise() {
-        List<DataItem> list = new ArrayList<>();
-        list.add(new DataItem(new double[]{0.0, 1.0}));
-        list.add(new DataItem(new double[]{1.0, 0.0}));
-        list.add(new DataItem(new double[]{0.0, 0.0}));
-        return list;
-    }
-
-    private List<DataItem> createAnd() {
-        List<DataItem> list = new ArrayList<>();
-        list.add(new DataItem(new double[]{1.0, 1.0}));
-        list.add(new DataItem(new double[]{1.0, 1.0}));
-        list.add(new DataItem(new double[]{1.0, 1.0}));
-        return list;
+        assertEquals(49.5, manager.getTestResults().getComparableSuccess(), 0.0001);
     }
 
     private Database createDatabase(int numOfElements, boolean binary, long seed) {
