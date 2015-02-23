@@ -14,7 +14,6 @@ public abstract class BackPropagative extends FeedForwardNetwork {
 
     protected final double[][] gradients;
     protected final double[][][] deltaWeights;
-    protected final double[][][] weightsEta;
 
     public BackPropagative(String name, List<Integer> topology, WeightsFactory wFactory,
                            FeedForwardHeuristic heuristic, TransferFunctionCalculator transferFunction) {
@@ -24,33 +23,18 @@ public abstract class BackPropagative extends FeedForwardNetwork {
             this.gradients[i] = new double[this.topology[i] + 1];
         }
         this.deltaWeights = new double[this.topology.length - 1][][];
-        this.weightsEta = new double[this.topology.length - 1][][];
         for (int i = 0; i < this.topology.length - 1; i++) {
             this.deltaWeights[i] = new double[this.neuronOutputValues[i].length][];
-            this.weightsEta[i] = new double[this.neuronOutputValues[i].length][];
             for (int j = 0; j < neuronOutputValues[i].length; j++) {
                 this.deltaWeights[i][j] = new double[this.topology[i + 1]];
-                this.weightsEta[i][j] = new double[this.topology[i + 1]];
             }
         }
         this.heuristic = heuristic;
-        this.setLearningRate();
     }
 
     protected abstract void calcGradients(double[] targetValues);
 
     protected abstract boolean isBatchFull();
-
-    private void setLearningRate() {
-        LOGGER.debug("Setting eta to each weight");
-        for (int i = 0; i < topology.length - 1; i++) {
-            for (int j = 0; j < neuronOutputValues[i].length; j++) {
-                for (int k = 0; k < topology[i + 1]; k++) {
-                    weightsEta[i][j][k] = heuristic.learningRate;
-                }
-            }
-        }
-    }
 
     @Override
     public void trainNetwork(double[] targetValues) {
@@ -80,13 +64,7 @@ public abstract class BackPropagative extends FeedForwardNetwork {
     // ********************************************************************************
     protected void weightsCalculation() {
         if (heuristic.dynamicKillingWeights) {
-            if (heuristic.dynamicBoostingEtas) {
-                complexUpdateWeights();
-            } else {
-                weightsKillingUpdateWeights();
-            }
-        } else if (heuristic.dynamicBoostingEtas) {
-            etaBoostUpdateWeights();
+            weightsKillingUpdateWeights();
         } else {
             simpleUpdateWeights();
         }
@@ -94,7 +72,7 @@ public abstract class BackPropagative extends FeedForwardNetwork {
 
     private double calcDeltaWeight(int i, int j, int k) {
         double oldDeltaWeight = deltaWeights[i][k][j];
-        deltaWeights[i][k][j] = weightsEta[i][k][j] * neuronOutputValues[i][k] * gradients[i + 1][j]
+        deltaWeights[i][k][j] = heuristic.learningRate * neuronOutputValues[i][k] * gradients[i + 1][j]
                 + heuristic.momentum * oldDeltaWeight;
         return oldDeltaWeight;
     }
@@ -104,41 +82,6 @@ public abstract class BackPropagative extends FeedForwardNetwork {
             for (int j = 0; j < topology[i]; j++) {
                 for (int k = 0; k < neuronOutputValues[i - 1].length; k++) {
                     calcDeltaWeight(i - 1, j, k);
-                    weights[i - 1][k][j] += deltaWeights[i - 1][k][j];
-                }
-            }
-        }
-    }
-
-    private void complexUpdateWeights() {
-        for (int i = numOfLayers - 1; i > 0; i--) {
-            for (int j = 0; j < topology[i]; j++) {
-                for (int k = 0; k < neuronOutputValues[i - 1].length; k++) {
-                    double oldDeltaWeight = calcDeltaWeight(i - 1, j, k);
-                    if (oldDeltaWeight * deltaWeights[i - 1][k][j] >= 0) {
-                        weightsEta[i - 1][k][j] *= heuristic.BOOSTING_ETA_COEFF;
-                    } else {
-                        weightsEta[i - 1][k][j] *= heuristic.KILLING_ETA_COEFF;
-                    }
-                    weights[i - 1][k][j] = heuristic.l2RegularizationConstant
-                            * (weights[i - 1][k][j] + deltaWeights[i - 1][k][j]);
-                }
-            }
-        }
-    }
-
-    private void etaBoostUpdateWeights() {
-        for (int i = numOfLayers - 1; i > 0; i--) {
-            for (int j = 0; j < topology[i]; j++) {
-                for (int k = 0; k < neuronOutputValues[i - 1].length; k++) {
-                    double oldDeltaWeight = deltaWeights[i - 1][k][j];
-                    deltaWeights[i - 1][k][j] = weightsEta[i - 1][k][j] * neuronOutputValues[i - 1][k] * gradients[i][j]
-                            + heuristic.momentum * oldDeltaWeight;
-                    if (oldDeltaWeight * deltaWeights[i - 1][k][j] >= 0) {
-                        weightsEta[i - 1][k][j] *= heuristic.BOOSTING_ETA_COEFF;
-                    } else {
-                        weightsEta[i - 1][k][j] *= heuristic.KILLING_ETA_COEFF;
-                    }
                     weights[i - 1][k][j] += deltaWeights[i - 1][k][j];
                 }
             }
