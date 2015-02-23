@@ -26,17 +26,17 @@ public class BinaryMnistRBM extends Canvas {
 
         long seed = 0;
         double weightsScale = 0.01;
-        MnistDatasetReader reader = MnistExampleFFNN.getReader(MnistExampleFFNN.FULL_MNIST_SIZE, true);
+        MnistDatasetReader reader = MnistExampleFFNN.getReader(10000, true);
         Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST", false);
 
         BoltzmannMachineHeuristic heuristic = BoltzmannMachineHeuristic.createStartingHeuristicParams();
-        heuristic.learningRate = 0.01;
+        heuristic.learningRate = 0.1;
         heuristic.constructiveDivergenceIndex = 1;
-        heuristic.batchSize = 50;
-        heuristic.momentum = 0.2;
+        heuristic.batchSize = 10;
+        heuristic.momentum = 0.0;
         heuristic.temperature = 1;
         machine = new BinaryRestrictedBoltzmannMachine("RBM 1",
-                (database.getSizeOfVector()), 200,
+                (database.getSizeOfVector()), 100,
                 new GaussianRndWeightsFactory(weightsScale, seed),
                 heuristic, seed);
         manager_rbm = new UnsupervisedRBMManager(machine, database, seed, null,
@@ -59,7 +59,7 @@ public class BinaryMnistRBM extends Canvas {
         WritableRaster r = in.getRaster();
         graphics__.drawImage(in, border, border, null);
 
-        double weights[][] = machine.getWeights();
+        double weights[][] = machine.getWeights()[0];
 
         int offset = border;
         int buf = 28 + border + border;
