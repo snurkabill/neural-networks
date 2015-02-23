@@ -161,6 +161,9 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine implem
             this.reconHiddenBiases[i] += hiddenNeurons[i];
         }
 
+        // ================================================================================
+        // derivative
+        // ================================================================================
         numOfVectorsInBatch++;
         if (numOfVectorsInBatch >= heuristic.batchSize) {
             for (int i = 0; i < sizeOfVisibleVector; i++) {
@@ -176,22 +179,20 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine implem
                 this.diffHiddenBiases[i] /= heuristic.batchSize;
                 this.reconHiddenBiases[i] /= heuristic.batchSize;
             }
+            double learningCoeff = heuristic.learningRate / super.temperature;
             for (int i = 0; i < sizeOfVisibleVector; i++) {
                 for (int j = 0; j < sizeOfHiddenVector; j++) {
-                    deltaWeights[i][j] = (heuristic.learningRate / super.temperature) *
-                            (this.diffWeights[i][j] - this.reconWeights[i][j]) +
+                    deltaWeights[i][j] = learningCoeff * (this.diffWeights[i][j] - this.reconWeights[i][j]) +
                             heuristic.momentum * deltaWeights[i][j];
                     weights[i][j] += deltaWeights[i][j];
                 }
             }
             for (int i = 0; i < sizeOfVisibleVector; i++) {
-                deltaVisibleBias[i] = (heuristic.learningRate / super.temperature) * reconVisibleBiases[i] +
-                        heuristic.momentum * deltaVisibleBias[i];
+                deltaVisibleBias[i] = learningCoeff * reconVisibleBiases[i] + heuristic.momentum * deltaVisibleBias[i];
                 visibleBias[i] += deltaVisibleBias[i];
             }
             for (int i = 0; i < sizeOfHiddenVector; i++) {
-                deltaHiddenBias[i] = (heuristic.learningRate / super.temperature) *
-                        (diffHiddenBiases[i] - reconHiddenBiases[i]) +
+                deltaHiddenBias[i] = learningCoeff * (diffHiddenBiases[i] - reconHiddenBiases[i]) +
                         heuristic.momentum * deltaHiddenBias[i];
                 hiddenBias[i] += deltaHiddenBias[i];
             }
