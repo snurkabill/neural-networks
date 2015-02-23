@@ -9,11 +9,13 @@ import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.SupervisedRBMManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.PartialProbabilisticAssociationVectorValidator;
 import net.snurkabill.neuralnetworks.managers.feedforward.FeedForwardNetworkManager;
-import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.BinaryRestrictedBoltzmannMachine;
+import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.binaryvisible.BinaryToBinaryRBM;
+import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.binaryvisible.BinaryToRectifiedRBM;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.OnlineFeedForwardNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.ParametrizedHyperbolicTangens;
 import net.snurkabill.neuralnetworks.weights.weightfactory.GaussianRndWeightsFactory;
 import net.snurkabill.neuralnetworks.weights.weightfactory.SmartGaussianRndWeightsFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -41,7 +43,7 @@ public class GeneralFunctionalityTest {
     }
 
     @Test
-    public void learningBinaryRBM() {
+    public void learningBinaryBinaryRBM() {
         long seed = 0;
         double weightsScale = 0.01;
         Database database = createDatabase(2000, true, seed);
@@ -51,16 +53,40 @@ public class GeneralFunctionalityTest {
         heuristic.constructiveDivergenceIndex = 1;
         heuristic.temperature = 1;
         heuristic.batchSize = 3;
-        BinaryRestrictedBoltzmannMachine machine =
-                new BinaryRestrictedBoltzmannMachine("RBM basicHeuristic",
+        BinaryToBinaryRBM machine =
+                new BinaryToBinaryRBM("RBM basicHeuristic",
                         (database.getSizeOfVector() + database.getNumberOfClasses()), 50,
                         new GaussianRndWeightsFactory(weightsScale, seed),
                         heuristic, seed);
         NetworkManager manager = new SupervisedRBMManager(machine, database, seed, null,
-                new PartialProbabilisticAssociationVectorValidator(10, database.getNumberOfClasses()));
+                new PartialProbabilisticAssociationVectorValidator(1, database.getNumberOfClasses()));
         manager.supervisedTraining(1000);
         manager.testNetwork();
-        assertEquals(49.5, manager.getTestResults().getComparableSuccess(), 0.0001);
+        assertEquals(61.5, manager.getTestResults().getComparableSuccess(), 0.0001);
+    }
+
+    @Test
+    @Ignore("need to ignore because I don't know how to train it correctly")
+    public void learningBinaryRectifiedRBM() {
+        long seed = 0;
+        double weightsScale = 0.1;
+        Database database = createDatabase(2000, true, seed);
+        BoltzmannMachineHeuristic heuristic = new BoltzmannMachineHeuristic();
+        heuristic.momentum = 0.1;
+        heuristic.learningRate = 0.1;
+        heuristic.constructiveDivergenceIndex = 1;
+        heuristic.temperature = 1;
+        heuristic.batchSize = 30;
+        BinaryToBinaryRBM machine =
+                new BinaryToRectifiedRBM("RBM basicHeuristic",
+                        (database.getSizeOfVector() + database.getNumberOfClasses()), 50,
+                        new GaussianRndWeightsFactory(weightsScale, seed),
+                        heuristic, seed);
+        NetworkManager manager = new SupervisedRBMManager(machine, database, seed, null,
+                new PartialProbabilisticAssociationVectorValidator(1, database.getNumberOfClasses()));
+        manager.supervisedTraining(1000);
+        manager.testNetwork();
+        assertEquals(61.5, manager.getTestResults().getComparableSuccess(), 0.0001);
     }
 
     private Database createDatabase(int numOfElements, boolean binary, long seed) {

@@ -51,6 +51,8 @@ public abstract class NeuralNetwork {
 
     public abstract void setHeuristic(BasicHeuristic heuristic);
 
+    public abstract double[][][] getWeights();
+
     public String determineWorkingName() {
         return "Name: " + this.name;
     }

@@ -6,7 +6,9 @@ import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.UnsupervisedRBMManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.ProbabilisticAssociationVectorValidator;
-import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.BinaryRestrictedBoltzmannMachine;
+import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
+import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.binaryvisible.BinaryToBinaryRBM;
+import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.binaryvisible.BinaryToRectifiedRBM;
 import net.snurkabill.neuralnetworks.weights.weightfactory.GaussianRndWeightsFactory;
 
 import javax.swing.*;
@@ -19,7 +21,7 @@ public class BinaryMnistRBM extends Canvas {
 
     static int count = 0;
 
-    final BinaryRestrictedBoltzmannMachine machine;
+    final RestrictedBoltzmannMachine machine;
     NetworkManager manager_rbm;
 
     public BinaryMnistRBM() {
@@ -35,7 +37,7 @@ public class BinaryMnistRBM extends Canvas {
         heuristic.batchSize = 10;
         heuristic.momentum = 0.0;
         heuristic.temperature = 1;
-        machine = new BinaryRestrictedBoltzmannMachine("RBM 1",
+        machine = new BinaryToBinaryRBM("RBM 1",
                 (database.getSizeOfVector()), 100,
                 new GaussianRndWeightsFactory(weightsScale, seed),
                 heuristic, seed);

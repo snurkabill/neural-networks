@@ -6,7 +6,7 @@ import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.UnsupervisedRBMManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.ProbabilisticAssociationVectorValidator;
-import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.BinaryRestrictedBoltzmannMachine;
+import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.binaryvisible.BinaryToBinaryRBM;
 import net.snurkabill.neuralnetworks.scenario.LogicFunctions;
 import net.snurkabill.neuralnetworks.weights.weightfactory.GaussianRndWeightsFactory;
 import org.junit.Ignore;
@@ -53,7 +53,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         heuristic.temperature = 1;
         heuristic.batchSize = 1;
         heuristic.constructiveDivergenceIndex = 1;
-        BinaryRestrictedBoltzmannMachine machine = new BinaryRestrictedBoltzmannMachine("RBM1",
+        BinaryToBinaryRBM machine = new BinaryToBinaryRBM("RBM1",
                 database.getSizeOfVector(), 10,
                 new GaussianRndWeightsFactory(0.01, seed), heuristic, seed);
         managers.add(new UnsupervisedRBMManager(machine, database, 0, null,
@@ -65,7 +65,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         heuristic.temperature = 1;
         heuristic.batchSize = 3;
         heuristic.constructiveDivergenceIndex = 1;
-        machine = new BinaryRestrictedBoltzmannMachine("RBM2", database.getSizeOfVector(), 10,
+        machine = new BinaryToBinaryRBM("RBM2", database.getSizeOfVector(), 10,
                 new GaussianRndWeightsFactory(0.01, seed), heuristic, seed);
         managers.add(new UnsupervisedRBMManager(machine, database, 0, null,
                 new ProbabilisticAssociationVectorValidator(10)));
@@ -76,7 +76,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         heuristic.temperature = 1;
         heuristic.batchSize = 10;
         heuristic.constructiveDivergenceIndex = 1;
-        machine = new BinaryRestrictedBoltzmannMachine("RBM3", database.getSizeOfVector(), 10,
+        machine = new BinaryToBinaryRBM("RBM3", database.getSizeOfVector(), 10,
                 new GaussianRndWeightsFactory(0.01, seed), heuristic, seed);
         managers.add(new UnsupervisedRBMManager(machine, database, 0, null,
                 new ProbabilisticAssociationVectorValidator(10)));
@@ -87,7 +87,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         heuristic.temperature = 1;
         heuristic.batchSize = 50;
         heuristic.constructiveDivergenceIndex = 1;
-        machine = new BinaryRestrictedBoltzmannMachine("RBM4", database.getSizeOfVector(), 10,
+        machine = new BinaryToBinaryRBM("RBM4", database.getSizeOfVector(), 10,
                 new GaussianRndWeightsFactory(0.01, seed), heuristic, seed);
         managers.add(new UnsupervisedRBMManager(machine, database, 0, null,
                 new ProbabilisticAssociationVectorValidator(10)));
@@ -98,7 +98,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         heuristic.temperature = 1;
         heuristic.batchSize = 100;
         heuristic.constructiveDivergenceIndex = 1;
-        machine = new BinaryRestrictedBoltzmannMachine("RBM5", database.getSizeOfVector(), 10,
+        machine = new BinaryToBinaryRBM("RBM5", database.getSizeOfVector(), 10,
                 new GaussianRndWeightsFactory(0.01, seed), heuristic, seed);
         managers.add(new UnsupervisedRBMManager(machine, database, 0, null,
                 new ProbabilisticAssociationVectorValidator(10)));

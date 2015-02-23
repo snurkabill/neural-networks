@@ -1,21 +1,26 @@
-package net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl;
+package net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.gaussianvisible;
 
 import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 
-public class BinaryRestrictedBoltzmannMachine extends RestrictedBoltzmannMachine {
+public class GaussianVisibleRestrictedBoltzmannMachine extends RestrictedBoltzmannMachine {
 
-    public BinaryRestrictedBoltzmannMachine(String name, int numOfVisible, int numOfHidden, WeightsFactory wFactory,
-                                            BoltzmannMachineHeuristic heuristicParams, long seed) {
-        super(name, numOfVisible, numOfHidden, wFactory, heuristicParams, seed);
+    // TODO: properly calculate inputDeviations ... or maybe there is no need, it depends on data
+    private final double inputDeviations[];
+
+    public GaussianVisibleRestrictedBoltzmannMachine(String name, int numOfVisible, int numOfHidden, WeightsFactory wFactory, BoltzmannMachineHeuristic heuristic, long seed) {
+        super(name, numOfVisible, numOfHidden, wFactory, heuristic, seed);
+        this.inputDeviations = new double[numOfVisible];
+        for (int i = 0; i < inputDeviations.length; i++) {
+            inputDeviations[i] = 1;
+        }
     }
 
     @Override
     protected void calcVisibleNeurons() {
         for (int i = 0; i < sizeOfVisibleVector; i++) {
-            visibleNeurons[i] =
-                    (super.calcProbabilityOfPositiveOutput(calcVisiblePotential(i)) > random.nextDouble()) ? 1.0 : 0.0;
+            visibleNeurons[i] = calcVisiblePotential(i);
         }
     }
 
@@ -23,14 +28,14 @@ public class BinaryRestrictedBoltzmannMachine extends RestrictedBoltzmannMachine
     protected void calcHiddenNeurons() {
         for (int i = 0; i < sizeOfHiddenVector; i++) {
             hiddenNeurons[i] =
-                    (super.calcProbabilityOfPositiveOutput(calcHiddenPotential(i)) > random.nextDouble()) ? 1.0 : 0.0;
+                    (super.calcProbabilityOfPositiveOutput(calcHiddenPotential(i)) < random.nextDouble()) ? 1.0 : 0.0;
         }
     }
 
     @Override
     public double[] reconstructNext() {
         for (int i = 0; i < this.getSizeOfVisibleVector(); i++) {
-            this.getVisibleNeurons()[i] = this.random.nextInt(2);
+            this.getVisibleNeurons()[i] = this.random.nextDouble();
         }
         calcHiddenNeurons();
         return activateVisibleNeurons();
@@ -42,10 +47,12 @@ public class BinaryRestrictedBoltzmannMachine extends RestrictedBoltzmannMachine
         this.calcHiddenNeurons();
         double energy = 0.0;
         double helpEnergy = 0.0;
+        double errorModifier = 2;
         for (int i = 0; i < sizeOfVisibleVector; i++) {
-            helpEnergy += visibleNeurons[i] * visibleBias[i];
+            double tmp = (visibleNeurons[i] - visibleBias[i]);
+            helpEnergy += (tmp * tmp) / (errorModifier * Math.pow(inputDeviations[i], 2)); // square of std. dev.
         }
-        energy -= helpEnergy;
+        energy += helpEnergy; // yes, here is plus
         helpEnergy = 0.0;
         for (int i = 0; i < sizeOfHiddenVector; i++) {
             helpEnergy += hiddenNeurons[i] * hiddenBias[i];
@@ -54,20 +61,11 @@ public class BinaryRestrictedBoltzmannMachine extends RestrictedBoltzmannMachine
         helpEnergy = 0.0;
         for (int i = 0; i < sizeOfVisibleVector; i++) {
             for (int j = 0; j < sizeOfHiddenVector; j++) {
-                helpEnergy += visibleNeurons[i] * hiddenNeurons[j] * weights[i][j];
+                helpEnergy += (visibleNeurons[i] / inputDeviations[i]) * hiddenNeurons[j] * weights[i][j];
             }
             helpEnergy += visibleNeurons[i] * visibleBias[i];
         }
         energy -= helpEnergy;
         return energy;
-    }
-
-    @Override
-    public String determineWorkingName() {
-        String workingName = this.getName();
-        workingName.concat(" [" + String.valueOf(this.sizeOfVisibleVector) + " -> " +
-                String.valueOf(this.sizeOfHiddenVector) + "] ");
-        workingName.concat("heuristic: " + this.getHeuristic());
-        return workingName;
     }
 }

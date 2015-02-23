@@ -216,6 +216,7 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine implem
         this.trainMachine(visibleNeurons);
     }
 
+    // should perform persistent CD
     private void runMachine(int iterations, double[] inputVals) {
         LOGGER.trace("Machine runs {} iterations", iterations);
         setVisibleNeurons(inputVals);
@@ -327,12 +328,13 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine implem
         return this.getHiddenNeurons();
     }
 
-    public double[][] getWeights() {
-        double[][] weightsSnapshot = new double[this.sizeOfVisibleVector + 1][this.sizeOfHiddenVector];
+    @Override
+    public double[][][] getWeights() {
+        double[][][] weightsSnapshot = new double[1][this.sizeOfVisibleVector + 1][this.sizeOfHiddenVector];
         for (int i = 0; i < this.sizeOfVisibleVector; i++) {
-            System.arraycopy(this.weights[i], 0, weightsSnapshot[i], 0, this.sizeOfHiddenVector);
+            System.arraycopy(this.weights[i], 0, weightsSnapshot[0][i], 0, this.sizeOfHiddenVector);
         }
-        System.arraycopy(hiddenBias, 0, weightsSnapshot[sizeOfVisibleVector], 0, this.sizeOfHiddenVector);
+        System.arraycopy(hiddenBias, 0, weightsSnapshot[0][sizeOfVisibleVector], 0, this.sizeOfHiddenVector);
         return weightsSnapshot;
     }
 

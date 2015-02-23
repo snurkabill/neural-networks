@@ -12,7 +12,7 @@ import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.Probabili
 import net.snurkabill.neuralnetworks.managers.feedforward.FeedForwardNetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.deep.DeepBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
-import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.BinaryRestrictedBoltzmannMachine;
+import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.binaryvisible.BinaryToBinaryRBM;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.DeepOnlineFeedForwardNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.OnlineFeedForwardNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.ParametrizedHyperbolicTangens;
@@ -65,7 +65,7 @@ public class RBMTest {
         heuristics.batchSize = 3;
         heuristics.learningRate = 0.01;
 
-        BinaryRestrictedBoltzmannMachine rbm = new BinaryRestrictedBoltzmannMachine(
+        BinaryToBinaryRBM rbm = new BinaryToBinaryRBM(
                 "RBMTest", topology.get(0), topology.get(1),
                 new GaussianRndWeightsFactory(0.0, 0), heuristics, 0);
 
