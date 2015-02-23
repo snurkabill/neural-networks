@@ -152,6 +152,7 @@ public abstract class FeedForwardNetwork extends NeuralNetwork implements FeedFo
         return this.sizeOfInputVector;
     }
 
+    @Override
     public double[][][] getWeights() {
         return this.weights;
     }

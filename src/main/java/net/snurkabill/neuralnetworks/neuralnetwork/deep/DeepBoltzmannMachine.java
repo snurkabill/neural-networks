@@ -28,11 +28,12 @@ public class DeepBoltzmannMachine extends NeuralNetwork implements DeepNetwork, 
         this.sizeOfOutputVector = machines.get(indexOfLastLayer).getSizeOfOutputVector();
     }
 
+    @Override
     public double[][][] getWeights() {
         double[][][] weights = new double[machines.size()][][];
         for (int i = 0; i < machines.size(); i++) {
             for (int j = 0; j < machines.get(i).getSizeOfVisibleVector(); j++) {
-                weights[i] = machines.get(i).getWeights();
+                weights[i] = machines.get(i).getWeights()[0];
             }
         }
         return weights;

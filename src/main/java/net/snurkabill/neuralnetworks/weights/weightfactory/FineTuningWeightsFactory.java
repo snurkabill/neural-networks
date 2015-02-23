@@ -9,7 +9,7 @@ public class FineTuningWeightsFactory implements WeightsFactory {
     private final double[][][] weights;
 
     public FineTuningWeightsFactory(DeepBoltzmannMachine deepBoltzmannMachine, FeedForwardNetwork backNetwork) {
-        if (deepBoltzmannMachine.getForwardedValues().length != backNetwork.getWeights()[0].length - 1) {
+        if (deepBoltzmannMachine.getForwardedValues().length != backNetwork.getSizeOfInputVector()) {
             throw new IllegalArgumentException("No compatibility!");
         }
         double[][][] dbmWeights = deepBoltzmannMachine.getWeights();
