@@ -4,12 +4,11 @@ import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 
-public class GaussianVisibleRestrictedBoltzmannMachine extends RestrictedBoltzmannMachine {
+public class GaussianToBinaryRBM extends RestrictedBoltzmannMachine {
 
-    // TODO: properly calculate inputDeviations ... or maybe there is no need, it depends on data
     private final double inputDeviations[];
 
-    public GaussianVisibleRestrictedBoltzmannMachine(String name, int numOfVisible, int numOfHidden, WeightsFactory wFactory, BoltzmannMachineHeuristic heuristic, long seed) {
+    public GaussianToBinaryRBM(String name, int numOfVisible, int numOfHidden, WeightsFactory wFactory, BoltzmannMachineHeuristic heuristic, long seed) {
         super(name, numOfVisible, numOfHidden, wFactory, heuristic, seed);
         this.inputDeviations = new double[numOfVisible];
         for (int i = 0; i < inputDeviations.length; i++) {

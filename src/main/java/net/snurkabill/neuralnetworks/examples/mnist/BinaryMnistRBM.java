@@ -32,13 +32,13 @@ public class BinaryMnistRBM extends Canvas {
         Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST", false);
 
         BoltzmannMachineHeuristic heuristic = BoltzmannMachineHeuristic.createStartingHeuristicParams();
-        heuristic.learningRate = 0.1;
+        heuristic.learningRate = 0.01;
         heuristic.constructiveDivergenceIndex = 1;
-        heuristic.batchSize = 10;
-        heuristic.momentum = 0.0;
+        heuristic.batchSize = 30;
+        heuristic.momentum = 0.3;
         heuristic.temperature = 1;
         machine = new BinaryToBinaryRBM("RBM 1",
-                (database.getSizeOfVector()), 100,
+                (database.getSizeOfVector()), 200,
                 new GaussianRndWeightsFactory(weightsScale, seed),
                 heuristic, seed);
         manager_rbm = new UnsupervisedRBMManager(machine, database, seed, null,
