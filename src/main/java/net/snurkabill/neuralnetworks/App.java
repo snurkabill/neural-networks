@@ -1,5 +1,6 @@
 package net.snurkabill.neuralnetworks;
 
+import net.snurkabill.neuralnetworks.examples.RBMProofOfConcept.GaussianVisibleTest;
 import net.snurkabill.neuralnetworks.examples.RBMProofOfConcept.RBMTest;
 import net.snurkabill.neuralnetworks.examples.mnist.BinaryMnistRBM;
 import net.snurkabill.neuralnetworks.examples.mnist.MnistExampleFFNN;
@@ -14,14 +15,15 @@ public class App {
 
     public static void main(String argv[]) throws IOException {
 
-        BinaryMnistRBM.start();
+        //GaussianVisibleTest.gaussianVisibleExample();
+        //BinaryMnistRBM.start();
         //new RBMTest().test();
 
         //DeepBeliefNetworkConcept.errorFunctionOnRBMs();
         //DeepBeliefNetworkConcept.deepXor();
         //DeepBeliefNetworkConcept.deepBoltzmannMachine();
 
-        //MnistExampleFFNN.basicBenchmark();
+        MnistExampleFFNN.basicBenchmark();
         //GaussianVisibleImplementation.shitFuck();
         //IWannaKillMyself.and();
     }
