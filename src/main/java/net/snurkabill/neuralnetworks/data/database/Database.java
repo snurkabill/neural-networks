@@ -1,5 +1,6 @@
 package net.snurkabill.neuralnetworks.data.database;
 
+import net.snurkabill.neuralnetworks.utilities.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +81,6 @@ public class Database<T extends DataItem> {
         return isChanged;
     }
 
-
     private Map<Integer, List<T>> applyFilterOnDatasetForDimReduction(boolean[] filter,
                                                                       Map<Integer, List<T>> dataSet) {
         LOGGER.info("Applying filter on data");
@@ -110,6 +110,47 @@ public class Database<T extends DataItem> {
         }
         LOGGER.info("Data are filtered!");
         return reducedData;
+    }
+
+    public Database normalize() {
+        LOGGER.info("Data normalization started.");
+        for (int i = 0; i < this.getSizeOfVector(); i++) {
+            LOGGER.debug("Normalizing {}th elements", i);
+            double[] array = new double[this.sizeOfTrainingSet];
+            int counter = 0;
+            for (int j = 0; j < trainingSet.size(); j++) {
+                for (int k = 0; k < trainingSet.get(j).size(); k++) {
+                    array[counter] = trainingSet.get(j).get(k).data[i];
+                    counter++;
+                }
+            }
+            assert counter == sizeOfTrainingSet;
+
+            double mean = Utilities.mean(array);
+            double stdev = Utilities.stddev(array, mean);
+            LOGGER.trace("mean: {}, stdev: {}", mean, stdev);
+
+            // applying normalization
+            counter = 0;
+            for (int j = 0; j < trainingSet.size(); j++) {
+                for (int k = 0; k < trainingSet.get(j).size(); k++) {
+
+                    trainingSet.get(j).get(k).data[i] = (trainingSet.get(j).get(k).data[i] - mean) / stdev;
+                    counter++;
+                }
+            }
+            assert counter == sizeOfTrainingSet;
+            counter = 0;
+            for (int j = 0; j < testingSet.size(); j++) {
+                for (int k = 0; k < testingSet.get(j).size(); k++) {
+                    testingSet.get(j).get(k).data[i] = (trainingSet.get(j).get(k).data[i] - mean) / stdev;
+                    counter++;
+                }
+            }
+            assert counter == sizeOfTestingSet;
+        }
+        LOGGER.info("Normalizing finished");
+        return this;
     }
 
     public T getTrainingIteratedData(int i) {

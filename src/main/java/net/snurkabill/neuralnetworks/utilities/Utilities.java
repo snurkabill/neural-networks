@@ -14,15 +14,13 @@ public class Utilities {
 
     public static double mean(final double[] input) {
         double m = 0.0;
-        for (int i = 0; i < input.length; i++)
-            m += input[i];
+        for (double anInput : input) m += anInput;
         return m / input.length;
     }
 
     public static double stddev(final double[] input, double mean) {
         double sum = 0.0;
-        for (int i = 0; i < input.length; i++)
-            sum += (input[i] - mean) * (input[i] - mean);
+        for (double anInput : input) sum += (anInput - mean) * (anInput - mean);
         return Math.sqrt(sum / (input.length - 1));
     }
 
