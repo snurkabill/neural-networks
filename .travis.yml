@@ -1,7 +1,14 @@
 language: java
+script: mvn clean install -DskipTests=true
 jdk:
   - oraclejdk8
   - oraclejdk7
   - openjdk8
   - openjdk7
   - openjdk6
+branches:
+  only:
+  - master
+notifications:
+  email:
+  - snurkabill@gmail.com
