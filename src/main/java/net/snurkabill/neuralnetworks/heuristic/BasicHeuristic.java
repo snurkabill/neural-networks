@@ -19,7 +19,7 @@ public abstract class BasicHeuristic {
         this.learningRate = 0.1;
         this.momentum = 0;
         this.dynamicKillingWeights = false;
-        this.l2RegularizationConstant = 0;
+        this.l2RegularizationConstant = 1;
         this.batchSize = 1;
     }
 

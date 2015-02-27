@@ -184,17 +184,17 @@ public abstract class RestrictedBoltzmannMachine extends BoltzmannMachine implem
                 for (int j = 0; j < sizeOfHiddenVector; j++) {
                     deltaWeights[i][j] = learningCoeff * (this.diffWeights[i][j] - this.reconWeights[i][j]) +
                             heuristic.momentum * deltaWeights[i][j];
-                    weights[i][j] += deltaWeights[i][j];
+                    weights[i][j] = heuristic.l2RegularizationConstant * (weights[i][j] + deltaWeights[i][j]);
                 }
             }
             for (int i = 0; i < sizeOfVisibleVector; i++) {
                 deltaVisibleBias[i] = learningCoeff * reconVisibleBiases[i] + heuristic.momentum * deltaVisibleBias[i];
-                visibleBias[i] += deltaVisibleBias[i];
+                visibleBias[i] = heuristic.l2RegularizationConstant * (visibleBias[i] + deltaVisibleBias[i]);
             }
             for (int i = 0; i < sizeOfHiddenVector; i++) {
                 deltaHiddenBias[i] = learningCoeff * (diffHiddenBiases[i] - reconHiddenBiases[i]) +
                         heuristic.momentum * deltaHiddenBias[i];
-                hiddenBias[i] += deltaHiddenBias[i];
+                hiddenBias[i] = heuristic.l2RegularizationConstant * (hiddenBias[i] + deltaHiddenBias[i]);
             }
             for (int i = 0; i < sizeOfVisibleVector; i++) {
                 for (int j = 0; j < sizeOfHiddenVector; j++) {
