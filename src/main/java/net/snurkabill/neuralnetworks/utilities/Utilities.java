@@ -13,14 +13,32 @@ public class Utilities {
     public static final double ERROR_MODIFIER = 0.5;
 
     public static double mean(final double[] input) {
+        if(input.length == 0) {
+            throw new IllegalArgumentException("There must be at least one element for calculating mean");
+        }
         double m = 0.0;
-        for (double anInput : input) m += anInput;
+        for (double anInput : input) {
+            m += anInput;
+        }
         return m / input.length;
     }
 
+    public static double stddev(final double[] input) {
+        return stddev(input, mean(input));
+    }
+
+    /**
+     * calculates corrected sample standard deviation
+     */
     public static double stddev(final double[] input, double mean) {
+        if(input.length <= 1) {
+            throw new IllegalArgumentException("There needs to be at least 2 elements for calculating " +
+                    "corrected sample standard deviation");
+        }
         double sum = 0.0;
-        for (double anInput : input) sum += (anInput - mean) * (anInput - mean);
+        for (double anInput : input) {
+            sum += (anInput - mean) * (anInput - mean);
+        }
         return Math.sqrt(sum / (input.length - 1));
     }
 
