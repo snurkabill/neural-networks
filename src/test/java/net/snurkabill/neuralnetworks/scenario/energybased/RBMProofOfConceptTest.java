@@ -65,7 +65,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
             if(manager.getTestResults().getComparableSuccess() > 90) {
                 break;
             }
-            manager.supervisedTraining(10);
+            manager.supervisedTraining(1000);
         }
         manager.testNetwork();
         assertEquals("Result:" + manager.getTestResults().getComparableSuccess(),
@@ -95,7 +95,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         heuristic.temperature = 0.1;
         heuristic.batchSize = 6;
 
-        BinaryToBinaryRBM machine = new BinaryToBinaryRBM("And-RBM", database.getSizeOfVector() + database.getNumberOfClasses(),
+        BinaryToBinaryRBM machine = new BinaryToBinaryRBM("Or-RBM", database.getSizeOfVector() + database.getNumberOfClasses(),
                 10, new GaussianRndWeightsFactory(0, seed), heuristic, seed);
 
         SupervisedRBMManager manager = new SupervisedRBMManager(machine, database, seed, null,
@@ -108,7 +108,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
             if(manager.getTestResults().getComparableSuccess() > 90) {
                 break;
             }
-            manager.supervisedTraining(10);
+            manager.supervisedTraining(1000);
         }
         manager.testNetwork();
         assertEquals("Result:" + manager.getTestResults().getComparableSuccess(),
