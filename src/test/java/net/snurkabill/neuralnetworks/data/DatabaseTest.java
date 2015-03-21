@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+import static org.junit.Assert.assertEquals;
+
 public class DatabaseTest {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("Database test");
@@ -66,30 +68,30 @@ public class DatabaseTest {
 
     @Test
     public void testNumberOfElements() {
-        Assert.assertEquals(numberOfClasses, database.getNumberOfClasses());
+        assertEquals(numberOfClasses, database.getNumberOfClasses());
     }
 
     @Test
     public void testSizeOfSets() {
         for (int i = 0; i < database.getNumberOfClasses(); i++) {
-            Assert.assertEquals(sizeOfElementsTesting[i], database.getSizeOfTestingDataset(i));
-            Assert.assertEquals(sizeOfElementsTraining[i], database.getSizeOfTrainingDataset(i));
+            assertEquals(sizeOfElementsTesting[i], database.getSizeOfTestingDataset(i));
+            assertEquals(sizeOfElementsTraining[i], database.getSizeOfTrainingDataset(i));
         }
         int sum = 0;
         for (int i = 0; i < sizeOfElementsTesting.length; i++) {
             sum += sizeOfElementsTesting[i];
         }
-        Assert.assertEquals(sum, database.getTestSetSize());
+        assertEquals(sum, database.getTestSetSize());
         sum = 0;
         for (int i = 0; i < sizeOfElementsTraining.length; i++) {
             sum += sizeOfElementsTraining[i];
         }
-        Assert.assertEquals(sum, database.getTrainingsetSize());
+        assertEquals(sum, database.getTrainingsetSize());
     }
 
     @Test
     public void testSizeOfVector() {
-        Assert.assertEquals(1, database.getSizeOfVector());
+        assertEquals(1, database.getSizeOfVector());
     }
 
     @Test
@@ -98,7 +100,7 @@ public class DatabaseTest {
             Iterator<DataItem> iterator = database.getTestingIteratorOverClass(i);
             for (int j = 0; iterator.hasNext(); j++) {
                 double val = iterator.next().data[0];
-                Assert.assertEquals(i * 10 + j, val, precision);
+                assertEquals(i * 10 + j, val, precision);
             }
         }
     }
@@ -127,9 +129,10 @@ public class DatabaseTest {
             } else {
                 throw new IllegalArgumentException("WTF");
             }
-            Assert.assertEquals(item.data[0], num, precision);
+            assertEquals(item.data[0], num, precision);
         }
     }
+
 
     @Test
     @Ignore
