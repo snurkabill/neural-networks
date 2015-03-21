@@ -27,19 +27,16 @@ public class Utilities {
         return stddev(input, mean(input));
     }
 
-    /**
-     * calculates corrected sample standard deviation
-     */
     public static double stddev(final double[] input, double mean) {
-        if(input.length <= 1) {
-            throw new IllegalArgumentException("There needs to be at least 2 elements for calculating " +
-                    "corrected sample standard deviation");
+        if(input.length == 0) {
+            throw new IllegalArgumentException("There needs to be at least 1 element for calculating " +
+                    "standard deviation");
         }
         double sum = 0.0;
         for (double anInput : input) {
             sum += (anInput - mean) * (anInput - mean);
         }
-        return Math.sqrt(sum / (input.length - 1));
+        return Math.sqrt(sum / (input.length));
     }
 
     public static double sigmoid(double x) {
