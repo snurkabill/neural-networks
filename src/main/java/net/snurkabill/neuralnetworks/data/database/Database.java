@@ -20,6 +20,7 @@ public class Database<T extends DataItem> {
 
     private int sizeOfTrainingSet;
     private int sizeOfTestingSet;
+
     private int numberOfClasses;
     private final String name;
     private final int sizeOfVector;
@@ -43,7 +44,7 @@ public class Database<T extends DataItem> {
         this.trainingSet = applyFilterOnDatasetForDimReduction(filter, trainingSet);
         this.testingSet = applyFilterOnDatasetForDimReduction(filter, testingSet);
         this.numberOfClasses = this.trainingSet.size();
-        this.testingSetIterator = new HashMap<>(this.trainingSet.size(), 1);
+        this.testingSetIterator = new HashMap<>(this.testingSet.size(), 1);
         this.trainingSetIterator = new HashMap<>(this.trainingSet.size(), 1);
         for (int i = 0; i < this.trainingSet.size(); i++) {
             sizeOfTrainingSet += this.trainingSet.get(i).size();
@@ -112,45 +113,56 @@ public class Database<T extends DataItem> {
         return reducedData;
     }
 
-    public Database normalize() {
-        LOGGER.info("Data normalization started.");
-        for (int i = 0; i < this.getSizeOfVector(); i++) {
-            LOGGER.debug("Normalizing {}th elements", i);
-            double[] array = new double[this.sizeOfTrainingSet];
-            int counter = 0;
-            for (int j = 0; j < trainingSet.size(); j++) {
-                for (int k = 0; k < trainingSet.get(j).size(); k++) {
-                    array[counter] = trainingSet.get(j).get(k).data[i];
-                    counter++;
-                }
-            }
-            assert counter == sizeOfTrainingSet;
+    private int calculatePercentageSize(double scaleSize) {
+        int size = 0;
+        for (int i = 0; i < trainingSet.size(); i++) {
+            size += trainingSet.get(i).size() * scaleSize;
+        }
+        return size;
+    }
 
+    public Database standardNormalization(int percentageSampleSize) {
+        if(percentageSampleSize <= 0) {
+            throw new IllegalArgumentException("percentageSampleSize (" + percentageSampleSize + ") is too low. " +
+                    "Must be from interval (0, 100>");
+        }
+        if(percentageSampleSize > 100) {
+            throw new IllegalArgumentException("percentageSampleSize (" + percentageSampleSize + ") is too high. " +
+                    "Must be from interval (0, 100>");
+        }
+        return standardNormalization(percentageSampleSize / 100.0);
+    }
+
+    public Database standardNormalization(double scaleSize) {
+        if(scaleSize > 1) {
+            throw new IllegalArgumentException("ScaleSize (" + scaleSize + ") is too large," +
+                    " correct interval is (0, 1>");
+        }
+        if(scaleSize <= 0) {
+            throw new IllegalArgumentException("ScaleSize (" + scaleSize + ") is too low, correct interval is (0, 1>");
+        }
+        LOGGER.info("Data standard normalization started.");
+        for (int i = 0; i < this.getSizeOfVector(); i++) {
+            int sampleSize = calculatePercentageSize(scaleSize);
+            double[] array = new double[sampleSize];
+            for (int j = 0; j < sampleSize; j++) {
+                array[j] = this.getRandomizedTrainingData().data[i];
+            }
             double mean = Utilities.mean(array);
             double stdev = Utilities.stddev(array, mean);
-            LOGGER.trace("mean: {}, stdev: {}", mean, stdev);
-
-            // applying normalization
-            counter = 0;
-            for (int j = 0; j < trainingSet.size(); j++) {
-                for (int k = 0; k < trainingSet.get(j).size(); k++) {
-
-                    trainingSet.get(j).get(k).data[i] = (trainingSet.get(j).get(k).data[i] - mean) / stdev;
-                    counter++;
-                }
-            }
-            assert counter == sizeOfTrainingSet;
-            counter = 0;
-            for (int j = 0; j < testingSet.size(); j++) {
-                for (int k = 0; k < testingSet.get(j).size(); k++) {
-                    testingSet.get(j).get(k).data[i] = (trainingSet.get(j).get(k).data[i] - mean) / stdev;
-                    counter++;
-                }
-            }
-            assert counter == sizeOfTestingSet;
+            applyStdNormalizationOnIthDimension(i, mean, stdev, trainingSet);
+            applyStdNormalizationOnIthDimension(i, mean, stdev, testingSet);
         }
         LOGGER.info("Normalizing finished");
         return this;
+    }
+
+    private void applyStdNormalizationOnIthDimension(int i, double mean, double stdev, Map<Integer, List<T>> set) {
+        for (int j = 0; j < set.size(); j++) {
+            for (int k = 0; k < set.get(j).size(); k++) {
+                set.get(j).get(k).data[i] = (set.get(j).get(k).data[i] - mean) / stdev;
+            }
+        }
     }
 
     public T getTrainingIteratedData(int i) {
@@ -193,6 +205,7 @@ public class Database<T extends DataItem> {
         return getTestingData(random.nextInt(testingSet.size()));
     }
 
+    // TODO: picking right list should be provided by random choice based on list's sizes
     public T getRandomizedTrainingData() {
         return getTrainingData(random.nextInt(trainingSet.size()));
     }
