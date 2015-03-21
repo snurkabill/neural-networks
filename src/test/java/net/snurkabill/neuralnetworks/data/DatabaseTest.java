@@ -3,7 +3,6 @@ package net.snurkabill.neuralnetworks.data;
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.data.database.LabelledItem;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -21,7 +20,7 @@ public class DatabaseTest {
     public static final int numberOfClasses = 3;
     public static final int[] sizeOfElementsTesting = {3, 7, 9};
     public static final int[] sizeOfElementsTraining = {8, 6, 3};
-    public static final double precision = 0.0000001;
+    public static final double tolerance = 0.0000001;
 
     private static Database database;
 
@@ -59,6 +58,23 @@ public class DatabaseTest {
             map.put(i, tmp);
         }
         return map;
+    }
+
+    public static Map<Integer, List<LabelledItem>> createSimpleSet() {
+        Map<Integer, List<LabelledItem>> trainingSet = new HashMap<>();
+        List<LabelledItem> first = new ArrayList<>();
+        first.add(new LabelledItem(new double[] {1, 1, 1}, 0));
+        first.add(new LabelledItem(new double[] {2, 2, 2}, 0));
+        first.add(new LabelledItem(new double[] {3, 3, 3}, 0));
+        first.add(new LabelledItem(new double[] {100, 200, 300}, 0));
+        List<LabelledItem> second = new ArrayList<>();
+        second.add(new LabelledItem(new double[] {-1, -1, -1}, 1));
+        second.add(new LabelledItem(new double[] {-2, -2, -2}, 1));
+        second.add(new LabelledItem(new double[] {-3, -3, -3}, 1));
+        second.add(new LabelledItem(new double[] {-100, -200, -300}, 1));
+        trainingSet.put(0, first);
+        trainingSet.put(1, second);
+        return trainingSet;
     }
 
     @BeforeClass
@@ -100,7 +116,7 @@ public class DatabaseTest {
             Iterator<DataItem> iterator = database.getTestingIteratorOverClass(i);
             for (int j = 0; iterator.hasNext(); j++) {
                 double val = iterator.next().data[0];
-                assertEquals(i * 10 + j, val, precision);
+                assertEquals(i * 10 + j, val, tolerance);
             }
         }
     }
@@ -129,10 +145,52 @@ public class DatabaseTest {
             } else {
                 throw new IllegalArgumentException("WTF");
             }
-            assertEquals(item.data[0], num, precision);
+            assertEquals(item.data[0], num, tolerance);
         }
     }
 
+    @Test
+    public void unityBasedNormalization() {
+        Database database = new Database(0, createSimpleSet(), createSimpleSet(), "database", false);
+        Iterator<DataItem> iterator = database.getTestingIterator();
+
+        double max1 = Double.NEGATIVE_INFINITY;
+        double min1 = Double.POSITIVE_INFINITY;
+        double max2 = Double.NEGATIVE_INFINITY;
+        double min2 = Double.POSITIVE_INFINITY;
+        double max3 = Double.NEGATIVE_INFINITY;
+        double min3 = Double.POSITIVE_INFINITY;
+
+        for (int i = 0; iterator.hasNext(); i++) {
+            DataItem item = iterator.next();
+
+            if(item.data[0] < min1) {
+                min1 = item.data[0];
+            }
+            if(item.data[1] < min2) {
+                min2 = item.data[1];
+            }
+            if(item.data[2] < min3) {
+                min3 = item.data[2];
+            }
+
+            if(item.data[0] > max1) {
+                max1 = item.data[0];
+            }
+            if(item.data[1] < max2) {
+                max2 = item.data[1];
+            }
+            if(item.data[2] < max3) {
+                max3 = item.data[2];
+            }
+        }
+        assertEquals(10, min1, tolerance);
+        assertEquals(10, min2, tolerance);
+        assertEquals(10, min3, tolerance);
+        assertEquals(20, max1, tolerance);
+        assertEquals(20, max2, tolerance);
+        assertEquals(20, max3, tolerance);
+    }
 
     @Test
     @Ignore
@@ -163,8 +221,6 @@ public class DatabaseTest {
         }
         long endTime = System.currentTimeMillis();
         LOGGER.info("Time spent: {}", endTime - startTime);
-
-
     }
 }
 

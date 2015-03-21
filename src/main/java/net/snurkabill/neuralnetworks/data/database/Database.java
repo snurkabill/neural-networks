@@ -121,7 +121,18 @@ public class Database<T extends DataItem> {
         return size;
     }
 
-    public Database standardNormalization(int percentageSampleSize) {
+    private void checkScaleSize(double scaleSize) {
+        if(scaleSize > 1) {
+            throw new IllegalArgumentException("ScaleSize (" + scaleSize + ") is too large," +
+                    " correct interval is (0, 1>");
+        }
+        if(scaleSize <= 0) {
+            throw new IllegalArgumentException("ScaleSize (" + scaleSize + ") is too low, correct interval is (0, 1>");
+        }
+    }
+
+    // TODO: implement deterministic normalization
+    public Database stochasticStandardNormalization(int percentageSampleSize) {
         if(percentageSampleSize <= 0) {
             throw new IllegalArgumentException("percentageSampleSize (" + percentageSampleSize + ") is too low. " +
                     "Must be from interval (0, 100>");
@@ -130,17 +141,11 @@ public class Database<T extends DataItem> {
             throw new IllegalArgumentException("percentageSampleSize (" + percentageSampleSize + ") is too high. " +
                     "Must be from interval (0, 100>");
         }
-        return standardNormalization(percentageSampleSize / 100.0);
+        return stochasticStandardNormalization(percentageSampleSize / 100.0);
     }
 
-    public Database standardNormalization(double scaleSize) {
-        if(scaleSize > 1) {
-            throw new IllegalArgumentException("ScaleSize (" + scaleSize + ") is too large," +
-                    " correct interval is (0, 1>");
-        }
-        if(scaleSize <= 0) {
-            throw new IllegalArgumentException("ScaleSize (" + scaleSize + ") is too low, correct interval is (0, 1>");
-        }
+    public Database stochasticStandardNormalization(double scaleSize) {
+        checkScaleSize(scaleSize);
         LOGGER.info("Data standard normalization started.");
         for (int i = 0; i < this.getSizeOfVector(); i++) {
             int sampleSize = calculatePercentageSize(scaleSize);
@@ -160,7 +165,44 @@ public class Database<T extends DataItem> {
     private void applyStdNormalizationOnIthDimension(int i, double mean, double stdev, Map<Integer, List<T>> set) {
         for (int j = 0; j < set.size(); j++) {
             for (int k = 0; k < set.get(j).size(); k++) {
-                set.get(j).get(k).data[i] = (set.get(j).get(k).data[i] - mean) / stdev;
+                if(stdev == 0) {
+                    set.get(j).get(k).data[i] = 0.0;
+                } else {
+                    set.get(j).get(k).data[i] = (set.get(j).get(k).data[i] - mean) / stdev;
+                }
+            }
+        }
+    }
+
+    public Database stochasticUnityBasedNormalization(double scaleSize, double topLimit, double lowLimit) {
+        checkScaleSize(scaleSize);
+        LOGGER.info("Data unity-based normalization started.");
+        for (int i = 0; i < this.getSizeOfVector(); i++) {
+            int sampleSize = calculatePercentageSize(scaleSize);
+            double max = Double.NEGATIVE_INFINITY;
+            double min = Double.POSITIVE_INFINITY;
+            for (int j = 0; j < sampleSize; j++) {
+                double item = this.getRandomizedTrainingData().data[i];
+                if(item > max) {
+                    max = item;
+                }
+                if(item < min) {
+                    min = item;
+                }
+            }
+            applyUnitBasedNormalizationOnIthDimension(i, max, min, topLimit, lowLimit, trainingSet);
+            applyUnitBasedNormalizationOnIthDimension(i, max, min, topLimit, lowLimit, testingSet);
+        }
+        LOGGER.info("Normalizing finished");
+        return this;
+    }
+
+    private void applyUnitBasedNormalizationOnIthDimension(int i, double max, double min,double topLimit,
+                                                           double lowLimit, Map<Integer, List<T>> set) {
+        for (int j = 0; j < set.size(); j++) {
+            for (int k = 0; k < set.get(j).size(); k++) {
+                set.get(j).get(k).data[i] = lowLimit +
+                        ((set.get(j).get(k).data[i] - min) * (topLimit - lowLimit) / (max - min));
             }
         }
     }
