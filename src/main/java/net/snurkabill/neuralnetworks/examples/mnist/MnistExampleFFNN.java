@@ -113,8 +113,8 @@ public class MnistExampleFFNN {
                 new PartialProbabilisticAssociationVectorValidator(1, database.getNumberOfClasses()));
 
         MasterNetworkManager superManager = new MasterNetworkManager("MNIST",
-                Arrays.asList(manager, manager_rbm/*, manager_rbm2, manager_rbm3, manager_rbm4*/));
-        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(2, 10000, superManager);
+                Arrays.asList(manager, manager_rbm/*, manager_rbm2, manager_rbm3, manager_rbm4*/), 2);
+        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(5, 10000, superManager);
         benchmarker.benchmark();
     }
 
