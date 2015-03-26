@@ -45,7 +45,7 @@ public class FeedForwardNetworkManager extends NetworkManager {
         int fail = 0;
         for (int _class = 0; _class < database.getNumberOfClasses(); _class++) {
             targetMaker.getTargetValues(_class);
-            Iterator<DataItem> testingIterator = database.getTestingIteratorOverClass(_class);
+            Database.TestClassIterator testingIterator = database.getTestingIteratorOverClass(_class);
             for (; testingIterator.hasNext(); ) {
                 double[] item = testingIterator.next().data;
                 globalError += network.calcError(item, targetValues);

@@ -22,7 +22,7 @@ public abstract class NetworkManager {
     protected final NeuralNetwork neuralNetwork;
     protected final Database database;
     protected final TargetValues targetMaker;
-    protected final Database.InfiniteRandomTrainSetIterator infiniteTrainingIterator;
+    protected final Database.InfiniteRandomTrainingIterator infiniteTrainingIterator;
     protected final List<NetworkResults> results = new ArrayList<>();
     private final Timer timer = new Timer();
     protected double globalError;

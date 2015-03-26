@@ -44,14 +44,14 @@ public class MasterNetworkManager {
         LOGGER.info("================================================================================");
         LOGGER.info("TRAINING STARTED");
         timer.startTimer();
-        this.executor = Executors.newFixedThreadPool(numberOfThreads);
+        /*this.executor = Executors.newFixedThreadPool(numberOfThreads);
         for (int i = 0; i < managers.size(); i++) {
             //futureManagers.set(i, executor.submit(new ConcurrentTrainer(managers.get(i), numOfIterations)));
             executor.submit(new ConcurrentTrainer(managers.get(i), numOfIterations));
         }
         executor.shutdown();
         while (!executor.isTerminated()) {
-        }
+        }*/
         /*for (Future future : futureManagers) {
             try {
                 future.get();
@@ -61,6 +61,9 @@ public class MasterNetworkManager {
                 throw new RuntimeException(e);
             }
         }*/
+        for (NetworkManager manager : managers) {
+            manager.supervisedTraining(numOfIterations);
+        }
         timer.stopTimer();
         LOGGER.info("TRAINING STOPPED; TOTAL TIME: {} seconds", timer.secondsSpent());
         LOGGER.info("================================================================================");
@@ -70,14 +73,14 @@ public class MasterNetworkManager {
         LOGGER.info("================================================================================");
         LOGGER.info("TESTING STARTED");
         timer.startTimer();
-        this.executor = Executors.newFixedThreadPool(numberOfThreads);
+        /*this.executor = Executors.newFixedThreadPool(numberOfThreads);
         for (int i = 0; i < managers.size(); i++) {
             //futureManagers.set(i, executor.submit(new ConcurrentTester(managers.get(i))));
             executor.submit(new ConcurrentTester(managers.get(i)));
         }
         executor.shutdown();
         while (!executor.isTerminated()) {
-        }
+        }*/
         /*for (Future future : futureManagers) {
             try {
                 future.get();
@@ -87,6 +90,9 @@ public class MasterNetworkManager {
                 throw new RuntimeException(e);
             }
         }*/
+        for (NetworkManager manager : managers) {
+            manager.testNetwork();
+        }
         timer.stopTimer();
         LOGGER.info("TESTING STOPPED; TOTAL TIME: {} seconds", timer.secondsSpent());
         LOGGER.info("================================================================================");

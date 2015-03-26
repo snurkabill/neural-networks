@@ -85,7 +85,7 @@ public class DatabaseTest {
         for (int i = 0; i < sizeOfElementsTraining.length; i++) {
             sum += sizeOfElementsTraining[i];
         }
-        assertEquals(sum, database.getTrainingsetSize());
+        assertEquals(sum, database.getTrainingSetSize());
     }
 
     @Test
@@ -132,35 +132,5 @@ public class DatabaseTest {
         }
     }
 
-    @Test
-    @Ignore
-    public void testPerformanceOfSingleAndMultipleThreadTestIterator() {
-        Map<Integer, List<Integer>> testingSet = new HashMap<>();
-
-        int numOfClasses = 100;
-        int numOfElementsInclass = 100_000;
-
-        for (int i = 0; i < numOfClasses; i++) {
-            List<Integer> tmpList = new ArrayList<>();
-            for (int j = 0; j < numOfElementsInclass; j++) {
-                tmpList.add(j);
-            }
-            testingSet.put(i, tmpList);
-        }
-        Database tmpDatabase = new Database(0, null, testingSet, "testingPerformance", true);
-
-        Iterator<DataItem> iterator = tmpDatabase.getTestingIterator();
-
-        long startTime = System.currentTimeMillis();
-
-        for (; iterator.hasNext(); ) {
-            DataItem a = iterator.next();
-            if (a.data[0] == -1) {
-                LOGGER.info("asdf");
-            }
-        }
-        long endTime = System.currentTimeMillis();
-        LOGGER.info("Time spent: {}", endTime - startTime);
-    }
 }
 
