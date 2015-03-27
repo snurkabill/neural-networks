@@ -2,7 +2,9 @@ package net.snurkabill.neuralnetworks.managers.concurrent;
 
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
 
-public class ConcurrentTester implements Runnable {
+import java.util.concurrent.Callable;
+
+public class ConcurrentTester implements Callable<ConcurrentTester> {
 
     private final NetworkManager manager;
 
@@ -10,8 +12,10 @@ public class ConcurrentTester implements Runnable {
         this.manager = manager;
     }
 
+
     @Override
-    public void run() {
+    public ConcurrentTester call() throws Exception {
         manager.testNetwork();
+        return this;
     }
 }

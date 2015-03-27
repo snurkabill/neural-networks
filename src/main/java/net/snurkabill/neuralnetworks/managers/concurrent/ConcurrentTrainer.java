@@ -2,7 +2,9 @@ package net.snurkabill.neuralnetworks.managers.concurrent;
 
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
 
-public class ConcurrentTrainer implements Runnable {
+import java.util.concurrent.Callable;
+
+public class ConcurrentTrainer implements Callable<ConcurrentTrainer> {
 
     private final NetworkManager manager;
     private final int numberOfIterations;
@@ -13,7 +15,8 @@ public class ConcurrentTrainer implements Runnable {
     }
 
     @Override
-    public void run() {
+    public ConcurrentTrainer call() throws Exception {
         manager.supervisedTraining(numberOfIterations);
+        return this;
     }
 }

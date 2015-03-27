@@ -21,7 +21,6 @@ public class MasterNetworkManager {
     private final Timer timer = new Timer();
     private final String nameOfProblem;
     private ExecutorService executor;
-    private final List<Future> futureManagers;
     private final int numberOfThreads;
 
     public MasterNetworkManager(String nameOfProblem, List<NetworkManager> singleNetworkManagers, int numberOfThreads) {
@@ -29,7 +28,6 @@ public class MasterNetworkManager {
         this.managers = singleNetworkManagers;
         this.nameOfProblem = nameOfProblem;
         this.numberOfThreads = numberOfThreads;
-        this.futureManagers = new ArrayList<>(singleNetworkManagers.size());
     }
 
     public String getNameOfProblem() {
@@ -44,25 +42,18 @@ public class MasterNetworkManager {
         LOGGER.info("================================================================================");
         LOGGER.info("TRAINING STARTED");
         timer.startTimer();
-        /*this.executor = Executors.newFixedThreadPool(numberOfThreads);
-        for (int i = 0; i < managers.size(); i++) {
-            //futureManagers.set(i, executor.submit(new ConcurrentTrainer(managers.get(i), numOfIterations)));
-            executor.submit(new ConcurrentTrainer(managers.get(i), numOfIterations));
+        this.executor = Executors.newFixedThreadPool(numberOfThreads);
+        List<Future<ConcurrentTrainer>> tasks = new ArrayList<>();
+        for (NetworkManager manager : managers) {
+            tasks.add(executor.submit(new ConcurrentTrainer(manager, numOfIterations)));
         }
         executor.shutdown();
-        while (!executor.isTerminated()) {
-        }*/
-        /*for (Future future : futureManagers) {
+        for (Future<ConcurrentTrainer> task : tasks) {
             try {
-                future.get();
+                task.get();
             } catch (InterruptedException | ExecutionException e) {
-                LOGGER.error("The " + this.getClass().getSimpleName() + " of problem: " + this.getNameOfProblem() + " "
-                        + "was interrupted during training phase.", e);
-                throw new RuntimeException(e);
+                throw new RuntimeException("Training phase exception", e);
             }
-        }*/
-        for (NetworkManager manager : managers) {
-            manager.supervisedTraining(numOfIterations);
         }
         timer.stopTimer();
         LOGGER.info("TRAINING STOPPED; TOTAL TIME: {} seconds", timer.secondsSpent());
@@ -73,25 +64,18 @@ public class MasterNetworkManager {
         LOGGER.info("================================================================================");
         LOGGER.info("TESTING STARTED");
         timer.startTimer();
-        /*this.executor = Executors.newFixedThreadPool(numberOfThreads);
-        for (int i = 0; i < managers.size(); i++) {
-            //futureManagers.set(i, executor.submit(new ConcurrentTester(managers.get(i))));
-            executor.submit(new ConcurrentTester(managers.get(i)));
+        this.executor = Executors.newFixedThreadPool(numberOfThreads);
+        List<Future<ConcurrentTester>> tasks = new ArrayList<>();
+        for (NetworkManager manager : managers) {
+            tasks.add(executor.submit(new ConcurrentTester(manager)));
         }
         executor.shutdown();
-        while (!executor.isTerminated()) {
-        }*/
-        /*for (Future future : futureManagers) {
+        for (Future<ConcurrentTester> task : tasks) {
             try {
-                future.get();
+                task.get();
             } catch (InterruptedException | ExecutionException e) {
-                LOGGER.error("The " + this.getClass().getSimpleName() + " of problem: " + this.getNameOfProblem() + " "
-                        + "was interrupted during testing phase.", e);
-                throw new RuntimeException(e);
+                throw new RuntimeException("Testing phase excetion", e);
             }
-        }*/
-        for (NetworkManager manager : managers) {
-            manager.testNetwork();
         }
         timer.stopTimer();
         LOGGER.info("TESTING STOPPED; TOTAL TIME: {} seconds", timer.secondsSpent());
