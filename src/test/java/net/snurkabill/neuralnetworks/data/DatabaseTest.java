@@ -26,8 +26,8 @@ public class DatabaseTest {
 
     private static int sumElements(int[] array) {
         int sum = 0;
-        for (int i = 0; i < array.length; i++) {
-            sum += array[i];
+        for (int anArray : array) {
+            sum += anArray;
         }
         return sum;
     }
@@ -77,15 +77,15 @@ public class DatabaseTest {
             assertEquals(sizeOfElementsTraining[i], database.getSizeOfTrainingDataset(i));
         }
         int sum = 0;
-        for (int i = 0; i < sizeOfElementsTesting.length; i++) {
-            sum += sizeOfElementsTesting[i];
+        for (int aSizeOfElementsTesting : sizeOfElementsTesting) {
+            sum += aSizeOfElementsTesting;
         }
         assertEquals(sum, database.getTestSetSize());
         sum = 0;
-        for (int i = 0; i < sizeOfElementsTraining.length; i++) {
-            sum += sizeOfElementsTraining[i];
+        for (int aSizeOfElementsTraining : sizeOfElementsTraining) {
+            sum += aSizeOfElementsTraining;
         }
-        assertEquals(sum, database.getTrainingsetSize());
+        assertEquals(sum, database.getTrainingSetSize());
     }
 
     @Test
@@ -96,7 +96,7 @@ public class DatabaseTest {
     @Test
     public void testPickedTestingIterator() {
         for (int i = 0; i < numberOfClasses; i++) {
-            Iterator<DataItem> iterator = database.getTestingIteratorOverClass(i);
+            Database.TestClassIterator iterator = database.getTestingIteratorOverClass(i);
             for (int j = 0; iterator.hasNext(); j++) {
                 double val = iterator.next().data[0];
                 assertEquals(i * 10 + j, val, tolerance);
@@ -106,7 +106,7 @@ public class DatabaseTest {
 
     @Test
     public void testInfiniteTrainingIterator() {
-        Iterator<DataItem> iterator = database.getInfiniteTrainingIterator();
+        Database.InfiniteSimpleTrainingIterator iterator = database.getInfiniteTrainingIterator();
         int lastFirst = 0;
         int lastSecond = 0;
         int lastThird = 0;
@@ -132,35 +132,5 @@ public class DatabaseTest {
         }
     }
 
-    @Test
-    @Ignore
-    public void testPerformanceOfSingleAndMultipleThreadTestIterator() {
-        Map<Integer, List<Integer>> testingSet = new HashMap<>();
-
-        int numOfClasses = 100;
-        int numOfElementsInclass = 100_000;
-
-        for (int i = 0; i < numOfClasses; i++) {
-            List<Integer> tmpList = new ArrayList<>();
-            for (int j = 0; j < numOfElementsInclass; j++) {
-                tmpList.add(j);
-            }
-            testingSet.put(i, tmpList);
-        }
-        Database tmpDatabase = new Database(0, null, testingSet, "testingPerformance", true);
-
-        Iterator<DataItem> iterator = tmpDatabase.getTestingIterator();
-
-        long startTime = System.currentTimeMillis();
-
-        for (; iterator.hasNext(); ) {
-            DataItem a = iterator.next();
-            if (a.data[0] == -1) {
-                LOGGER.info("asdf");
-            }
-        }
-        long endTime = System.currentTimeMillis();
-        LOGGER.info("Time spent: {}", endTime - startTime);
-    }
 }
 

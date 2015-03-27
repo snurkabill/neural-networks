@@ -36,7 +36,7 @@ public class UnsupervisedRBMManager extends RestrictedBoltzmannMachineManager {
         globalError = 0.0;
         int all = 0;
         for (int _class = 0; _class < database.getNumberOfClasses(); _class++) {
-            Iterator<DataItem> testingIterator = database.getTestingIteratorOverClass(_class);
+            Database.TestClassIterator testingIterator = database.getTestingIteratorOverClass(_class);
             for (; testingIterator.hasNext(); ) {
                 globalError += validator.validate(testingIterator.next().data, machine);
                 all++;

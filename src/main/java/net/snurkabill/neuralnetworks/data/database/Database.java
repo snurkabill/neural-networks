@@ -13,47 +13,65 @@ public class Database<T extends DataItem> {
 
     private final Random random;
 
-    private final Map<Integer, List<T>> trainingSet;
-    private final Map<Integer, List<T>> testingSet;
-    private final Map<Integer, Iterator<T>> trainingSetIterator;
-    private final Map<Integer, Iterator<T>> testingSetIterator;
+    private final DataItem[][] trainingSet;
+    private final DataItem[][] testingSet;
 
-    private int sizeOfTrainingSet;
-    private int sizeOfTestingSet;
+    private final int sizeOfTrainingSet;
+    private final int sizeOfTestingSet;
 
-    private int numberOfClasses;
+    private final double[] probabilitiesOfClasses;
+
+    private final int numberOfClasses;
     private final String name;
     private final int sizeOfVector;
 
     public Database(long seed, Map<Integer, List<T>> trainingSet, Map<Integer, List<T>> testingSet,
                     String name, boolean applyFilter) {
+        if(name == null) {
+            throw new IllegalArgumentException("Database name cannot be null");
+        }
+        if(testingSet == null) {
+            throw new IllegalArgumentException("Testing set cannot be null");
+        }
+        if(trainingSet == null) {
+            throw new IllegalArgumentException("Training set cannot be null");
+        }
         if (trainingSet.size() != testingSet.size()) {
             throw new IllegalArgumentException("TrainingSet has different size than testingSet");
         }
-        LOGGER.info("Creating database {} ...", name);
+        LOGGER.info("Creating database {}", name);
         this.name = name;
-        this.random = new Random();
-        this.random.setSeed(seed);
+        this.random = new Random(seed);
+        boolean[] filter = makeFilter(applyFilter, trainingSet);
+        this.trainingSet = applyFilterOnDatasetForDimReduction(filter, trainingSet);
+        this.testingSet = applyFilterOnDatasetForDimReduction(filter, testingSet);
+        this.sizeOfVector = this.trainingSet[0][0].data.length;
+        this.numberOfClasses = this.trainingSet.length;
+        this.sizeOfTrainingSet = sumElements(this.trainingSet);
+        this.sizeOfTestingSet = sumElements(this.testingSet);
+        this.probabilitiesOfClasses = new double[this.numberOfClasses];
+        this.calculateProbabilitiesOfClasses();
+        LOGGER.info("Database {} created!", name);
+    }
+
+    private boolean[] makeFilter(boolean applyFilter, Map<Integer, List<T>> trainingSet) {
+        int sizeOfVector = trainingSet.get(0).get(0).data.length;
         boolean[] filter = applyFilter ? makeFilterForRemovingRedundantDimensions(trainingSet) :
-                new boolean[trainingSet.get(0).get(0).data.length];
+                new boolean[sizeOfVector];
         if (!applyFilter) {
             for (int i = 0; i < filter.length; i++) {
                 filter[i] = true;
             }
         }
-        this.trainingSet = applyFilterOnDatasetForDimReduction(filter, trainingSet);
-        this.testingSet = applyFilterOnDatasetForDimReduction(filter, testingSet);
-        this.numberOfClasses = this.trainingSet.size();
-        this.testingSetIterator = new HashMap<>(this.testingSet.size(), 1);
-        this.trainingSetIterator = new HashMap<>(this.trainingSet.size(), 1);
-        for (int i = 0; i < this.trainingSet.size(); i++) {
-            sizeOfTrainingSet += this.trainingSet.get(i).size();
-            sizeOfTestingSet += this.testingSet.get(i).size();
-            testingSetIterator.put(i, this.testingSet.get(i).iterator());
-            trainingSetIterator.put(i, this.trainingSet.get(i).iterator());
+        return filter;
+    }
+
+    private int sumElements(DataItem[][] dataSet) {
+        int sum = 0;
+        for (int i = 0; i < this.trainingSet.length; i++) {
+            sum += dataSet[i].length;
         }
-        sizeOfVector = this.trainingSet.get(0).get(0).data.length;
-        LOGGER.info("Database {} created!", name);
+        return sum;
     }
 
     private boolean[] makeFilterForRemovingRedundantDimensions(Map<Integer, List<T>> trainingDataset) {
@@ -66,8 +84,9 @@ public class Database<T extends DataItem> {
                 throw new IllegalArgumentException("One class of dataset is empty!");
             }
         }
-        double[] tmpSnapshot = new double[trainingDataset.get(0).get(0).data.length];
-        boolean[] isChanged = new boolean[trainingDataset.get(0).get(0).data.length];
+        int sizeOfVector = trainingDataset.get(0).get(0).data.length;
+        double[] tmpSnapshot = new double[sizeOfVector];
+        boolean[] isChanged = new boolean[sizeOfVector];
         System.arraycopy(trainingDataset.get(0).get(0).data, 0, tmpSnapshot, 0, tmpSnapshot.length);
         for (int i = 0; i < trainingDataset.size(); i++) {
             for (int j = 0; j < trainingDataset.get(i).size(); j++) {
@@ -82,10 +101,10 @@ public class Database<T extends DataItem> {
         return isChanged;
     }
 
-    private Map<Integer, List<T>> applyFilterOnDatasetForDimReduction(boolean[] filter,
+    private DataItem[][] applyFilterOnDatasetForDimReduction(boolean[] filter,
                                                                       Map<Integer, List<T>> dataSet) {
         LOGGER.info("Applying filter on data");
-        Map<Integer, List<T>> reducedData = new LinkedHashMap<>(dataSet.size(), 1);
+        DataItem[][] reducedData = new DataItem[dataSet.size()][];
         int sizeOfNewVector = 0;
         for (boolean _filter : filter) {
             if (_filter) {
@@ -93,32 +112,28 @@ public class Database<T extends DataItem> {
             }
         }
         for (int i = dataSet.size() - 1; i >= 0; i--) {
-            List<T> tmpList = new ArrayList<>(dataSet.get(i).size());
-            for (int j = dataSet.get(i).size() - 1; j >= 0; j--) {
+            reducedData[i] = new DataItem[dataSet.get(i).size()];
+            for (int j = reducedData[i].length - 1; j >= 0; j--) {
                 double[] data = new double[sizeOfNewVector];
                 for (int k = 0, move = 0; k < filter.length; k++) {
-                    if (filter[k]) {
+                    if(filter[k]) {
                         data[move] = dataSet.get(i).get(j).data[k];
-                        move++;
+						move++;
                     }
                 }
-                DataItem item = new DataItem(data);
-                tmpList.add((T) item);
+                reducedData[i][(reducedData[i].length - 1) - j] = new DataItem(data);
                 dataSet.get(i).remove(j);
             }
             dataSet.remove(i);
-            reducedData.put(i, tmpList);
         }
         LOGGER.info("Data are filtered!");
         return reducedData;
     }
 
-    private int calculatePercentageSize(double scaleSize) {
-        int size = 0;
-        for (int i = 0; i < trainingSet.size(); i++) {
-            size += trainingSet.get(i).size() * scaleSize;
+    private void calculateProbabilitiesOfClasses() {
+        for (int i = 0; i < this.trainingSet.length; i++) {
+            probabilitiesOfClasses[i] = trainingSet[i].length / sizeOfTrainingSet;
         }
-        return size;
     }
 
     private void checkScaleSize(double scaleSize) {
@@ -144,14 +159,23 @@ public class Database<T extends DataItem> {
         return stochasticStandardNormalization(percentageSampleSize / 100.0);
     }
 
+    private int calculatePercentageSize(double scaleSize) {
+        int tmp = (int) (sizeOfTrainingSet * scaleSize);
+        if(tmp > sizeOfTrainingSet) {
+            tmp = sizeOfTrainingSet;
+        }
+        return tmp;
+    }
+
     public Database stochasticStandardNormalization(double scaleSize) {
         checkScaleSize(scaleSize);
         LOGGER.info("Data standard normalization started.");
         for (int i = 0; i < this.getSizeOfVector(); i++) {
             int sampleSize = calculatePercentageSize(scaleSize);
             double[] array = new double[sampleSize];
+            InfiniteRandomTrainingIterator iterator = this.getInfiniteRandomTrainingIterator();
             for (int j = 0; j < sampleSize; j++) {
-                array[j] = this.getRandomizedTrainingData().data[i];
+                array[j] = iterator.next().data[i];
             }
             double mean = Utilities.mean(array);
             double stdev = Utilities.stddev(array, mean);
@@ -162,13 +186,13 @@ public class Database<T extends DataItem> {
         return this;
     }
 
-    private void applyStdNormalizationOnIthDimension(int i, double mean, double stdev, Map<Integer, List<T>> set) {
-        for (int j = 0; j < set.size(); j++) {
-            for (int k = 0; k < set.get(j).size(); k++) {
-                if(stdev == 0) {
-                    set.get(j).get(k).data[i] = 0.0;
+    private void applyStdNormalizationOnIthDimension(int i, double mean, double stdev, DataItem[][] set) {
+        for (DataItem[] _class : set) {
+            for (DataItem item : _class) {
+                if (stdev == 0) {
+                    item.data[i] = 0.0;
                 } else {
-                    set.get(j).get(k).data[i] = (set.get(j).get(k).data[i] - mean) / stdev;
+                    item.data[i] = (item.data[i] - mean) / stdev;
                 }
             }
         }
@@ -181,8 +205,9 @@ public class Database<T extends DataItem> {
             int sampleSize = calculatePercentageSize(scaleSize);
             double max = Double.NEGATIVE_INFINITY;
             double min = Double.POSITIVE_INFINITY;
+            InfiniteRandomTrainingIterator iterator = this.getInfiniteRandomTrainingIterator();
             for (int j = 0; j < sampleSize; j++) {
-                double item = this.getRandomizedTrainingData().data[i];
+                double item = iterator.next().data[i];
                 if(item > max) {
                     max = item;
                 }
@@ -198,65 +223,19 @@ public class Database<T extends DataItem> {
     }
 
     private void applyUnitBasedNormalizationOnIthDimension(int i, double max, double min,double topLimit,
-                                                           double lowLimit, Map<Integer, List<T>> set) {
-        for (int j = 0; j < set.size(); j++) {
-            for (int k = 0; k < set.get(j).size(); k++) {
-                set.get(j).get(k).data[i] = lowLimit +
-                        ((set.get(j).get(k).data[i] - min) * (topLimit - lowLimit) / (max - min));
+                                                           double lowLimit, DataItem[][] set) {
+        for (DataItem[] _class : set) {
+            for (DataItem item : _class) {
+                item.data[i] = lowLimit + ((item.data[i] - min) * (topLimit - lowLimit) / (max - min));
             }
         }
-    }
-
-    public T getTrainingIteratedData(int i) {
-        if (!trainingSetIterator.get(i).hasNext()) {
-            LOGGER.debug("Setting new iterator of trainingSet for {}th list", i);
-            trainingSetIterator.put(i, trainingSet.get(i).iterator());
-        }
-        return trainingSetIterator.get(i).next();
-    }
-
-    public T getTestingIteratedData(int i) {
-        if (!testingSetIterator.get(i).hasNext()) {
-            LOGGER.debug("Setting new iterator of testingSet for {}th list", i);
-            testingSetIterator.put(i, testingSet.get(i).iterator());
-        }
-        return testingSetIterator.get(i).next();
-    }
-
-    private T getTrainingData(int i) {
-        List<T> list = trainingSet.get(i);
-        return list.get(random.nextInt(list.size()));
-    }
-
-    private T getTestingData(int i) {
-        List<T> list = testingSet.get(i);
-        return list.get(random.nextInt(list.size()));
-    }
-
-    public LabelledItem getRandomizedLabelTestingData() {
-        int _class = random.nextInt(testingSet.size());
-        return new LabelledItem(getTestingData(_class), _class);
-    }
-
-    public LabelledItem getRandomizedLabelTrainingData() {
-        int _class = random.nextInt(trainingSet.size());
-        return new LabelledItem(getTrainingData(_class), _class);
-    }
-
-    public T getRandomizedTestingData() {
-        return getTestingData(random.nextInt(testingSet.size()));
-    }
-
-    // TODO: picking right list should be provided by random choice based on list's sizes
-    public T getRandomizedTrainingData() {
-        return getTrainingData(random.nextInt(trainingSet.size()));
     }
 
     public int getTestSetSize() {
         return sizeOfTestingSet;
     }
 
-    public int getTrainingsetSize() {
+    public int getTrainingSetSize() {
         return sizeOfTrainingSet;
     }
 
@@ -265,15 +244,130 @@ public class Database<T extends DataItem> {
     }
 
     public int getSizeOfTestingDataset(int index) {
-        return testingSet.get(index).size();
+        return testingSet[index].length;
     }
 
     public int getSizeOfTrainingDataset(int index) {
-        return trainingSet.get(index).size();
+        return trainingSet[index].length;
     }
 
     public int getSizeOfVector() {
         return sizeOfVector;
+    }
+
+    public synchronized TestClassIterator getTestingIteratorOverClass(int _class) {
+        return new TestClassIterator(_class);
+    }
+
+    public synchronized InfiniteSimpleTrainingIterator getInfiniteTrainingIterator() {
+        return new InfiniteSimpleTrainingIterator();
+    }
+
+    public synchronized InfiniteRandomTrainingIterator getInfiniteRandomTrainingIterator() {
+        return new InfiniteRandomTrainingIterator();
+    }
+
+    public class InfiniteRandomTrainingIterator implements Iterator<LabelledItem> {
+
+        @Override
+        public boolean hasNext() {
+            return true;
+        }
+
+        @Override
+        public LabelledItem next() {
+            int randomIndex = random.nextInt(sizeOfTrainingSet);
+            int tmpIndex = 0;
+            int previousTmpIndex = 0;
+            for (int i = 0; i < numberOfClasses; i++) {
+                tmpIndex += trainingSet[i].length;
+                if(randomIndex < tmpIndex) {
+                    randomIndex -= previousTmpIndex;
+                    return new LabelledItem(trainingSet[i][randomIndex], i);
+                }
+                previousTmpIndex = tmpIndex;
+            }
+            throw new IllegalStateException("Index should have been picked");
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+    }
+
+    public class InfiniteSimpleTrainingIterator implements Iterator<LabelledItem> {
+
+        private final int[] lastUnused = new int[getNumberOfClasses()];
+        private int lastUnusedClass;
+        private int lastUsedClass;
+
+        public InfiniteSimpleTrainingIterator() {
+            lastUnusedClass = 0;
+            for (int i = 0; i < lastUnused.length; i++) {
+                lastUnused[i] = trainingSet[i].length - 1;
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            return true;
+        }
+
+        @Override
+        public LabelledItem next() {
+            lastUnusedClass = (lastUnusedClass + 1) % numberOfClasses;
+            if (lastUnusedClass == 0) {
+                lastUsedClass = trainingSet.length - 1;
+            } else {
+                lastUsedClass = lastUnusedClass - 1;
+            }
+            lastUnused[lastUsedClass] = (lastUnused[lastUsedClass] + 1) % trainingSet[lastUsedClass].length;
+            if (lastUnused[lastUsedClass] == trainingSet[lastUsedClass].length) {
+                lastUnused[lastUsedClass] = 0;
+            }
+            return new LabelledItem(trainingSet[lastUsedClass][lastUnused[lastUsedClass]], lastUsedClass);
+        }
+
+        public int nextClass() {
+            return lastUnusedClass;
+        }
+
+        public int previousClass() {
+            return lastUsedClass;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+    }
+
+    public class TestClassIterator implements Iterator<LabelledItem> {
+
+        private final int _class;
+        private int index;
+
+        public TestClassIterator(int _class) {
+            this._class = _class;
+            index = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return index < testingSet[_class].length;
+        }
+
+        @Override
+        public LabelledItem next() {
+            index++;
+            return new LabelledItem(testingSet[_class][index - 1], _class);
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
     }
 
     @Deprecated
@@ -282,24 +376,24 @@ public class Database<T extends DataItem> {
         long time1 = System.currentTimeMillis();
         try (DataOutputStream os = new DataOutputStream(new FileOutputStream(new File(name)))) {
             os.writeInt(numberOfClasses);
-            os.writeInt(trainingSet.get(0).get(0).data.length);
+            os.writeInt(trainingSet[0][0].data.length);
             for (int i = 0; i < numberOfClasses; i++) {
-                os.writeInt(trainingSet.get(i).size());
+                os.writeInt(trainingSet[i].length);
             }
             for (int i = 0; i < numberOfClasses; i++) {
-                for (int j = 0; j < trainingSet.get(i).size(); j++) {
-                    for (int k = 0; k < trainingSet.get(0).get(0).data.length; k++) {
-                        os.writeDouble(trainingSet.get(i).get(j).data[k]);
+                for (int j = 0; j < trainingSet[i].length; j++) {
+                    for (int k = 0; k < trainingSet[0][0].data.length; k++) {
+                        os.writeDouble(trainingSet[i][j].data[k]);
                     }
                 }
             }
             for (int i = 0; i < numberOfClasses; i++) {
-                os.writeInt(testingSet.get(i).size());
+                os.writeInt(testingSet[i].length);
             }
             for (int i = 0; i < numberOfClasses; i++) {
-                for (int j = 0; j < testingSet.get(i).size(); j++) {
-                    for (int k = 0; k < testingSet.get(0).get(0).data.length; k++) {
-                        os.writeDouble(testingSet.get(i).get(j).data[k]);
+                for (int j = 0; j < testingSet[i].length; j++) {
+                    for (int k = 0; k < testingSet[0][0].data.length; k++) {
+                        os.writeDouble(testingSet[i][j].data[k]);
                     }
                 }
             }
@@ -360,134 +454,4 @@ public class Database<T extends DataItem> {
         return new Database(seed, trainingSet, testingSet, baseFile.getName(), false);
     }
 
-    public synchronized Iterator<T> getTestingIteratorOverClass(int i) {
-        return testingSet.get(i).iterator();
-    }
-
-    public synchronized Iterator<T> getTrainingIteratorOverClass(int i) {
-        return trainingSet.get(i).iterator();
-    }
-
-    public synchronized Iterator<T> getTestingIterator() {
-        return new TestSetIterator(testingSet);
-    }
-
-    public synchronized InfiniteSimpleTrainSetIterator getInfiniteTrainingIterator() {
-        return new InfiniteSimpleTrainSetIterator(trainingSet);
-    }
-
-    public synchronized InfiniteRandomTrainSetIterator getInfiniteRandomTrainingIterator() {
-        return new InfiniteRandomTrainSetIterator();
-    }
-
-    public class InfiniteRandomTrainSetIterator implements Iterator {
-
-        @Override
-        public boolean hasNext() {
-            return true;
-        }
-
-        @Override
-        public LabelledItem next() {
-            int randomNum = random.nextInt(trainingSet.size());
-            LabelledItem item = new LabelledItem(getTrainingData(randomNum), randomNum);
-            return item;
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-    }
-
-    public class InfiniteSimpleTrainSetIterator implements Iterator {
-
-        private final Map<Integer, List<T>> map;
-        private final List<Iterator<T>> iterators = new ArrayList<>();
-        private int lastUnusedClass;
-        private int lastUsedClass;
-
-        public InfiniteSimpleTrainSetIterator(Map<Integer, List<T>> map) {
-            this.map = map;
-            for (int i = 0; i < map.size(); i++) {
-                iterators.add(map.get(i).iterator());
-            }
-            lastUnusedClass = 0;
-            lastUsedClass = 0;
-            // FINISH ME
-        }
-
-        @Override
-        public boolean hasNext() {
-            return true;
-        }
-
-        @Override
-        public LabelledItem next() {
-            if (lastUnusedClass == map.size()) {
-                lastUnusedClass = 0;
-            }
-            if (!iterators.get(lastUnusedClass).hasNext()) {
-                iterators.set(lastUnusedClass, map.get(lastUnusedClass).iterator());
-            }
-            lastUnusedClass++;
-            if (lastUnusedClass == 0) {
-                lastUsedClass = map.size() - 1;
-            } else {
-                lastUsedClass = lastUnusedClass - 1;
-            }
-            return new LabelledItem(iterators.get(lastUnusedClass - 1).next().data, lastUnusedClass - 1);
-        }
-
-        public int nextClass() {
-            return lastUnusedClass;
-        }
-
-        public int previousClass() {
-            return lastUsedClass;
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-    }
-
-    public class TestSetIterator implements Iterator {
-        private final List<Iterator<T>> iterators;
-        private final Iterator<Iterator<T>> master;
-        private Iterator<T> actual;
-        private int actualClass;
-
-        public TestSetIterator(Map<Integer, List<T>> map) {
-            iterators = new ArrayList<>(map.size());
-            for (int i = 0; i < map.size(); i++) {
-                iterators.add(map.get(i).iterator());
-            }
-            master = iterators.iterator();
-            actual = master.next();
-            actualClass = 0;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return master.hasNext() || actual.hasNext();
-        }
-
-        @Override
-        public LabelledItem next() {
-            if (actual.hasNext()) {
-                return new LabelledItem(actual.next(), actualClass);
-            } else {
-                actual = master.next();
-                actualClass++;
-                return new LabelledItem(actual.next(), actualClass);
-            }
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-    }
 }

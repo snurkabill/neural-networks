@@ -71,8 +71,9 @@ public class GaussianVisibleTest {
             manager.testNetwork();
             LOGGER.info("Error: {}", manager.getTestResults().getComparableSuccess());
         }
+        Database.InfiniteRandomTrainingIterator iterator = database.getInfiniteRandomTrainingIterator();
         for (int i = 0; i < 100; i++) {
-            DataItem item = database.getRandomizedTrainingData();
+            DataItem item = iterator.next();
 
             rbm.calculateNetwork(item.data);
             LOGGER.info("Original: {}, Reconstruction: {} ", item.data, rbm.getVisibleNeurons());

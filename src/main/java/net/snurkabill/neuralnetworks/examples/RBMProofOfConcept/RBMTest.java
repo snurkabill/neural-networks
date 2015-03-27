@@ -117,7 +117,8 @@ public class RBMTest {
                 FeedForwardHeuristic.createDefaultHeuristic(), new ParametrizedHyperbolicTangens());
         NetworkManager manager5 = new FeedForwardNetworkManager(network, database, null);
 
-        MasterNetworkManager master = new MasterNetworkManager("fine tunning", Arrays.asList(manager3, /*manager4,*/ manager5));
+        MasterNetworkManager master = new MasterNetworkManager(
+                "fine tunning", Arrays.asList(manager3, /*manager4,*/ manager5), 2);
         SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(1000, 1, master);
         benchmarker.benchmark();
     }

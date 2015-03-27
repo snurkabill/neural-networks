@@ -35,12 +35,13 @@ public class GreedyLayerWiseStackedDeepRBMTrainer {
         LOGGER.info("Training {} RBMs started. Total iterations: {}", machines.size(), iterationsForLevels);
         Timer totalTime = new Timer();
         totalTime.startTimer();
+        Database.InfiniteRandomTrainingIterator iterator = database.getInfiniteRandomTrainingIterator();
         for (int i = 0; i < machines.size(); i++) {
             LOGGER.info("Training {}th layer", i);
             Timer layerTimer = new Timer();
             layerTimer.startTimer();
             for (int iteration = 0; iteration < iterationsForLevels.get(i); iteration++) {
-                machines.get(0).setVisibleNeurons(database.getRandomizedTrainingData().data);
+                machines.get(0).setVisibleNeurons(iterator.next().data);
                 double binomialSampling[] = new double[machines.get(i).getSizeOfVisibleVector()];
                 for (int j = 0; j < binomialIterationsSampling.get(i); j++) {
                     for (int k = 0; k < i; k++) {
