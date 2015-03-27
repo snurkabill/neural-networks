@@ -121,7 +121,7 @@ public class Database<T extends DataItem> {
 						move++;
                     }
                 }
-                reducedData[i][j] = new DataItem(data);
+                reducedData[i][(reducedData[i].length - 1) - j] = new DataItem(data);
                 dataSet.get(i).remove(j);
             }
             dataSet.remove(i);
@@ -267,7 +267,7 @@ public class Database<T extends DataItem> {
         return new InfiniteRandomTrainingIterator();
     }
 
-    public class InfiniteRandomTrainingIterator implements Iterator {
+    public class InfiniteRandomTrainingIterator implements Iterator<LabelledItem> {
 
         @Override
         public boolean hasNext() {
@@ -296,14 +296,17 @@ public class Database<T extends DataItem> {
         }
     }
 
-    public class InfiniteSimpleTrainingIterator implements Iterator {
+    public class InfiniteSimpleTrainingIterator implements Iterator<LabelledItem> {
 
         private final int[] lastUnused = new int[getNumberOfClasses()];
         private int lastUnusedClass;
         private int lastUsedClass;
 
         public InfiniteSimpleTrainingIterator() {
-            lastUnusedClass = trainingSet.length - 1;
+            lastUnusedClass = 0;
+            for (int i = 0; i < lastUnused.length; i++) {
+                lastUnused[i] = trainingSet[i].length - 1;
+            }
         }
 
         @Override
@@ -340,7 +343,7 @@ public class Database<T extends DataItem> {
         }
     }
 
-    public class TestClassIterator implements Iterator {
+    public class TestClassIterator implements Iterator<LabelledItem> {
 
         private final int _class;
         private int index;

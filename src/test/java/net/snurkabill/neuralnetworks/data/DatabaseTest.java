@@ -26,8 +26,8 @@ public class DatabaseTest {
 
     private static int sumElements(int[] array) {
         int sum = 0;
-        for (int i = 0; i < array.length; i++) {
-            sum += array[i];
+        for (int anArray : array) {
+            sum += anArray;
         }
         return sum;
     }
@@ -77,13 +77,13 @@ public class DatabaseTest {
             assertEquals(sizeOfElementsTraining[i], database.getSizeOfTrainingDataset(i));
         }
         int sum = 0;
-        for (int i = 0; i < sizeOfElementsTesting.length; i++) {
-            sum += sizeOfElementsTesting[i];
+        for (int aSizeOfElementsTesting : sizeOfElementsTesting) {
+            sum += aSizeOfElementsTesting;
         }
         assertEquals(sum, database.getTestSetSize());
         sum = 0;
-        for (int i = 0; i < sizeOfElementsTraining.length; i++) {
-            sum += sizeOfElementsTraining[i];
+        for (int aSizeOfElementsTraining : sizeOfElementsTraining) {
+            sum += aSizeOfElementsTraining;
         }
         assertEquals(sum, database.getTrainingSetSize());
     }
@@ -96,7 +96,7 @@ public class DatabaseTest {
     @Test
     public void testPickedTestingIterator() {
         for (int i = 0; i < numberOfClasses; i++) {
-            Iterator<DataItem> iterator = database.getTestingIteratorOverClass(i);
+            Database.TestClassIterator iterator = database.getTestingIteratorOverClass(i);
             for (int j = 0; iterator.hasNext(); j++) {
                 double val = iterator.next().data[0];
                 assertEquals(i * 10 + j, val, tolerance);
@@ -106,7 +106,7 @@ public class DatabaseTest {
 
     @Test
     public void testInfiniteTrainingIterator() {
-        Iterator<DataItem> iterator = database.getInfiniteTrainingIterator();
+        Database.InfiniteSimpleTrainingIterator iterator = database.getInfiniteTrainingIterator();
         int lastFirst = 0;
         int lastSecond = 0;
         int lastThird = 0;
