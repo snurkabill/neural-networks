@@ -27,7 +27,9 @@ public class MasterNetworkManager {
         this.LOGGER = LoggerFactory.getLogger(MasterNetworkManager.class.getSimpleName() + ": " + nameOfProblem);
         this.managers = singleNetworkManagers;
         this.nameOfProblem = nameOfProblem;
-        this.numberOfThreads = numberOfThreads;
+        this.numberOfThreads = numberOfThreads > Runtime.getRuntime().availableProcessors() ?
+                Runtime.getRuntime().availableProcessors() : numberOfThreads;
+        LOGGER.info("Master manager created with {} threads", this.numberOfThreads);
     }
 
     public String getNameOfProblem() {
