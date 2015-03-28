@@ -1,6 +1,7 @@
 package net.snurkabill.neuralnetworks.data.database;
 
 import net.snurkabill.neuralnetworks.utilities.Utilities;
+import net.snurkabill.neuralnetworks.utilities.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,7 @@ public class Database<T extends DataItem> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("Database");
 
+    private final Timer timer = new Timer();
     private final Random random;
 
     private final DataItem[][] trainingSet;
@@ -19,14 +21,60 @@ public class Database<T extends DataItem> {
     private final int sizeOfTrainingSet;
     private final int sizeOfTestingSet;
 
-    private final double[] probabilitiesOfClasses;
-
     private final int numberOfClasses;
     private final String name;
     private final int sizeOfVector;
 
+    public Database(long seed, File dataFile) {
+        if(dataFile == null) {
+            throw new IllegalArgumentException("Wrong file name: (" + dataFile + ")");
+        }
+        constructingDatabaseStarted(dataFile.getName());
+        this.name = dataFile.getName();
+        this.random = new Random(seed);
+        try (DataInputStream inputStream = new DataInputStream(new FileInputStream(dataFile))) {
+            this.numberOfClasses = inputStream.readInt();
+            this.trainingSet = new DataItem[numberOfClasses][];
+            this.testingSet = new DataItem[numberOfClasses][];
+            this.sizeOfVector = inputStream.readInt();
+            int tmpSizeOfSet = 0;
+            for (int i = 0; i < numberOfClasses; i++) {
+                this.trainingSet[i] = new DataItem[inputStream.readInt()];
+                tmpSizeOfSet += trainingSet[i].length;
+            }
+            this.sizeOfTrainingSet = tmpSizeOfSet;
+            double[] tmpArray = new double[sizeOfVector];
+            for (int i = 0; i < numberOfClasses; i++) {
+                for (int j = 0; j < trainingSet[i].length; j++) {
+                    for (int k = 0; k < this.sizeOfVector; k++) {
+                        tmpArray[k] = inputStream.readDouble();
+                    }
+                    trainingSet[i][j] = new DataItem(tmpArray);
+                }
+            }
+            tmpSizeOfSet = 0;
+            for (int i = 0; i < numberOfClasses; i++) {
+                this.testingSet[i] = new DataItem[inputStream.readInt()];
+                tmpSizeOfSet += testingSet[i].length;
+            }
+            this.sizeOfTestingSet = tmpSizeOfSet;
+            for (int i = 0; i < numberOfClasses; i++) {
+                for (int j = 0; j < testingSet[i].length; j++) {
+                    for (int k = 0; k < sizeOfVector; k++) {
+                        tmpArray[k] = inputStream.readDouble();
+                    }
+                    testingSet[i][j] = new DataItem(tmpArray);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Loading database failed!", e);
+        }
+        constructingDatabaseEnded();
+    }
+
     public Database(long seed, Map<Integer, List<T>> trainingSet, Map<Integer, List<T>> testingSet,
                     String name, boolean applyFilter) {
+        constructingDatabaseStarted(name);
         if(name == null) {
             throw new IllegalArgumentException("Database name cannot be null");
         }
@@ -39,19 +87,32 @@ public class Database<T extends DataItem> {
         if (trainingSet.size() != testingSet.size()) {
             throw new IllegalArgumentException("TrainingSet has different size than testingSet");
         }
-        LOGGER.info("Creating database {}", name);
         this.name = name;
         this.random = new Random(seed);
         boolean[] filter = makeFilter(applyFilter, trainingSet);
-        this.trainingSet = applyFilterOnDatasetForDimReduction(filter, trainingSet);
-        this.testingSet = applyFilterOnDatasetForDimReduction(filter, testingSet);
+        LOGGER.info("Converting data");
+        this.timer.startTimer();
+        this.trainingSet = convertDataToArrays(filter, trainingSet);
+        this.testingSet = convertDataToArrays(filter, testingSet);
+        LOGGER.info("Converting is done, took {} seconds", timer.secondsSpent());
         this.sizeOfVector = this.trainingSet[0][0].data.length;
         this.numberOfClasses = this.trainingSet.length;
         this.sizeOfTrainingSet = sumElements(this.trainingSet);
         this.sizeOfTestingSet = sumElements(this.testingSet);
-        this.probabilitiesOfClasses = new double[this.numberOfClasses];
-        this.calculateProbabilitiesOfClasses();
-        LOGGER.info("Database {} created!", name);
+        constructingDatabaseEnded();
+    }
+
+    private void constructingDatabaseStarted(String name) {
+        this.timer.startTimer();
+        LOGGER.info("Creating database {}", name);
+    }
+
+    private void constructingDatabaseEnded() {
+        LOGGER.info("Database {} created after {} seconds", name, timer.secondsSpent());
+    }
+
+    public String getName() {
+        return name;
     }
 
     private boolean[] makeFilter(boolean applyFilter, Map<Integer, List<T>> trainingSet) {
@@ -75,13 +136,14 @@ public class Database<T extends DataItem> {
     }
 
     private boolean[] makeFilterForRemovingRedundantDimensions(Map<Integer, List<T>> trainingDataset) {
-        LOGGER.info("Making filter for removing redundant dimensions on dataset");
+        timer.startTimer();
+        LOGGER.info("Making filter for removing redundant dimensions of dataSet");
         if (trainingDataset.isEmpty()) {
-            throw new IllegalArgumentException("Training dataset is empty!");
+            throw new IllegalArgumentException("Training dataSet is empty!");
         }
         for (Map.Entry<Integer, List<T>> list : trainingDataset.entrySet()) {
             if (list.getValue().isEmpty()) {
-                throw new IllegalArgumentException("One class of dataset is empty!");
+                throw new IllegalArgumentException("One class of dataSet is empty!");
             }
         }
         int sizeOfVector = trainingDataset.get(0).get(0).data.length;
@@ -97,13 +159,12 @@ public class Database<T extends DataItem> {
                 }
             }
         }
-        LOGGER.info("Filter is done!");
+        LOGGER.info("Filter has been created after {} seconds", timer.secondsSpent());
         return isChanged;
     }
 
-    private DataItem[][] applyFilterOnDatasetForDimReduction(boolean[] filter,
-                                                                      Map<Integer, List<T>> dataSet) {
-        LOGGER.info("Applying filter on data");
+    private DataItem[][] convertDataToArrays(boolean[] filter,
+                                             Map<Integer, List<T>> dataSet) {
         DataItem[][] reducedData = new DataItem[dataSet.size()][];
         int sizeOfNewVector = 0;
         for (boolean _filter : filter) {
@@ -126,14 +187,7 @@ public class Database<T extends DataItem> {
             }
             dataSet.remove(i);
         }
-        LOGGER.info("Data are filtered!");
         return reducedData;
-    }
-
-    private void calculateProbabilitiesOfClasses() {
-        for (int i = 0; i < this.trainingSet.length; i++) {
-            probabilitiesOfClasses[i] = trainingSet[i].length / sizeOfTrainingSet;
-        }
     }
 
     private void checkScaleSize(double scaleSize) {
@@ -168,6 +222,7 @@ public class Database<T extends DataItem> {
     }
 
     public Database stochasticStandardNormalization(double scaleSize) {
+        this.timer.startTimer();
         checkScaleSize(scaleSize);
         LOGGER.info("Data standard normalization started.");
         for (int i = 0; i < this.getSizeOfVector(); i++) {
@@ -182,7 +237,7 @@ public class Database<T extends DataItem> {
             applyStdNormalizationOnIthDimension(i, mean, stdev, trainingSet);
             applyStdNormalizationOnIthDimension(i, mean, stdev, testingSet);
         }
-        LOGGER.info("Normalizing finished");
+        LOGGER.info("Normalizing finished. Spent {} seconds", this.timer.secondsSpent());
         return this;
     }
 
@@ -200,6 +255,7 @@ public class Database<T extends DataItem> {
 
     public Database stochasticUnityBasedNormalization(double scaleSize, double topLimit, double lowLimit) {
         checkScaleSize(scaleSize);
+        this.timer.startTimer();
         LOGGER.info("Data unity-based normalization started.");
         for (int i = 0; i < this.getSizeOfVector(); i++) {
             int sampleSize = calculatePercentageSize(scaleSize);
@@ -218,7 +274,7 @@ public class Database<T extends DataItem> {
             applyUnitBasedNormalizationOnIthDimension(i, max, min, topLimit, lowLimit, trainingSet);
             applyUnitBasedNormalizationOnIthDimension(i, max, min, topLimit, lowLimit, testingSet);
         }
-        LOGGER.info("Normalizing finished");
+        LOGGER.info("Data unity-based normalization finished. Took {} seconds", this.timer.secondsSpent());
         return this;
     }
 
@@ -370,88 +426,37 @@ public class Database<T extends DataItem> {
         }
     }
 
-    @Deprecated
-    public void storeDatabase() throws FileNotFoundException, IOException {
-        LOGGER.info("Storing database: {}", name);
-        long time1 = System.currentTimeMillis();
-        try (DataOutputStream os = new DataOutputStream(new FileOutputStream(new File(name)))) {
-            os.writeInt(numberOfClasses);
-            os.writeInt(trainingSet[0][0].data.length);
+    public void storeDatabase() {
+        this.timer.startTimer();
+        LOGGER.info("Storing database started with ({}) filename", this.name);
+        try (DataOutputStream outputStream = new DataOutputStream(new FileOutputStream(new File(this.name)))) {
+            outputStream.writeInt(numberOfClasses);
+            outputStream.writeInt(trainingSet[0][0].data.length);
             for (int i = 0; i < numberOfClasses; i++) {
-                os.writeInt(trainingSet[i].length);
+                outputStream.writeInt(trainingSet[i].length);
             }
             for (int i = 0; i < numberOfClasses; i++) {
                 for (int j = 0; j < trainingSet[i].length; j++) {
                     for (int k = 0; k < trainingSet[0][0].data.length; k++) {
-                        os.writeDouble(trainingSet[i][j].data[k]);
+                        outputStream.writeDouble(trainingSet[i][j].data[k]);
                     }
                 }
             }
             for (int i = 0; i < numberOfClasses; i++) {
-                os.writeInt(testingSet[i].length);
+                outputStream.writeInt(testingSet[i].length);
             }
             for (int i = 0; i < numberOfClasses; i++) {
                 for (int j = 0; j < testingSet[i].length; j++) {
                     for (int k = 0; k < testingSet[0][0].data.length; k++) {
-                        os.writeDouble(testingSet[i][j].data[k]);
+                        outputStream.writeDouble(testingSet[i][j].data[k]);
                     }
                 }
             }
-            os.flush();
+            outputStream.flush();
+        } catch (Exception e) {
+            throw new RuntimeException("Storing database failed!", e);
         }
-        long time2 = System.currentTimeMillis();
-        LOGGER.info("Storing database done, took: {}", time2 - time1);
-    }
-
-    @Deprecated
-    public static Database loadDatabase(File baseFile) throws FileNotFoundException, IOException {
-        return loadDatabase(baseFile, 0);
-    }
-
-    @Deprecated
-    public static Database loadDatabase(File baseFile, long seed) throws FileNotFoundException, IOException {
-        LOGGER.info("Loading database {}", baseFile.getName());
-        long time1 = System.currentTimeMillis();
-        Map<Integer, List<DataItem>> trainingSet;
-        Map<Integer, List<DataItem>> testingSet;
-        try (DataInputStream is = new DataInputStream(new FileInputStream(baseFile))) {
-            trainingSet = new HashMap<>();
-            testingSet = new HashMap<>();
-            int numberOfClasses = is.readInt();
-            for (int i = 0; i < numberOfClasses; i++) {
-                trainingSet.put(i, new ArrayList<DataItem>());
-                testingSet.put(i, new ArrayList<DataItem>());
-            }
-            int sizeOfVector = is.readInt();
-            List<Integer> sizesOfTrainingLists = new ArrayList<>();
-            for (int i = 0; i < numberOfClasses; i++) {
-                sizesOfTrainingLists.add(is.readInt());
-            }
-            double[] buffer = new double[sizeOfVector];
-            for (int i = 0; i < numberOfClasses; i++) {
-                for (int j = 0; j < sizesOfTrainingLists.get(i); j++) {
-                    for (int k = 0; k < sizeOfVector; k++) {
-                        buffer[k] = is.readDouble();
-                    }
-                    trainingSet.get(i).add(new DataItem(buffer));
-                }
-            }
-            List<Integer> sizesOfTestingLists = new ArrayList<>();
-            for (int i = 0; i < numberOfClasses; i++) {
-                sizesOfTestingLists.add(is.readInt());
-            }
-            for (int i = 0; i < numberOfClasses; i++) {
-                for (int j = 0; j < sizesOfTestingLists.get(i); j++) {
-                    for (int k = 0; k < sizeOfVector; k++) {
-                        buffer[k] = is.readDouble();
-                    }
-                    testingSet.get(i).add(new DataItem(buffer));
-                }
-            }
-        }
-        long time2 = System.currentTimeMillis();
-        LOGGER.info("Loading database done, took: {}", time2 - time1);
-        return new Database(seed, trainingSet, testingSet, baseFile.getName(), false);
+        LOGGER.info("Storing database is done after {} seconds", timer.secondsSpent());
     }
 
 }

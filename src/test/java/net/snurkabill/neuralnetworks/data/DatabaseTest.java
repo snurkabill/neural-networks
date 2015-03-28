@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -129,6 +130,41 @@ public class DatabaseTest {
                 throw new IllegalArgumentException("WTF");
             }
             assertEquals(item.data[0], num, tolerance);
+        }
+    }
+
+    @Test
+    public void storeLoadTest() {
+        database.storeDatabase();
+        Database database2 = new Database(0, new File("testingBase"));
+
+        assertEquals(database.getNumberOfClasses(), database2.getNumberOfClasses());
+        assertEquals(database.getSizeOfVector(), database2.getSizeOfVector());
+        assertEquals(database.getTestSetSize(), database2.getTestSetSize());
+        assertEquals(database.getTrainingSetSize(), database2.getTrainingSetSize());
+        assertEquals(database.getName(), database2.getName());
+
+        for (int i = 0; i < database.getNumberOfClasses(); i++) {
+            assertEquals(database.getSizeOfTestingDataset(i), database2.getSizeOfTestingDataset(i));
+            assertEquals(database.getSizeOfTrainingDataset(i), database2.getSizeOfTrainingDataset(i));
+        }
+
+        Database.InfiniteSimpleTrainingIterator originalIterator = database.getInfiniteTrainingIterator();
+        Database.InfiniteSimpleTrainingIterator copyIterator = database2.getInfiniteTrainingIterator();
+
+        for (int i = 0; i < database.getTrainingSetSize() * 2; i++) {
+            LabelledItem item1 = originalIterator.next();
+            LabelledItem item2 = copyIterator.next();
+            assertEquals(item1._class, item2._class);
+            assertEquals(item1.data[0], item2.data[0], tolerance);
+        }
+
+        for (int i = 0; i < database.getNumberOfClasses(); i++) {
+            Database.TestClassIterator originalTestIterator = database.getTestingIteratorOverClass(i);
+            Database.TestClassIterator copyTestIterator = database2.getTestingIteratorOverClass(i);
+            for (int j = 0; j < database.getSizeOfTestingDataset(i); j++) {
+                assertEquals(originalTestIterator.next().data[0], copyTestIterator.next().data[0], tolerance);
+            }
         }
     }
 
