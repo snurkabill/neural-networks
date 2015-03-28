@@ -2,6 +2,7 @@ neural-networks
 ======
 
 [![Build Status](https://travis-ci.org/snurkabill/neural-networks.svg?branch=master)](https://travis-ci.org/snurkabill/neural-networks)
+[![Coverage Status](https://coveralls.io/repos/snurkabill/neural-networks/badge.svg)](https://coveralls.io/r/snurkabill/neural-networks)
 
 Just a note, it's my hobby! :) 
 
