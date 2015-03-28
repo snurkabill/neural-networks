@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -134,7 +136,7 @@ public class DatabaseTest {
     }
 
     @Test
-    public void storeLoadTest() {
+    public void storeLoadTest() throws IOException {
         database.storeDatabase();
         Database database2 = new Database(0, new File("testingBase"));
 
@@ -166,6 +168,7 @@ public class DatabaseTest {
                 assertEquals(originalTestIterator.next().data[0], copyTestIterator.next().data[0], tolerance);
             }
         }
+        Files.delete(new File("testingBase").toPath());
     }
 
 }
