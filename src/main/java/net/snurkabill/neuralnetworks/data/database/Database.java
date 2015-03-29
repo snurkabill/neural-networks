@@ -315,6 +315,10 @@ public class Database<T extends DataItem> {
         return new TestClassIterator(_class);
     }
 
+    public synchronized TrainingClassIterator getTrainingIteratorOverClass(int _class) {
+        return new TrainingClassIterator(_class);
+    }
+
     public synchronized InfiniteSimpleTrainingIterator getInfiniteTrainingIterator() {
         return new InfiniteSimpleTrainingIterator();
     }
@@ -405,6 +409,33 @@ public class Database<T extends DataItem> {
         private int index;
 
         public TestClassIterator(int _class) {
+            this._class = _class;
+            index = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return index < testingSet[_class].length;
+        }
+
+        @Override
+        public LabelledItem next() {
+            index++;
+            return new LabelledItem(testingSet[_class][index - 1], _class);
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+    }
+
+    public class TrainingClassIterator implements Iterator<LabelledItem> {
+
+        private final int _class;
+        private int index;
+
+        public TrainingClassIterator(int _class) {
             this._class = _class;
             index = 0;
         }
