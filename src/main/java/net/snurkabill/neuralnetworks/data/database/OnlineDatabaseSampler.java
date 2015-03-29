@@ -34,11 +34,23 @@ public class OnlineDatabaseSampler {
 
     public OnlineDatabaseSampler(String databaseName, int sizeOfVector, int classesOfDivision,
                                  int ratioOfMaxDiffBetweenClasses, int trainTestRatio, int maxSizeOfDatabaseInMB) {
-        if (ratioOfMaxDiffBetweenClasses <= 0) {
+        if(databaseName == null) {
+            throw new IllegalArgumentException("Database name cannot be null");
+        }
+        if(sizeOfVector <= 0) {
+            throw new IllegalArgumentException("Size of vector must be at least 1");
+        }
+        if(classesOfDivision <= 1) {
+            throw new IllegalArgumentException("There must be at least 2 classes of division");
+        }
+        if(ratioOfMaxDiffBetweenClasses <= 0) {
             throw new IllegalArgumentException("Invalid ratio");
         }
-        if (trainTestRatio <= 1) {
+        if(trainTestRatio <= 1) {
             throw new IllegalArgumentException("Invalid train test ratio");
+        }
+        if(maxSizeOfDatabaseInMB <= 0) {
+            throw new IllegalArgumentException("Size of database cannot be zero or less");
         }
         this.sizeOfVector = sizeOfVector;
         this.classesOfDivision = classesOfDivision;
@@ -84,13 +96,13 @@ public class OnlineDatabaseSampler {
         }
         if (classID == classWithLeastVectors) {
             addVector(classID, inputVector);
-            calcLeastVectorIndex();
         } else if (sumsOfVectors.get(classID) / sumsOfVectors.get(classWithLeastVectors) < classRatio) {
             addVector(classID, inputVector);
         } else {
             LOGGER.debug("Skiping vector of ID: {}", classID);
             LOGGER.debug("Class with least vectors {}", classWithLeastVectors);
         }
+        calcLeastVectorIndex();
     }
 
     private void calcLeastVectorIndex() {
@@ -116,7 +128,7 @@ public class OnlineDatabaseSampler {
     }
 
     public int sizeOfDatabaseInMegabytes() {
-        return (int) ((sizeOfVector * allVectors * SIZE_OF_DOUBLE) / SIZE_OF_MEGABYTE);
+        return (int) ((sizeOfVector * allVectors * SIZE_OF_DOUBLE) / ((double) SIZE_OF_MEGABYTE));
     }
 
     public Database createDatabase(String name, long seed) {
