@@ -442,13 +442,13 @@ public class Database<T extends DataItem> {
 
         @Override
         public boolean hasNext() {
-            return index < testingSet[_class].length;
+            return index < trainingSet[_class].length;
         }
 
         @Override
         public LabelledItem next() {
             index++;
-            return new LabelledItem(testingSet[_class][index - 1], _class);
+            return new LabelledItem(trainingSet[_class][index - 1], _class);
         }
 
         @Override
