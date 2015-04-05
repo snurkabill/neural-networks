@@ -91,10 +91,12 @@ public class Database<T extends DataItem> {
         this.random = new Random(seed);
         boolean[] filter = makeFilter(applyFilter, trainingSet);
         LOGGER.info("Converting data");
+        int previousVectorSize = trainingSet.get(0).get(0).data.length;
         this.timer.startTimer();
         this.trainingSet = convertDataToArrays(filter, trainingSet);
         this.testingSet = convertDataToArrays(filter, testingSet);
         LOGGER.info("Converting is done, took {} seconds", timer.secondsSpent());
+        LOGGER.info("Old vector size: {}, new vector size: {}", previousVectorSize, this.trainingSet[0][0].data.length);
         this.sizeOfVector = this.trainingSet[0][0].data.length;
         this.numberOfClasses = this.trainingSet.length;
         this.sizeOfTrainingSet = sumElements(this.trainingSet);
