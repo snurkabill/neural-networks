@@ -131,12 +131,12 @@ public class OnlineDatabaseSampler {
         return (int) ((sizeOfVector * allVectors * SIZE_OF_DOUBLE) / ((double) SIZE_OF_MEGABYTE));
     }
 
-    public Database createDatabase(String name, long seed) {
-        return new Database(seed, trainingSet, testingSet, name, true);
+    public Database createDatabase(long seed) {
+        return new Database(seed, trainingSet, testingSet, databaseName, true);
     }
 
-    public Database createDatabase(String name) {
-        return createDatabase(name, 0);
+    public Database createDatabase() {
+        return createDatabase(0);
     }
 
     public int getClassWithLeastVectors() {
