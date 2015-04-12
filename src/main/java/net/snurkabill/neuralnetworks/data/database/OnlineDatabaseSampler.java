@@ -92,7 +92,7 @@ public class OnlineDatabaseSampler {
     public void sampleVector(int classID, double[] inputVector) throws FullDatabaseException {
         if (maxSizeOfDatabaseInMB <= this.sizeOfDatabaseInMegabytes()) {
             throw new FullDatabaseException(this.databaseName + " is full: "
-                    + "" + this.sizeOfDatabaseInMegabytes() + "MB");
+                    + "" + this.sizeOfDatabaseInMegabytes() + "MB with "  + allVectors + " vectors.");
         }
         if (classID == classWithLeastVectors) {
             addVector(classID, inputVector);
