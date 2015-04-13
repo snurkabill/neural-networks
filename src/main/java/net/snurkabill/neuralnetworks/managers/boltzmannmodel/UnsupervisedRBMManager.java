@@ -1,6 +1,5 @@
 package net.snurkabill.neuralnetworks.managers.boltzmannmodel;
 
-import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.data.database.LabelledItem;
 import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
@@ -8,8 +7,6 @@ import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.Probabili
 import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.results.UnsupervisedNetworkResults;
-
-import java.util.Iterator;
 
 public class UnsupervisedRBMManager extends RestrictedBoltzmannMachineManager {
 

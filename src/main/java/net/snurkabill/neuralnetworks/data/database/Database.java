@@ -1,12 +1,15 @@
 package net.snurkabill.neuralnetworks.data.database;
 
-import net.snurkabill.neuralnetworks.utilities.Utilities;
 import net.snurkabill.neuralnetworks.utilities.Timer;
+import net.snurkabill.neuralnetworks.utilities.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class Database<T extends DataItem> {
 

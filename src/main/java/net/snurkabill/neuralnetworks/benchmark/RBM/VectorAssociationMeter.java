@@ -12,7 +12,7 @@ public class VectorAssociationMeter {
         int differentUnknownIndexes = 0;
         for (int i = 0; i < originalVector.getLength(); i++) {
             if (originalVector.getArray()[i] != associatedVector.getArray()[i]) {
-                if (knownIndexes[i] == true) {
+                if (knownIndexes[i]) {
                     differentUnknownIndexes++;
                 }
             }

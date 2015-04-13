@@ -21,7 +21,6 @@ public class ProbabilisticAssociationVectorValidator implements RestrictedBoltzm
 
     @Override
     public double validate(double[] inputVector, RestrictedBoltzmannMachine machine) {
-        double distributiveError = 0.0;
         double[] values = new double[inputVector.length];
         for (int i = 0; i < iterations; i++) {
             machine.calculateNetwork(inputVector);

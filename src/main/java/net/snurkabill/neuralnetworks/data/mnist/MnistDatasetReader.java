@@ -24,7 +24,7 @@ public class MnistDatasetReader implements Enumeration<MnistItem> {
     private int count = 0;
     private int current = 0;
 
-    public MnistDatasetReader(File labelsFile, File imagesFile, int sizeOfDataset, boolean binary) throws IOException, FileNotFoundException {
+    public MnistDatasetReader(File labelsFile, File imagesFile, int sizeOfDataset, boolean binary) throws IOException {
         LOGGER.info("Unzipping files with {} samples ...", sizeOfDataset);
         trainingSet = new LinkedHashMap<>((int) ((double) (sizeOfDataset / TEST_FILTER) * (TEST_FILTER - 1)) + 1, 1);
         testSet = new LinkedHashMap<>((sizeOfDataset / TEST_FILTER) + 1, 1);

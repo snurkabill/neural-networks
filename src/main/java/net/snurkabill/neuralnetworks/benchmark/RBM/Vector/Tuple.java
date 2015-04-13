@@ -25,7 +25,7 @@ public class Tuple {
         this(convertToInt(results));
     }
 
-    private static final int[] convertToInt(double[] results) {
+    private static int[] convertToInt(double[] results) {
         int[] array = new int[results.length];
         for (int i = 0; i < array.length; i++) {
             array[i] = (int) (results[i] + TOLERANCE);

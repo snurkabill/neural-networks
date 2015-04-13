@@ -45,7 +45,6 @@ public class RBMTest {
         List<List<DataItem>> data2 = new ArrayList<>();
 
         for (int i = 0; i < vectors.size(); i++) {
-            int multiplicator = 100;
             data.add(new ArrayList<DataItem>());
             data2.add(new ArrayList<DataItem>());
             for (int j = 0; j < 100; j++) {

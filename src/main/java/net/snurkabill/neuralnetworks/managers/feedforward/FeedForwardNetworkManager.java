@@ -1,6 +1,5 @@
 package net.snurkabill.neuralnetworks.managers.feedforward;
 
-import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.data.database.LabelledItem;
 import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
@@ -8,8 +7,6 @@ import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.BackPropagative;
 import net.snurkabill.neuralnetworks.results.SupervisedNetworkResults;
-
-import java.util.Iterator;
 
 public class FeedForwardNetworkManager extends NetworkManager {
 

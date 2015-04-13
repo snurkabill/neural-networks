@@ -2,8 +2,6 @@ package net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.r
 
 import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.SoftPlus;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.TransferFunctionCalculator;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 
 public class BinaryToBinaryRBM extends RestrictedBoltzmannMachine {

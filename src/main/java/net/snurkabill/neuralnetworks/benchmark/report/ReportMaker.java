@@ -37,8 +37,6 @@ public class ReportMaker {
         }
     }
 
-    ;
-
     public enum Picking {
         PICK_SUCCESS("Success"),
         PICK_ERROR("Error");

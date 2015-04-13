@@ -15,7 +15,6 @@ import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.i
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.ParametrizedHyperbolicTangens;
 import net.snurkabill.neuralnetworks.weights.weightfactory.GaussianRndWeightsFactory;
 import net.snurkabill.neuralnetworks.weights.weightfactory.SmartGaussianRndWeightsFactory;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;

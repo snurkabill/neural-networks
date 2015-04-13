@@ -6,7 +6,6 @@ import net.snurkabill.neuralnetworks.data.database.LabelledItem;
 import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
-import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.results.SupervisedNetworkResults;
 import net.snurkabill.neuralnetworks.utilities.Utilities;
 
@@ -31,7 +30,6 @@ public class BinaryDeepBeliefNetworkManager extends NetworkManager {
     @Override
     protected void test() {
         double[] targetValues = targetMaker.nullTargetValues();
-        RestrictedBoltzmannMachine machine = (RestrictedBoltzmannMachine) neuralNetwork;
         int[] successValuesCounter = new int[neuralNetwork.getSizeOfOutputVector()];
         globalError = 0.0;
         int success = 0;
