@@ -102,6 +102,9 @@ public abstract class NetworkManager {
             LOGGER.debug("Confusion Matrix:");
             for (int i = 0; i < database.getNumberOfClasses(); i++) {
                 LOGGER.debug("{}: {}, {}", i, confusionMatrix[i], confusionPercentages[i]);
+                for (int j = 0; j < database.getNumberOfClasses(); j++) {
+                    confusionMatrix[i][j] = 0;
+                }
             }
         }
     }
