@@ -21,7 +21,6 @@ public class App {
         //DeepBeliefNetworkConcept.deepBoltzmannMachine();
 
         MnistExampleFFNN.basicBenchmark();
-        //GaussianVisibleImplementation.shitFuck();
-        //IWannaKillMyself.and();
+        
     }
 }
