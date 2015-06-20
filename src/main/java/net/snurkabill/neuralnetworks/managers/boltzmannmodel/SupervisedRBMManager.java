@@ -45,7 +45,11 @@ public class SupervisedRBMManager extends RestrictedBoltzmannMachineManager {
             for (; testingIterator.hasNext(); ) {
                 double[] item = this.fillTestingVectorForReconstruction(testingIterator.next().data);
                 globalError += validator.validate(item, machine);
-                if (validator.getClassWithHighestProbability() == _class) {
+                int pickedClass = validator.getClassWithHighestProbability();
+                if(pickedClass != Integer.MIN_VALUE) {
+                    confusionMatrix[_class][pickedClass]++;
+                }
+                if (pickedClass == _class) {
                     success++;
                     successValuesCounter[_class]++;
                 } else fail++;

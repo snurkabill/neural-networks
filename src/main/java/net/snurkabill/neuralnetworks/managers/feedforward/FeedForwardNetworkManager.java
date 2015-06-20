@@ -37,6 +37,7 @@ public class FeedForwardNetworkManager extends NetworkManager {
         FeedForwardNetwork network = (FeedForwardNetwork) super.neuralNetwork;
         double[] targetValues = targetMaker.nullTargetValues();
         int[] successValuesCounter = new int[neuralNetwork.getSizeOfOutputVector()];
+
         globalError = 0.0;
         int success = 0;
         int fail = 0;
@@ -46,7 +47,9 @@ public class FeedForwardNetworkManager extends NetworkManager {
             for (; testingIterator.hasNext(); ) {
                 double[] item = testingIterator.next().data;
                 globalError += network.calcError(item, targetValues);
-                if (network.getFirstHighestValueIndex() == _class) {
+                int pickedClass = network.getFirstHighestValueIndex();
+                confusionMatrix[_class][pickedClass]++;
+                if (pickedClass == _class) {
                     success++;
                     successValuesCounter[_class]++;
                 } else fail++;
@@ -55,7 +58,6 @@ public class FeedForwardNetworkManager extends NetworkManager {
         int all = (success + fail);
         percentageSuccess = ((double) success * 100.0) / (double) all;
         globalError /= all;
-        LOGGER.debug("Global Error: {}, Percentage Successs: {}", globalError, percentageSuccess);
     }
 
     @Override

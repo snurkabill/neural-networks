@@ -31,6 +31,8 @@ public abstract class NetworkManager {
     protected long learningTimeBeforeTest;
     private final HeuristicCalculator heuristicCalculator;
     private boolean wasAlreadyTested;
+    protected final int[][] confusionMatrix;
+    protected final double[][] confusionPercentages;
 
     public NetworkManager(NeuralNetwork neuralNetwork, Database database,
                           HeuristicCalculator heuristicCalculator) {
@@ -43,6 +45,8 @@ public abstract class NetworkManager {
         this.targetMaker = new SeparableTargetValues(neuralNetwork.getTransferFunction(),
                 database.getNumberOfClasses());
         this.infiniteTrainingIterator = database.getInfiniteRandomTrainingIterator();
+        this.confusionMatrix = new int[database.getNumberOfClasses()][database.getNumberOfClasses()];
+        this.confusionPercentages = new double[database.getNumberOfClasses()][database.getNumberOfClasses()];
     }
 
     public void supervisedTraining(int numOfIterations) {
@@ -86,6 +90,19 @@ public abstract class NetworkManager {
                 database.getTestSetSize(), timer.secondsSpent(), timer.samplesPerSec(database.getTestSetSize()));
         if (heuristicCalculator != null) {
             neuralNetwork.setHeuristic(heuristicCalculator.calculateNewHeuristic(results));
+        }
+        LOGGER.info("Global Error: {}, Percentage Successs: {}", globalError, percentageSuccess);
+
+        if(LOGGER.isDebugEnabled()) {
+            for (int i = 0; i < database.getNumberOfClasses(); i++) {
+                for (int j = 0; j < database.getNumberOfClasses(); j++) {
+                    confusionPercentages[i][j] = (confusionMatrix[i][j] * 100.0) / database.getSizeOfTestingDataset(i);
+                }
+            }
+            LOGGER.debug("Confusion Matrix:");
+            for (int i = 0; i < neuralNetwork.getSizeOfOutputVector(); i++) {
+                LOGGER.debug("{}: {}, {}", i, confusionMatrix[i], confusionPercentages[i]);
+            }
         }
     }
 
