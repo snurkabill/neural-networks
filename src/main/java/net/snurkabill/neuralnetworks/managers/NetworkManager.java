@@ -100,7 +100,7 @@ public abstract class NetworkManager {
                 }
             }
             LOGGER.debug("Confusion Matrix:");
-            for (int i = 0; i < neuralNetwork.getSizeOfOutputVector(); i++) {
+            for (int i = 0; i < database.getNumberOfClasses(); i++) {
                 LOGGER.debug("{}: {}, {}", i, confusionMatrix[i], confusionPercentages[i]);
             }
         }
