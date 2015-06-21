@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks;
 
-import net.snurkabill.neuralnetworks.examples.mnist.MnistExampleFFNN;
+import net.snurkabill.neuralnetworks.examples.RBMProofOfConcept.GaussianVisibleTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +12,7 @@ public class App {
 
     public static void main(String argv[]) throws IOException {
 
-        //GaussianVisibleTest.gaussianVisibleExample();
+        GaussianVisibleTest.gaussianVisibleExample();
         //BinaryMnistRBM.start();
         //new RBMTest().test();
 
@@ -20,7 +20,7 @@ public class App {
         //DeepBeliefNetworkConcept.deepXor();
         //DeepBeliefNetworkConcept.deepBoltzmannMachine();
 
-        MnistExampleFFNN.basicBenchmark();
+        //MnistExampleFFNN.basicBenchmark();
         
     }
 }

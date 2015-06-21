@@ -6,6 +6,7 @@ import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.UnsupervisedRBMManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.ProbabilisticAssociationVectorValidator;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.gaussianvisible.GaussianToBinaryRBM;
+import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.gaussianvisible.GaussianToRectifiedRBM;
 import net.snurkabill.neuralnetworks.utilities.datagenerator.DataGenerator;
 import net.snurkabill.neuralnetworks.utilities.datagenerator.GaussianGenerator;
 import net.snurkabill.neuralnetworks.utilities.datagenerator.NGaussianDistribution;
@@ -42,12 +43,12 @@ public class GaussianVisibleTest {
         List<List<DataItem>> data = new ArrayList<>();
         List<List<DataItem>> data2 = new ArrayList<>();
 
-            data.add(new ArrayList<DataItem>());
-            data2.add(new ArrayList<DataItem>());
-            for (int j = 0; j < 1_000_000; j++) {
-                data.get(0).add(dataGenerator.generateNext());
-                data2.get(0).add(dataGenerator.generateNext());
-            }
+        data.add(new ArrayList<DataItem>());
+        data2.add(new ArrayList<DataItem>());
+        for (int j = 0; j < 1_000_000; j++) {
+            data.get(0).add(dataGenerator.generateNext());
+            data2.get(0).add(dataGenerator.generateNext());
+        }
 
         for (int i = 0; i < data.size(); i++) {
             trainingSet.put(i, data.get(i));
@@ -56,12 +57,14 @@ public class GaussianVisibleTest {
         Database database = new Database(0, trainingSet, testingSet, "testingDatabaseRBM", true);
 
         BoltzmannMachineHeuristic heuristics = BoltzmannMachineHeuristic.createStartingHeuristicParams();
-        heuristics.batchSize = 1000;
-        heuristics.learningRate = 0.001;
+        heuristics.batchSize = 1;
+        heuristics.learningRate = 0.000001;
+        heuristics.constructiveDivergenceIndex = 5;
+        heuristics.momentum = 0.3;
 
-        GaussianToBinaryRBM rbm = new GaussianToBinaryRBM(
-                "RBMTest", database.getSizeOfVector(), 100,
-                new GaussianRndWeightsFactory(0.0, 0), heuristics, 0);
+        GaussianToBinaryRBM rbm = new GaussianToRectifiedRBM(
+                "RBMTest", database.getSizeOfVector(), 30,
+                new GaussianRndWeightsFactory(1, 0), heuristics, 0);
 
         UnsupervisedRBMManager manager = new UnsupervisedRBMManager(rbm, database, 0, null,
                 new ProbabilisticAssociationVectorValidator(1));
