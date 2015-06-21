@@ -19,7 +19,7 @@ public class GaussianToBinaryRBM extends RestrictedBoltzmannMachine {
     @Override
     protected void calcVisibleNeurons() {
         for (int i = 0; i < sizeOfVisibleVector; i++) {
-            visibleNeurons[i] = calcVisiblePotential(i);
+            visibleNeurons[i] = random.nextGaussian() + calcVisiblePotential(i);
         }
     }
 
@@ -27,7 +27,7 @@ public class GaussianToBinaryRBM extends RestrictedBoltzmannMachine {
     protected void calcHiddenNeurons() {
         for (int i = 0; i < sizeOfHiddenVector; i++) {
             hiddenNeurons[i] =
-                    (super.calcProbabilityOfPositiveOutput(calcHiddenPotential(i)) < random.nextDouble()) ? 1.0 : 0.0;
+                    (super.calcProbabilityOfPositiveOutput(calcHiddenPotential(i)) > random.nextDouble()) ? 1.0 : 0.0;
         }
     }
 
