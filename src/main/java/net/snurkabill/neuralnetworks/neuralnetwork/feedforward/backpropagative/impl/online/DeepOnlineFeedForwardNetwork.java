@@ -30,6 +30,8 @@ public class DeepOnlineFeedForwardNetwork extends OnlineFeedForwardNetwork {
 
     @Override
     public void feedForward(double[] inputVector) {
+        //TODO: sample only if input transform is stochastic model
+        //TODO: add isStochastic() for models
         for (int i = 0; i < binomialDistribution.length; i++) {
             binomialDistribution[i] = 0;
         }

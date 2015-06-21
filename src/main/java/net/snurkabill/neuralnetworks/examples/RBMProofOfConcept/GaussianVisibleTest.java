@@ -1,8 +1,11 @@
 package net.snurkabill.neuralnetworks.examples.RBMProofOfConcept;
 
+import net.snurkabill.neuralnetworks.benchmark.SupervisedBenchmarker;
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
+import net.snurkabill.neuralnetworks.managers.MasterNetworkManager;
+import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.UnsupervisedRBMManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.ProbabilisticAssociationVectorValidator;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.gaussianvisible.GaussianToBinaryRBM;
@@ -63,12 +66,24 @@ public class GaussianVisibleTest {
         heuristics.momentum = 0.3;
 
         GaussianToBinaryRBM rbm = new GaussianToRectifiedRBM(
-                "RBMTest", database.getSizeOfVector(), 30,
+                "RBM-Rectified", database.getSizeOfVector(), 30,
                 new GaussianRndWeightsFactory(1, 0), heuristics, 0);
 
         UnsupervisedRBMManager manager = new UnsupervisedRBMManager(rbm, database, 0, null,
                 new ProbabilisticAssociationVectorValidator(1));
-        for (int i = 0; i < 100; i++) {
+
+        GaussianToBinaryRBM rbm2 = new GaussianToBinaryRBM(
+                "RBM-Binary", database.getSizeOfVector(), 30,
+                new GaussianRndWeightsFactory(1, 0), heuristics, 0);
+
+        UnsupervisedRBMManager manager2 = new UnsupervisedRBMManager(rbm2, database, 0, null,
+                new ProbabilisticAssociationVectorValidator(1));
+
+        MasterNetworkManager master = new MasterNetworkManager("2D-gauss", Arrays.<NetworkManager>asList(manager, manager2), 2);
+
+        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(100, 10_000, master);
+        benchmarker.benchmark();
+        /*for (int i = 0; i < 100; i++) {
             manager.supervisedTraining(10000);
             manager.testNetwork();
             LOGGER.info("Error: {}", manager.getTestResults().getComparableSuccess());
@@ -79,6 +94,6 @@ public class GaussianVisibleTest {
 
             rbm.calculateNetwork(item.data);
             LOGGER.info("Original: {}, Reconstruction: {} ", item.data, rbm.getVisibleNeurons());
-        }
+        }*/
     }
 }
