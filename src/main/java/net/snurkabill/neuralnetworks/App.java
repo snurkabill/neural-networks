@@ -13,6 +13,8 @@ public class App {
     public static void main(String argv[]) throws IOException {
 
         GaussianVisibleTest.gaussianVisibleExample();
+        //MnistExampleFFNN.mnistDBN();
+
         //BinaryMnistRBM.start();
         //new RBMTest().test();
 

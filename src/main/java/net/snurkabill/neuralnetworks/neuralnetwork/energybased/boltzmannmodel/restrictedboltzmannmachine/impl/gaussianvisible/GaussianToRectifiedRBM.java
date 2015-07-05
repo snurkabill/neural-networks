@@ -17,7 +17,7 @@ public class GaussianToRectifiedRBM extends GaussianToBinaryRBM {
     protected void calcHiddenNeurons() {
         for (int i = 0; i < sizeOfHiddenVector; i++) {
             hiddenNeurons[i] = hiddenTransferFunction.calculateOutputValue(
-                    calcProbabilityOfPositiveOutput(calcHiddenPotential(i)));
+                    /*calcProbabilityOfPositiveOutput*/(calcHiddenPotential(i)));
         }
     }
 }

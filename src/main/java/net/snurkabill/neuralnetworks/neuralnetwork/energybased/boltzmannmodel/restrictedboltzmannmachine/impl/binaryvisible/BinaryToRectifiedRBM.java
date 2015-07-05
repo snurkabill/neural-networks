@@ -16,10 +16,13 @@ public class BinaryToRectifiedRBM extends BinaryToBinaryRBM {
 
     @Override
     protected void calcHiddenNeurons() {
-        for (int i = 0; i < sizeOfHiddenVector; i++) {
-            hiddenNeurons[i] = hiddenTransferFunction.calculateOutputValue(
-                    calcProbabilityOfPositiveOutput(calcHiddenPotential(i)));
+        for (int i = 0; i < hiddenNeurons.length; i++) {
+            hiddenNeurons[i] = hiddenTransferFunction.calculateOutputValue(calcHiddenPotential(i));
         }
+        /*for (int i = 0; i < sizeOfHiddenVector; i++) {
+            hiddenNeurons[i] = hiddenTransferFunction.calculateOutputValue(
+                    *//*calcProbabilityOfPositiveOutput*//*(calcHiddenPotential(i)));
+        }*/
     }
 
     @Override
