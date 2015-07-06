@@ -95,7 +95,7 @@ public class RBMTest {
         DeepOnlineFeedForwardNetwork lastLayerTrainer = new DeepOnlineFeedForwardNetwork("deep",
                 Arrays.asList(topology.get(1), topology.get(2)),
                 new SmartGaussianRndWeightsFactory(new SigmoidFunction(), seed), linearHeuristics,
-                new ParametrizedHyperbolicTangens(), dbm, 10);
+                new ParametrizedHyperbolicTangens(), dbm);
         NetworkManager linearManager = new FeedForwardNetworkManager(lastLayerTrainer, database, null);
         linearManager.supervisedTraining(100_00);
         linearManager.testNetwork();

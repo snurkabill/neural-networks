@@ -71,10 +71,10 @@ public class GeneralFunctionalityTest {
         Database database = createDatabase(2000, true, seed);
         BoltzmannMachineHeuristic heuristic = new BoltzmannMachineHeuristic();
         heuristic.momentum = 0.1;
-        heuristic.learningRate = 0.1;
+        heuristic.learningRate = 0.01;
         heuristic.constructiveDivergenceIndex = 1;
         heuristic.temperature = 1;
-        heuristic.batchSize = 10;
+        heuristic.batchSize = 3;
         BinaryToBinaryRBM machine =
                 new BinaryToRectifiedRBM("RBM basicHeuristic",
                         (database.getSizeOfVector() + database.getNumberOfClasses()), 50,
@@ -84,7 +84,7 @@ public class GeneralFunctionalityTest {
                 new PartialProbabilisticAssociationVectorValidator(1, database.getNumberOfClasses()));
         manager.supervisedTraining(1000);
         manager.testNetwork();
-        assertEquals(51.5, manager.getTestResults().getComparableSuccess(), 0.0001);
+        assertEquals(70, manager.getTestResults().getComparableSuccess(), 0.0001);
     }
 
     private Database createDatabase(int numOfElements, boolean binary, long seed) {

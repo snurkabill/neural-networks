@@ -10,10 +10,14 @@ import net.snurkabill.neuralnetworks.managers.MasterNetworkManager;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.SupervisedRBMManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.PartialProbabilisticAssociationVectorValidator;
+import net.snurkabill.neuralnetworks.managers.deep.GreedyLayerWiseDeepBeliefNetworkBuilder;
 import net.snurkabill.neuralnetworks.managers.feedforward.FeedForwardNetworkManager;
+import net.snurkabill.neuralnetworks.neuralnetwork.deep.RBMCone;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.binaryvisible.BinaryToBinaryRBM;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.binaryvisible.BinaryToRectifiedRBM;
+import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.gaussianvisible.GaussianToRectifiedRBM;
+import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.DeepOnlineFeedForwardNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.OnlineFeedForwardNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.ParametrizedHyperbolicTangens;
 import net.snurkabill.neuralnetworks.results.SupervisedNetworkResults;
@@ -146,6 +150,42 @@ public class MnistExampleFFNN {
             SupervisedNetworkResults results = (SupervisedNetworkResults) manager.getTestResults();
             LOGGER.info("Success rate is {} in {} iteration", results.getSuccessPercentage(), i);
         }
+    }
+
+    public static void mnistDBN() {
+        long seed = 0;
+        MnistDatasetReader reader = getReader(FULL_MNIST_SIZE, true);
+        Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST", true);
+
+        BoltzmannMachineHeuristic heuristic = BoltzmannMachineHeuristic.createStartingHeuristicParams();
+        heuristic.momentum = 0.1;
+        heuristic.learningRate = 0.01;
+        heuristic.constructiveDivergenceIndex = 1;
+        heuristic.temperature = 1;
+        heuristic.batchSize = 3;
+
+        List<RestrictedBoltzmannMachine> machines = new ArrayList<>();
+        machines.add(new GaussianToRectifiedRBM("RBM 1", database.getSizeOfVector(), 200,
+                        new GaussianRndWeightsFactory(0.01, seed), heuristic, seed));
+        machines.add(new GaussianToRectifiedRBM("RBM 2", 200, 50, new GaussianRndWeightsFactory(0.01, seed),
+                heuristic, seed));
+        /*machines.add(new GaussianToRectifiedRBM("RBM 2", 100, 50, new GaussianRndWeightsFactory(0.01, seed),
+                heuristic, seed));
+*/
+        GreedyLayerWiseDeepBeliefNetworkBuilder DBNBuilder = new GreedyLayerWiseDeepBeliefNetworkBuilder(machines,
+                Arrays.asList(20_000, 20_000/*, 10_000*/), 0.1, database);
+
+        RBMCone rbmCone = DBNBuilder.createRBMCone();
+
+        DeepOnlineFeedForwardNetwork deepOnlineFeedForwardNetwork = new DeepOnlineFeedForwardNetwork("Deep-",
+                Arrays.asList(50, database.getNumberOfClasses()), new GaussianRndWeightsFactory(0.01, seed),
+                FeedForwardHeuristic.createDefaultHeuristic(), new ParametrizedHyperbolicTangens(), rbmCone);
+
+        NetworkManager manager = new FeedForwardNetworkManager(deepOnlineFeedForwardNetwork, database, null);
+        MasterNetworkManager superManager = new MasterNetworkManager("MNIST",
+                Arrays.asList(manager), 1);
+        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(10, 10_000, superManager);
+        benchmarker.benchmark();
     }
 
     public static void convertMap(Map<Integer, List<DataItem>> map) {
