@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.examples.mnist;
 
-import net.snurkabill.neuralnetworks.data.database.Database;
+import net.snurkabill.neuralnetworks.data.database.ClassFullDatabase;
 import net.snurkabill.neuralnetworks.data.mnist.MnistDatasetReader;
 import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
@@ -28,7 +28,7 @@ public class BinaryMnistRBM extends Canvas {
         long seed = 0;
         double weightsScale = 0.01;
         MnistDatasetReader reader = MnistExampleFFNN.getReader(10000, true);
-        Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST", false);
+        ClassFullDatabase classFullDatabase = new ClassFullDatabase(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST", false);
 
         BoltzmannMachineHeuristic heuristic = BoltzmannMachineHeuristic.createStartingHeuristicParams();
         heuristic.learningRate = 0.01;
@@ -37,10 +37,10 @@ public class BinaryMnistRBM extends Canvas {
         heuristic.momentum = 0.3;
         heuristic.temperature = 1;
         machine = new BinaryToBinaryRBM("RBM 1",
-                (database.getSizeOfVector()), 200,
+                (classFullDatabase.getSizeOfVector()), 200,
                 new GaussianRndWeightsFactory(weightsScale, seed),
                 heuristic, seed);
-        manager_rbm = new UnsupervisedRBMManager(machine, database, seed, null,
+        manager_rbm = new UnsupervisedRBMManager(machine, classFullDatabase, seed, null,
                 new ProbabilisticAssociationVectorValidator(1));
     }
 

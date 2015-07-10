@@ -1,7 +1,7 @@
 package net.snurkabill.neuralnetworks.scenario.energybased;
 
+import net.snurkabill.neuralnetworks.data.database.ClassFullDatabase;
 import net.snurkabill.neuralnetworks.data.database.DataItem;
-import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.SupervisedRBMManager;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.PartialProbabilisticAssociationVectorValidator;
@@ -39,7 +39,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         }
         testingSet.put(0, and);
         testingSet.put(1, noise);
-        Database database = new Database(0, trainingSet, testingSet, "Database", true);
+        ClassFullDatabase classFullDatabase = new ClassFullDatabase(0, trainingSet, testingSet, "ClassFullDatabase", true);
         BoltzmannMachineHeuristic heuristic = new BoltzmannMachineHeuristic();
         heuristic.learningRate = 0.001;
         heuristic.momentum = 0.1;
@@ -47,11 +47,11 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         heuristic.temperature = 0.1;
         heuristic.batchSize = 6;
 
-        BinaryToBinaryRBM machine = new BinaryToBinaryRBM("And-RBM", database.getSizeOfVector() + database.getNumberOfClasses(),
+        BinaryToBinaryRBM machine = new BinaryToBinaryRBM("And-RBM", classFullDatabase.getSizeOfVector() + classFullDatabase.getNumberOfClasses(),
                 10, new GaussianRndWeightsFactory(0, seed), heuristic, seed);
 
-        SupervisedRBMManager manager = new SupervisedRBMManager(machine, database, seed, null,
-                new PartialProbabilisticAssociationVectorValidator(1, database.getNumberOfClasses()));
+        SupervisedRBMManager manager = new SupervisedRBMManager(machine, classFullDatabase, seed, null,
+                new PartialProbabilisticAssociationVectorValidator(1, classFullDatabase.getNumberOfClasses()));
 
         // declarative way
         for (int i = 0; i < 10000; i++) {
@@ -82,7 +82,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         }
         testingSet.put(0, and);
         testingSet.put(1, noise);
-        Database database = new Database(0, trainingSet, testingSet, "Database", true);
+        ClassFullDatabase classFullDatabase = new ClassFullDatabase(0, trainingSet, testingSet, "ClassFullDatabase", true);
         BoltzmannMachineHeuristic heuristic = new BoltzmannMachineHeuristic();
         heuristic.learningRate = 0.001;
         heuristic.momentum = 0.1;
@@ -90,11 +90,11 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         heuristic.temperature = 0.1;
         heuristic.batchSize = 6;
 
-        BinaryToBinaryRBM machine = new BinaryToBinaryRBM("Or-RBM", database.getSizeOfVector() + database.getNumberOfClasses(),
+        BinaryToBinaryRBM machine = new BinaryToBinaryRBM("Or-RBM", classFullDatabase.getSizeOfVector() + classFullDatabase.getNumberOfClasses(),
                 10, new GaussianRndWeightsFactory(0, seed), heuristic, seed);
 
-        SupervisedRBMManager manager = new SupervisedRBMManager(machine, database, seed, null,
-                new PartialProbabilisticAssociationVectorValidator(1, database.getNumberOfClasses()));
+        SupervisedRBMManager manager = new SupervisedRBMManager(machine, classFullDatabase, seed, null,
+                new PartialProbabilisticAssociationVectorValidator(1, classFullDatabase.getNumberOfClasses()));
 
         // declarative way
         for (int i = 0; i < 10000; i++) {
@@ -126,7 +126,7 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         }
         testingSet.put(0, and);
         testingSet.put(1, noise);
-        Database database = new Database(0, trainingSet, testingSet, "Database", true);
+        ClassFullDatabase classFullDatabase = new ClassFullDatabase(0, trainingSet, testingSet, "ClassFullDatabase", true);
         BoltzmannMachineHeuristic heuristic = new BoltzmannMachineHeuristic();
         heuristic.learningRate = 0.001;
         heuristic.momentum = 0.1;
@@ -134,11 +134,11 @@ public class RBMProofOfConceptTest extends LogicFunctions {
         heuristic.temperature = 0.1;
         heuristic.batchSize = 6;
 
-        BinaryToBinaryRBM machine = new BinaryToBinaryRBM("And-RBM", database.getSizeOfVector() + database.getNumberOfClasses(),
+        BinaryToBinaryRBM machine = new BinaryToBinaryRBM("And-RBM", classFullDatabase.getSizeOfVector() + classFullDatabase.getNumberOfClasses(),
                 100, new GaussianRndWeightsFactory(0, seed), heuristic, seed);
 
-        SupervisedRBMManager manager = new SupervisedRBMManager(machine, database, seed, null,
-                new PartialProbabilisticAssociationVectorValidator(1, database.getNumberOfClasses()));
+        SupervisedRBMManager manager = new SupervisedRBMManager(machine, classFullDatabase, seed, null,
+                new PartialProbabilisticAssociationVectorValidator(1, classFullDatabase.getNumberOfClasses()));
 
         // declarative way
         for (int i = 0; i < 10000; i++) {

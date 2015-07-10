@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.managers.boltzmannmodel;
 
-import net.snurkabill.neuralnetworks.data.database.Database;
+import net.snurkabill.neuralnetworks.data.database.ClassFullDatabase;
 import net.snurkabill.neuralnetworks.data.database.LabelledItem;
 import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.ProbabilisticAssociationVectorValidator;
@@ -12,10 +12,10 @@ public class UnsupervisedRBMManager extends RestrictedBoltzmannMachineManager {
 
     private final ProbabilisticAssociationVectorValidator validator;
 
-    public UnsupervisedRBMManager(NeuralNetwork neuralNetwork, Database database, long seed,
+    public UnsupervisedRBMManager(NeuralNetwork neuralNetwork, ClassFullDatabase classFullDatabase, long seed,
                                   HeuristicCalculator heuristicCalculator,
                                   ProbabilisticAssociationVectorValidator validator) {
-        super(neuralNetwork, database, seed, heuristicCalculator);
+        super(neuralNetwork, classFullDatabase, seed, heuristicCalculator);
         this.validator = validator;
     }
 
@@ -32,8 +32,8 @@ public class UnsupervisedRBMManager extends RestrictedBoltzmannMachineManager {
         RestrictedBoltzmannMachine machine = (RestrictedBoltzmannMachine) neuralNetwork;
         globalError = 0.0;
         int all = 0;
-        for (int _class = 0; _class < database.getNumberOfClasses(); _class++) {
-            Database.TestClassIterator testingIterator = database.getTestingIteratorOverClass(_class);
+        for (int _class = 0; _class < classFullDatabase.getNumberOfClasses(); _class++) {
+            ClassFullDatabase.TestClassIterator testingIterator = classFullDatabase.getTestingIteratorOverClass(_class);
             for (; testingIterator.hasNext(); ) {
                 globalError += validator.validate(testingIterator.next().data, machine);
                 all++;
@@ -50,7 +50,7 @@ public class UnsupervisedRBMManager extends RestrictedBoltzmannMachineManager {
 
     @Override
     protected void checkVectorSizes() {
-        if (neuralNetwork.getSizeOfInputVector() != database.getSizeOfVector()) {
+        if (neuralNetwork.getSizeOfInputVector() != classFullDatabase.getSizeOfVector()) {
             throw new IllegalArgumentException("Size of input vector is different from number of classes");
         }
     }
