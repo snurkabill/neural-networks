@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.weights.weightfactory;
 
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.TransferFunctionCalculator;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.TransferFunctionCalculator;
 
 import java.util.Random;
 

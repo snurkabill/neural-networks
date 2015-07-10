@@ -2,8 +2,8 @@ package net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel;
 
 import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.EnergyBased;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.SigmoidFunction;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.TransferFunctionCalculator;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.SigmoidFunction;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.TransferFunctionCalculator;
 
 import java.util.Random;
 

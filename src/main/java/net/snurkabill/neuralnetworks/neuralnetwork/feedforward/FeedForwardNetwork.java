@@ -2,7 +2,7 @@ package net.snurkabill.neuralnetworks.neuralnetwork.feedforward;
 
 import net.snurkabill.neuralnetworks.neuralnetwork.FeedForwardable;
 import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.TransferFunctionCalculator;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.TransferFunctionCalculator;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 
 import java.util.List;

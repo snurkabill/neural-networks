@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class ClassFullDatabase<T extends DataItem> {
+public class Database<T extends DataItem> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("ClassFullDatabase");
+    private static final Logger LOGGER = LoggerFactory.getLogger("Database");
 
     private final Timer timer = new Timer();
     private final Random random;
@@ -28,7 +28,7 @@ public class ClassFullDatabase<T extends DataItem> {
     private final String name;
     private final int sizeOfVector;
 
-    public ClassFullDatabase(long seed, File dataFile) {
+    public Database(long seed, File dataFile) {
         if(dataFile == null) {
             throw new IllegalArgumentException("Wrong file name: (" + dataFile + ")");
         }
@@ -70,16 +70,16 @@ public class ClassFullDatabase<T extends DataItem> {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Loading classFullDatabase failed!", e);
+            throw new RuntimeException("Loading database failed!", e);
         }
         constructingDatabaseEnded();
     }
 
-    public ClassFullDatabase(long seed, Map<Integer, List<T>> trainingSet, Map<Integer, List<T>> testingSet,
-                             String name, boolean applyFilter) {
+    public Database(long seed, Map<Integer, List<T>> trainingSet, Map<Integer, List<T>> testingSet,
+                    String name, boolean applyFilter) {
         constructingDatabaseStarted(name);
         if(name == null) {
-            throw new IllegalArgumentException("ClassFullDatabase name cannot be null");
+            throw new IllegalArgumentException("Database name cannot be null");
         }
         if(testingSet == null) {
             throw new IllegalArgumentException("Testing set cannot be null");
@@ -109,11 +109,11 @@ public class ClassFullDatabase<T extends DataItem> {
 
     private void constructingDatabaseStarted(String name) {
         this.timer.startTimer();
-        LOGGER.info("Creating classFullDatabase {}", name);
+        LOGGER.info("Creating database {}", name);
     }
 
     private void constructingDatabaseEnded() {
-        LOGGER.info("ClassFullDatabase {} created after {} seconds", name, timer.secondsSpent());
+        LOGGER.info("Database {} created after {} seconds", name, timer.secondsSpent());
     }
 
     public String getName() {
@@ -206,7 +206,7 @@ public class ClassFullDatabase<T extends DataItem> {
     }
 
     // TODO: implement deterministic normalization
-    public ClassFullDatabase stochasticStandardNormalization(int percentageSampleSize) {
+    public Database stochasticStandardNormalization(int percentageSampleSize) {
         if(percentageSampleSize <= 0) {
             throw new IllegalArgumentException("percentageSampleSize (" + percentageSampleSize + ") is too low. " +
                     "Must be from interval (0, 100>");
@@ -226,7 +226,7 @@ public class ClassFullDatabase<T extends DataItem> {
         return tmp;
     }
 
-    public ClassFullDatabase stochasticStandardNormalization(double scaleSize) {
+    public Database stochasticStandardNormalization(double scaleSize) {
         this.timer.startTimer();
         checkScaleSize(scaleSize);
         LOGGER.info("Data standard normalization started.");
@@ -258,7 +258,7 @@ public class ClassFullDatabase<T extends DataItem> {
         }
     }
 
-    public ClassFullDatabase stochasticUnityBasedNormalization(double scaleSize, double topLimit, double lowLimit) {
+    public Database stochasticUnityBasedNormalization(double scaleSize, double topLimit, double lowLimit) {
         checkScaleSize(scaleSize);
         this.timer.startTimer();
         LOGGER.info("Data unity-based normalization started.");
@@ -464,7 +464,7 @@ public class ClassFullDatabase<T extends DataItem> {
 
     public void storeDatabase() {
         this.timer.startTimer();
-        LOGGER.info("Storing classFullDatabase started with ({}) filename", this.name);
+        LOGGER.info("Storing database started with ({}) filename", this.name);
         try (DataOutputStream outputStream = new DataOutputStream(new FileOutputStream(new File(this.name)))) {
             outputStream.writeInt(numberOfClasses);
             outputStream.writeInt(trainingSet[0][0].data.length);
@@ -490,9 +490,9 @@ public class ClassFullDatabase<T extends DataItem> {
             }
             outputStream.flush();
         } catch (Exception e) {
-            throw new RuntimeException("Storing classFullDatabase failed!", e);
+            throw new RuntimeException("Storing database failed!", e);
         }
-        LOGGER.info("Storing classFullDatabase is done after {} seconds", timer.secondsSpent());
+        LOGGER.info("Storing database is done after {} seconds", timer.secondsSpent());
     }
 
 }

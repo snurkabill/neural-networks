@@ -2,7 +2,7 @@ package net.snurkabill.neuralnetworks.examples.RBMProofOfConcept;
 
 import net.snurkabill.neuralnetworks.benchmark.SupervisedBenchmarker;
 import net.snurkabill.neuralnetworks.data.database.DataItem;
-import net.snurkabill.neuralnetworks.data.database.ClassFullDatabase;
+import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
 import net.snurkabill.neuralnetworks.heuristic.FeedForwardHeuristic;
 import net.snurkabill.neuralnetworks.managers.MasterNetworkManager;
@@ -15,8 +15,8 @@ import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.re
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.binaryvisible.BinaryToBinaryRBM;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.DeepOnlineFeedForwardNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.OnlineFeedForwardNetwork;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.ParametrizedHyperbolicTangens;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.SigmoidFunction;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.ParametrizedHyperbolicTangens;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.SigmoidFunction;
 import net.snurkabill.neuralnetworks.weights.weightfactory.FineTuningWeightsFactory;
 import net.snurkabill.neuralnetworks.weights.weightfactory.GaussianRndWeightsFactory;
 import net.snurkabill.neuralnetworks.weights.weightfactory.SmartGaussianRndWeightsFactory;
@@ -56,9 +56,9 @@ public class RBMTest {
             trainingSet.put(i, data.get(i));
             testingSet.put(i, data2.get(i));
         }
-        ClassFullDatabase classFullDatabase = new ClassFullDatabase(0, trainingSet, testingSet, "testingDatabaseRBM", true);
+        Database database = new Database(0, trainingSet, testingSet, "testingDatabaseRBM", true);
 
-        List<Integer> topology = Arrays.asList(classFullDatabase.getSizeOfVector(), 1, classFullDatabase.getNumberOfClasses());
+        List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 1, database.getNumberOfClasses());
 
         BoltzmannMachineHeuristic heuristics = BoltzmannMachineHeuristic.createStartingHeuristicParams();
         heuristics.batchSize = 3;
@@ -72,9 +72,9 @@ public class RBMTest {
                 "RBMTest", topology.get(0), topology.get(1),
                 new GaussianRndWeightsFactory(0.0, 0), heuristics, 0);*/
 
-        UnsupervisedRBMManager manager = new UnsupervisedRBMManager(rbm, classFullDatabase, 0, null,
+        UnsupervisedRBMManager manager = new UnsupervisedRBMManager(rbm, database, 0, null,
                 new ProbabilisticAssociationVectorValidator(10));
-        /*UnsupervisedRBMManager manager2 = new UnsupervisedRBMManager(rbm2, classFullDatabase, 0, null,
+        /*UnsupervisedRBMManager manager2 = new UnsupervisedRBMManager(rbm2, database, 0, null,
                 new ProbabilisticAssociationVectorValidator(10));*/
         for (int i = 0; i < 100; i++) {
             manager.supervisedTraining(1000);
@@ -96,7 +96,7 @@ public class RBMTest {
                 Arrays.asList(topology.get(1), topology.get(2)),
                 new SmartGaussianRndWeightsFactory(new SigmoidFunction(), seed), linearHeuristics,
                 new ParametrizedHyperbolicTangens(), dbm, 10);
-        NetworkManager linearManager = new FeedForwardNetworkManager(lastLayerTrainer, classFullDatabase, null);
+        NetworkManager linearManager = new FeedForwardNetworkManager(lastLayerTrainer, database, null);
         linearManager.supervisedTraining(100_00);
         linearManager.testNetwork();
         LOGGER.info("Deep online results: {}", linearManager.getTestResults().getComparableSuccess());
@@ -104,17 +104,17 @@ public class RBMTest {
         OnlineFeedForwardNetwork fineTuning = new OnlineFeedForwardNetwork("pretrained linear classifier", topology,
                 new FineTuningWeightsFactory(dbm, lastLayerTrainer),
                 FeedForwardHeuristic.createDefaultHeuristic(), new ParametrizedHyperbolicTangens());
-        NetworkManager manager3 = new FeedForwardNetworkManager(fineTuning, classFullDatabase, null);
+        NetworkManager manager3 = new FeedForwardNetworkManager(fineTuning, database, null);
 
         /*OnlineFeedForwardNetwork fineTuning2 = new OnlineFeedForwardNetwork("training whole machinery", topology,
-                new FineTuningWeightsFactory(dbm2, classFullDatabase.getNumberOfClasses(), seed, 0.001),
+                new FineTuningWeightsFactory(dbm2, database.getNumberOfClasses(), seed, 0.001),
                 FFNNHeuristic.createDefaultHeuristic(), new SigmoidFunction());
-        NetworkManager manager4 = new FeedForwardNetworkManager(fineTuning2, classFullDatabase, null);*/
+        NetworkManager manager4 = new FeedForwardNetworkManager(fineTuning2, database, null);*/
 
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
                 new SmartGaussianRndWeightsFactory(new ParametrizedHyperbolicTangens(), seed),
                 FeedForwardHeuristic.createDefaultHeuristic(), new ParametrizedHyperbolicTangens());
-        NetworkManager manager5 = new FeedForwardNetworkManager(network, classFullDatabase, null);
+        NetworkManager manager5 = new FeedForwardNetworkManager(network, database, null);
 
         MasterNetworkManager master = new MasterNetworkManager(
                 "fine tunning", Arrays.asList(manager3, /*manager4,*/ manager5), 2);

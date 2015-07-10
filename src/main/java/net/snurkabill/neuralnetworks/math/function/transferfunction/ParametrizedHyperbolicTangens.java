@@ -1,4 +1,4 @@
-package net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction;
+package net.snurkabill.neuralnetworks.math.function.transferfunction;
 
 public class ParametrizedHyperbolicTangens implements TransferFunctionCalculator {
 

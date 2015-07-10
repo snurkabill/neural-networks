@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.managers.feedforward;
 
-import net.snurkabill.neuralnetworks.data.database.ClassFullDatabase;
+import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.data.database.LabelledItem;
 import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
@@ -10,9 +10,9 @@ import net.snurkabill.neuralnetworks.results.SupervisedNetworkResults;
 
 public class FeedForwardNetworkManager extends NetworkManager {
 
-    public FeedForwardNetworkManager(BackPropagative neuralNetwork, ClassFullDatabase classFullDatabase,
+    public FeedForwardNetworkManager(BackPropagative neuralNetwork, Database database,
                                      HeuristicCalculator heuristicCalculator) {
-        super(neuralNetwork, classFullDatabase, heuristicCalculator);
+        super(neuralNetwork, database, heuristicCalculator);
     }
 
     @Override
@@ -41,9 +41,9 @@ public class FeedForwardNetworkManager extends NetworkManager {
         globalError = 0.0;
         int success = 0;
         int fail = 0;
-        for (int _class = 0; _class < classFullDatabase.getNumberOfClasses(); _class++) {
+        for (int _class = 0; _class < database.getNumberOfClasses(); _class++) {
             targetMaker.getTargetValues(_class);
-            ClassFullDatabase.TestClassIterator testingIterator = classFullDatabase.getTestingIteratorOverClass(_class);
+            Database.TestClassIterator testingIterator = database.getTestingIteratorOverClass(_class);
             for (; testingIterator.hasNext(); ) {
                 double[] item = testingIterator.next().data;
                 globalError += network.calcError(item, targetValues);
@@ -68,11 +68,11 @@ public class FeedForwardNetworkManager extends NetworkManager {
 
     @Override
     protected void checkVectorSizes() {
-        if (neuralNetwork.getSizeOfOutputVector() != classFullDatabase.getNumberOfClasses()) {
+        if (neuralNetwork.getSizeOfOutputVector() != database.getNumberOfClasses()) {
             throw new IllegalArgumentException("Size of output vector is different from number of classes");
         }
-        if (neuralNetwork.getSizeOfInputVector() != classFullDatabase.getSizeOfVector()) {
-            throw new IllegalArgumentException("Size of input vector is different from vectors in classFullDatabase");
+        if (neuralNetwork.getSizeOfInputVector() != database.getSizeOfVector()) {
+            throw new IllegalArgumentException("Size of input vector is different from vectors in database");
         }
     }
 }

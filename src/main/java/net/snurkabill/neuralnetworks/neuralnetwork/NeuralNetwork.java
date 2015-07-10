@@ -1,7 +1,7 @@
 package net.snurkabill.neuralnetworks.neuralnetwork;
 
 import net.snurkabill.neuralnetworks.heuristic.BasicHeuristic;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.TransferFunctionCalculator;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.TransferFunctionCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

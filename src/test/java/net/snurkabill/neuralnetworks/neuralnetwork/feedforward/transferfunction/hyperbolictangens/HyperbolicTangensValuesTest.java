@@ -1,7 +1,7 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.hyperbolictangens;
 
 import net.snurkabill.neuralnetworks.Tolerance;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.HyperbolicTangens;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.HyperbolicTangens;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

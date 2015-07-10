@@ -1,9 +1,9 @@
-package net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction;
+package net.snurkabill.neuralnetworks.math.function.transferfunction;
 
-public class ParametrizedSigmoidFunctionForBipolarVector implements TransferFunctionCalculator {
+public class SigmoidFunction implements TransferFunctionCalculator {
 
-    public static double TOP_LIMIT = 0.5;
-    public static double BOTTOM_LIMIT = -0.5;
+    public static double TOP_LIMIT = 1.0;
+    public static double BOTTOM_LIMIT = 0.0;
     public static double POSITIVE_ARGUMENT_LIMIT = 1.317;
 
     @Override
@@ -28,7 +28,7 @@ public class ParametrizedSigmoidFunctionForBipolarVector implements TransferFunc
 
     @Override
     public double calculateOutputValue(double x) {
-        return (1.0 / (1.0 + Math.exp(-x))) - 0.5;
+        return (1.0 / (1.0 + Math.exp(-x)));
     }
 
     @Override
@@ -39,6 +39,6 @@ public class ParametrizedSigmoidFunctionForBipolarVector implements TransferFunc
 
     @Override
     public String getName() {
-        return "SimpleSigmoid(-0.5)";
+        return "SimpleSigmoid";
     }
 }

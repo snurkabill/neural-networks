@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.target;
 
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.TransferFunctionCalculator;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.TransferFunctionCalculator;
 
 public abstract class TargetValues {
 

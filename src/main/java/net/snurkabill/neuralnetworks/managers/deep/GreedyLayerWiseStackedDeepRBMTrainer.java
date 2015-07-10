@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.managers.deep;
 
-import net.snurkabill.neuralnetworks.data.database.ClassFullDatabase;
+import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.utilities.DeepNetUtils;
 import net.snurkabill.neuralnetworks.utilities.Timer;
@@ -17,7 +17,7 @@ public class GreedyLayerWiseStackedDeepRBMTrainer {
     public static List<RestrictedBoltzmannMachine> train(List<RestrictedBoltzmannMachine> machines,
                                                          List<Integer> iterationsForLevels,
                                                          List<Integer> binomialIterationsSampling,
-                                                         ClassFullDatabase classFullDatabase, long seed) {
+                                                         Database database, long seed) {
         DeepNetUtils.checkMachineList(machines);
         if (iterationsForLevels == null) {
             throw new IllegalArgumentException("List of machines is null");
@@ -28,14 +28,14 @@ public class GreedyLayerWiseStackedDeepRBMTrainer {
         if (machines.size() != iterationsForLevels.size()) {
             throw new IllegalStateException("Difference between machines size and iterations size");
         }
-        if (classFullDatabase.getSizeOfVector() != machines.get(0).getVisibleNeurons().length) {
-            throw new IllegalStateException("First RBM has different size of input vector than classFullDatabase has");
+        if (database.getSizeOfVector() != machines.get(0).getVisibleNeurons().length) {
+            throw new IllegalStateException("First RBM has different size of input vector than database has");
         }
         Random random = new Random(seed);
         LOGGER.info("Training {} RBMs started. Total iterations: {}", machines.size(), iterationsForLevels);
         Timer totalTime = new Timer();
         totalTime.startTimer();
-        ClassFullDatabase.InfiniteRandomTrainingIterator iterator = classFullDatabase.getInfiniteRandomTrainingIterator();
+        Database.InfiniteRandomTrainingIterator iterator = database.getInfiniteRandomTrainingIterator();
         for (int i = 0; i < machines.size(); i++) {
             LOGGER.info("Training {}th layer", i);
             Timer layerTimer = new Timer();

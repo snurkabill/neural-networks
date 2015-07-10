@@ -2,7 +2,7 @@ package net.snurkabill.neuralnetworks.weights.weightfactory;
 
 import net.snurkabill.neuralnetworks.neuralnetwork.deep.DeepBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.FeedForwardNetwork;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.TransferFunctionCalculator;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.TransferFunctionCalculator;
 
 public class FineTuningWeightsFactory implements WeightsFactory {
 

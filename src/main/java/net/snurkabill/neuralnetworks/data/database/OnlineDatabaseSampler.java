@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class OnlineDatabaseSampler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("Online ClassFullDatabase Sampler");
+    private static final Logger LOGGER = LoggerFactory.getLogger("Online Database Sampler");
     private static final int SIZE_OF_DOUBLE = 8;
     private static final int SIZE_OF_MEGABYTE = 1024 * 1024;
 
@@ -35,7 +35,7 @@ public class OnlineDatabaseSampler {
     public OnlineDatabaseSampler(String databaseName, int sizeOfVector, int classesOfDivision,
                                  int ratioOfMaxDiffBetweenClasses, int trainTestRatio, int maxSizeOfDatabaseInMB) {
         if(databaseName == null) {
-            throw new IllegalArgumentException("ClassFullDatabase name cannot be null");
+            throw new IllegalArgumentException("Database name cannot be null");
         }
         if(sizeOfVector <= 0) {
             throw new IllegalArgumentException("Size of vector must be at least 1");
@@ -50,7 +50,7 @@ public class OnlineDatabaseSampler {
             throw new IllegalArgumentException("Invalid train test ratio");
         }
         if(maxSizeOfDatabaseInMB <= 0) {
-            throw new IllegalArgumentException("Size of classFullDatabase cannot be zero or less");
+            throw new IllegalArgumentException("Size of database cannot be zero or less");
         }
         this.sizeOfVector = sizeOfVector;
         this.classesOfDivision = classesOfDivision;
@@ -131,11 +131,11 @@ public class OnlineDatabaseSampler {
         return (int) ((sizeOfVector * allVectors * SIZE_OF_DOUBLE) / ((double) SIZE_OF_MEGABYTE));
     }
 
-    public ClassFullDatabase createDatabase(long seed) {
-        return new ClassFullDatabase(seed, trainingSet, testingSet, databaseName, true);
+    public Database createDatabase(long seed) {
+        return new Database(seed, trainingSet, testingSet, databaseName, true);
     }
 
-    public ClassFullDatabase createDatabase() {
+    public Database createDatabase() {
         return createDatabase(0);
     }
 

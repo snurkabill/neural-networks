@@ -1,19 +1,17 @@
-package net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction;
+package net.snurkabill.neuralnetworks.math.function.transferfunction;
 
-public class SigmoidFunction implements TransferFunctionCalculator {
+public class SoftPlus implements TransferFunctionCalculator {
 
-    public static double TOP_LIMIT = 1.0;
-    public static double BOTTOM_LIMIT = 0.0;
-    public static double POSITIVE_ARGUMENT_LIMIT = 1.317;
+    private static final double POSITIVE_ARGUMENT_LIMIT = 1.317;
 
     @Override
     public double getTopLimit() {
-        return TOP_LIMIT;
+        return Double.MAX_VALUE;
     }
 
     @Override
     public double getLowLimit() {
-        return BOTTOM_LIMIT;
+        return 0;
     }
 
     @Override
@@ -28,17 +26,16 @@ public class SigmoidFunction implements TransferFunctionCalculator {
 
     @Override
     public double calculateOutputValue(double x) {
-        return (1.0 / (1.0 + Math.exp(-x)));
+        return Math.log(1 + Math.exp(x));
     }
 
     @Override
     public double calculateDerivative(double x) {
-        double tmp = Math.exp(x);
-        return tmp / ((tmp + 1.0) * (tmp + 1.0));
+        return (1.0 / (1.0 + Math.exp(-x)));
     }
 
     @Override
     public String getName() {
-        return "SimpleSigmoid";
+        return null;
     }
 }

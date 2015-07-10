@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.data;
 
-import net.snurkabill.neuralnetworks.data.database.ClassFullDatabase;
+import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.database.LabelledItem;
 import org.junit.BeforeClass;
@@ -18,16 +18,16 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class ClassFullDatabaseTest {
+public class DatabaseTest {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger("ClassFullDatabase test");
+    public static final Logger LOGGER = LoggerFactory.getLogger("Database test");
 
     public static final int numberOfClasses = 3;
     public static final int[] sizeOfElementsTesting = {3, 7, 9};
     public static final int[] sizeOfElementsTraining = {8, 6, 3};
     public static final double tolerance = 0.0000001;
 
-    private static ClassFullDatabase classFullDatabase;
+    private static Database database;
 
     private static int sumElements(int[] array) {
         int sum = 0;
@@ -67,41 +67,41 @@ public class ClassFullDatabaseTest {
 
     @BeforeClass
     public static void beforeClass() {
-        classFullDatabase = new ClassFullDatabase(0, createTrainingSet(), createTestingSet(), "testingBase", true);
+        database = new Database(0, createTrainingSet(), createTestingSet(), "testingBase", true);
     }
 
     @Test
     public void testNumberOfElements() {
-        assertEquals(numberOfClasses, classFullDatabase.getNumberOfClasses());
+        assertEquals(numberOfClasses, database.getNumberOfClasses());
     }
 
     @Test
     public void testSizeOfSets() {
-        for (int i = 0; i < classFullDatabase.getNumberOfClasses(); i++) {
-            assertEquals(sizeOfElementsTesting[i], classFullDatabase.getSizeOfTestingDataset(i));
-            assertEquals(sizeOfElementsTraining[i], classFullDatabase.getSizeOfTrainingDataset(i));
+        for (int i = 0; i < database.getNumberOfClasses(); i++) {
+            assertEquals(sizeOfElementsTesting[i], database.getSizeOfTestingDataset(i));
+            assertEquals(sizeOfElementsTraining[i], database.getSizeOfTrainingDataset(i));
         }
         int sum = 0;
         for (int aSizeOfElementsTesting : sizeOfElementsTesting) {
             sum += aSizeOfElementsTesting;
         }
-        assertEquals(sum, classFullDatabase.getTestSetSize());
+        assertEquals(sum, database.getTestSetSize());
         sum = 0;
         for (int aSizeOfElementsTraining : sizeOfElementsTraining) {
             sum += aSizeOfElementsTraining;
         }
-        assertEquals(sum, classFullDatabase.getTrainingSetSize());
+        assertEquals(sum, database.getTrainingSetSize());
     }
 
     @Test
     public void testSizeOfVector() {
-        assertEquals(1, classFullDatabase.getSizeOfVector());
+        assertEquals(1, database.getSizeOfVector());
     }
 
     @Test
     public void testPickedTestingIterator() {
         for (int i = 0; i < numberOfClasses; i++) {
-            ClassFullDatabase.TestClassIterator iterator = classFullDatabase.getTestingIteratorOverClass(i);
+            Database.TestClassIterator iterator = database.getTestingIteratorOverClass(i);
             for (int j = 0; iterator.hasNext(); j++) {
                 double val = iterator.next().data[0];
                 assertEquals(i * 10 + j, val, tolerance);
@@ -111,7 +111,7 @@ public class ClassFullDatabaseTest {
 
     @Test
     public void testInfiniteTrainingIterator() {
-        ClassFullDatabase.InfiniteSimpleTrainingIterator iterator = classFullDatabase.getInfiniteTrainingIterator();
+        Database.InfiniteSimpleTrainingIterator iterator = database.getInfiniteTrainingIterator();
         int lastFirst = 0;
         int lastSecond = 0;
         int lastThird = 0;
@@ -139,34 +139,34 @@ public class ClassFullDatabaseTest {
 
     @Test
     public void storeLoadTest() throws IOException {
-        classFullDatabase.storeDatabase();
-        ClassFullDatabase classFullDatabase2 = new ClassFullDatabase(0, new File("testingBase"));
+        database.storeDatabase();
+        Database database2 = new Database(0, new File("testingBase"));
 
-        assertEquals(classFullDatabase.getNumberOfClasses(), classFullDatabase2.getNumberOfClasses());
-        assertEquals(classFullDatabase.getSizeOfVector(), classFullDatabase2.getSizeOfVector());
-        assertEquals(classFullDatabase.getTestSetSize(), classFullDatabase2.getTestSetSize());
-        assertEquals(classFullDatabase.getTrainingSetSize(), classFullDatabase2.getTrainingSetSize());
-        assertEquals(classFullDatabase.getName(), classFullDatabase2.getName());
+        assertEquals(database.getNumberOfClasses(), database2.getNumberOfClasses());
+        assertEquals(database.getSizeOfVector(), database2.getSizeOfVector());
+        assertEquals(database.getTestSetSize(), database2.getTestSetSize());
+        assertEquals(database.getTrainingSetSize(), database2.getTrainingSetSize());
+        assertEquals(database.getName(), database2.getName());
 
-        for (int i = 0; i < classFullDatabase.getNumberOfClasses(); i++) {
-            assertEquals(classFullDatabase.getSizeOfTestingDataset(i), classFullDatabase2.getSizeOfTestingDataset(i));
-            assertEquals(classFullDatabase.getSizeOfTrainingDataset(i), classFullDatabase2.getSizeOfTrainingDataset(i));
+        for (int i = 0; i < database.getNumberOfClasses(); i++) {
+            assertEquals(database.getSizeOfTestingDataset(i), database2.getSizeOfTestingDataset(i));
+            assertEquals(database.getSizeOfTrainingDataset(i), database2.getSizeOfTrainingDataset(i));
         }
 
-        ClassFullDatabase.InfiniteSimpleTrainingIterator originalIterator = classFullDatabase.getInfiniteTrainingIterator();
-        ClassFullDatabase.InfiniteSimpleTrainingIterator copyIterator = classFullDatabase2.getInfiniteTrainingIterator();
+        Database.InfiniteSimpleTrainingIterator originalIterator = database.getInfiniteTrainingIterator();
+        Database.InfiniteSimpleTrainingIterator copyIterator = database2.getInfiniteTrainingIterator();
 
-        for (int i = 0; i < classFullDatabase.getTrainingSetSize() * 2; i++) {
+        for (int i = 0; i < database.getTrainingSetSize() * 2; i++) {
             LabelledItem item1 = originalIterator.next();
             LabelledItem item2 = copyIterator.next();
             assertEquals(item1._class, item2._class);
             assertEquals(item1.data[0], item2.data[0], tolerance);
         }
 
-        for (int i = 0; i < classFullDatabase.getNumberOfClasses(); i++) {
-            ClassFullDatabase.TestClassIterator originalTestIterator = classFullDatabase.getTestingIteratorOverClass(i);
-            ClassFullDatabase.TestClassIterator copyTestIterator = classFullDatabase2.getTestingIteratorOverClass(i);
-            for (int j = 0; j < classFullDatabase.getSizeOfTestingDataset(i); j++) {
+        for (int i = 0; i < database.getNumberOfClasses(); i++) {
+            Database.TestClassIterator originalTestIterator = database.getTestingIteratorOverClass(i);
+            Database.TestClassIterator copyTestIterator = database2.getTestingIteratorOverClass(i);
+            for (int j = 0; j < database.getSizeOfTestingDataset(i); j++) {
                 assertEquals(originalTestIterator.next().data[0], copyTestIterator.next().data[0], tolerance);
             }
         }

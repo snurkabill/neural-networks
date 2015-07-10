@@ -1,12 +1,12 @@
 package net.snurkabill.neuralnetworks.scenario.feedforward;
 
-import net.snurkabill.neuralnetworks.data.database.ClassFullDatabase;
+import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.heuristic.FeedForwardHeuristic;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.managers.feedforward.FeedForwardNetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.OnlineFeedForwardNetwork;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.ParametrizedHyperbolicTangens;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.ParametrizedHyperbolicTangens;
 import net.snurkabill.neuralnetworks.scenario.LogicFunctions;
 import net.snurkabill.neuralnetworks.weights.weightfactory.SmartGaussianRndWeightsFactory;
 import org.junit.Test;
@@ -32,15 +32,15 @@ public class FFNNProofOfConceptTest extends LogicFunctions {
         }
         testingSet.put(0, and);
         testingSet.put(1, noise);
-        ClassFullDatabase classFullDatabase = new ClassFullDatabase(0, trainingSet, testingSet, "ClassFullDatabase", true);
-        List<Integer> topology = Arrays.asList(classFullDatabase.getSizeOfVector(), 2, classFullDatabase.getNumberOfClasses());
+        Database database = new Database(0, trainingSet, testingSet, "Database", true);
+        List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 2, database.getNumberOfClasses());
         FeedForwardHeuristic heuristic = new FeedForwardHeuristic();
         heuristic.learningRate = 0.01;
         heuristic.momentum = 0.1;
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
                 new SmartGaussianRndWeightsFactory(new ParametrizedHyperbolicTangens(), seed),
                 heuristic, new ParametrizedHyperbolicTangens());
-        NetworkManager manager = new FeedForwardNetworkManager(network, classFullDatabase, null);
+        NetworkManager manager = new FeedForwardNetworkManager(network, database, null);
         manager.supervisedTraining(10000);
         manager.testNetwork();
         assertEquals("Result:" + manager.getTestResults().getComparableSuccess(),
@@ -62,15 +62,15 @@ public class FFNNProofOfConceptTest extends LogicFunctions {
         }
         testingSet.put(0, or);
         testingSet.put(1, noise);
-        ClassFullDatabase classFullDatabase = new ClassFullDatabase(0, trainingSet, testingSet, "ClassFullDatabase", true);
-        List<Integer> topology = Arrays.asList(classFullDatabase.getSizeOfVector(), 2, classFullDatabase.getNumberOfClasses());
+        Database database = new Database(0, trainingSet, testingSet, "Database", true);
+        List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 2, database.getNumberOfClasses());
         FeedForwardHeuristic heuristic = new FeedForwardHeuristic();
         heuristic.learningRate = 0.01;
         heuristic.momentum = 0.1;
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
                 new SmartGaussianRndWeightsFactory(new ParametrizedHyperbolicTangens(), seed),
                 heuristic, new ParametrizedHyperbolicTangens());
-        NetworkManager manager = new FeedForwardNetworkManager(network, classFullDatabase, null);
+        NetworkManager manager = new FeedForwardNetworkManager(network, database, null);
         manager.supervisedTraining(10000);
         manager.testNetwork();
         assertEquals("Result:" + manager.getTestResults().getComparableSuccess(),
@@ -92,15 +92,15 @@ public class FFNNProofOfConceptTest extends LogicFunctions {
         }
         testingSet.put(0, xor);
         testingSet.put(1, noise);
-        ClassFullDatabase classFullDatabase = new ClassFullDatabase(0, trainingSet, testingSet, "ClassFullDatabase", true);
-        List<Integer> topology = Arrays.asList(classFullDatabase.getSizeOfVector(), 3, classFullDatabase.getNumberOfClasses());
+        Database database = new Database(0, trainingSet, testingSet, "Database", true);
+        List<Integer> topology = Arrays.asList(database.getSizeOfVector(), 3, database.getNumberOfClasses());
         FeedForwardHeuristic heuristic = new FeedForwardHeuristic();
         heuristic.learningRate = 0.01;
         heuristic.momentum = 0.1;
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
                 new SmartGaussianRndWeightsFactory(new ParametrizedHyperbolicTangens(), seed),
                 heuristic, new ParametrizedHyperbolicTangens());
-        NetworkManager manager = new FeedForwardNetworkManager(network, classFullDatabase, null);
+        NetworkManager manager = new FeedForwardNetworkManager(network, database, null);
         manager.supervisedTraining(10000);
         manager.testNetwork();
         assertEquals("Result:" + manager.getTestResults().getComparableSuccess(),

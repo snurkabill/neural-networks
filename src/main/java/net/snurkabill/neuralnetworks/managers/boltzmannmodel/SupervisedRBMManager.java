@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.managers.boltzmannmodel;
 
-import net.snurkabill.neuralnetworks.data.database.ClassFullDatabase;
+import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.data.database.LabelledItem;
 import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.PartialProbabilisticAssociationVectorValidator;
@@ -12,16 +12,16 @@ public class SupervisedRBMManager extends RestrictedBoltzmannMachineManager {
 
     private PartialProbabilisticAssociationVectorValidator validator;
 
-    public SupervisedRBMManager(NeuralNetwork neuralNetwork, ClassFullDatabase classFullDatabase, long seed,
+    public SupervisedRBMManager(NeuralNetwork neuralNetwork, Database database, long seed,
                                 HeuristicCalculator heuristicCalculator,
                                 PartialProbabilisticAssociationVectorValidator validator) {
-        super(neuralNetwork, classFullDatabase, seed, heuristicCalculator);
+        super(neuralNetwork, database, seed, heuristicCalculator);
         this.validator = validator;
     }
 
     @Override
     protected void train(int numOfIterations) {
-        double[] inputVector = new double[classFullDatabase.getSizeOfVector() + classFullDatabase.getNumberOfClasses()];
+        double[] inputVector = new double[database.getSizeOfVector() + database.getNumberOfClasses()];
         for (int i = 0; i < numOfIterations; i++) {
             LabelledItem item = this.infiniteTrainingIterator.next();
             System.arraycopy(item.data, 0, inputVector, 0, item.data.length);
@@ -40,8 +40,8 @@ public class SupervisedRBMManager extends RestrictedBoltzmannMachineManager {
         globalError = 0.0;
         int success = 0;
         int fail = 0;
-        for (int _class = 0; _class < classFullDatabase.getNumberOfClasses(); _class++) {
-            ClassFullDatabase.TestClassIterator testingIterator = classFullDatabase.getTestingIteratorOverClass(_class);
+        for (int _class = 0; _class < database.getNumberOfClasses(); _class++) {
+            Database.TestClassIterator testingIterator = database.getTestingIteratorOverClass(_class);
             for (; testingIterator.hasNext(); ) {
                 double[] item = this.fillTestingVectorForReconstruction(testingIterator.next().data);
                 globalError += validator.validate(item, machine);
@@ -61,9 +61,9 @@ public class SupervisedRBMManager extends RestrictedBoltzmannMachineManager {
     }
 
     private double[] fillTestingVectorForReconstruction(double[] tmpItem) {
-        double[] item = new double[classFullDatabase.getSizeOfVector() + classFullDatabase.getNumberOfClasses()];
+        double[] item = new double[database.getSizeOfVector() + database.getNumberOfClasses()];
         System.arraycopy(tmpItem, 0, item, 0, tmpItem.length);
-        for (int i = 0, j = tmpItem.length; i < classFullDatabase.getNumberOfClasses(); i++, j++) {
+        for (int i = 0, j = tmpItem.length; i < database.getNumberOfClasses(); i++, j++) {
             item[j] = 0;
         }
         return item;
@@ -77,7 +77,7 @@ public class SupervisedRBMManager extends RestrictedBoltzmannMachineManager {
 
     @Override
     protected void checkVectorSizes() {
-        if (neuralNetwork.getSizeOfInputVector() != classFullDatabase.getNumberOfClasses() + classFullDatabase.getSizeOfVector()) {
+        if (neuralNetwork.getSizeOfInputVector() != database.getNumberOfClasses() + database.getSizeOfVector()) {
             throw new IllegalArgumentException("Size of input vector is different from number of classes");
         }
     }

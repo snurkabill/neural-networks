@@ -1,7 +1,7 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.simplesigmoid;
 
 import net.snurkabill.neuralnetworks.Tolerance;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.SigmoidFunction;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.SigmoidFunction;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

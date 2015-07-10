@@ -1,7 +1,7 @@
 package net.snurkabill.neuralnetworks.managers;
 
 
-import net.snurkabill.neuralnetworks.data.database.ClassFullDatabase;
+import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
 import net.snurkabill.neuralnetworks.neuralnetwork.deep.DeepBoltzmannMachine;
@@ -20,9 +20,9 @@ public abstract class NetworkManager {
 
     protected final Logger LOGGER;
     protected final NeuralNetwork neuralNetwork;
-    protected final ClassFullDatabase classFullDatabase;
+    protected final Database database;
     protected final TargetValues targetMaker;
-    protected final ClassFullDatabase.InfiniteRandomTrainingIterator infiniteTrainingIterator;
+    protected final Database.InfiniteRandomTrainingIterator infiniteTrainingIterator;
     protected final List<NetworkResults> results = new ArrayList<>();
     private final Timer timer = new Timer();
     protected double globalError;
@@ -34,19 +34,19 @@ public abstract class NetworkManager {
     protected final int[][] confusionMatrix;
     protected final double[][] confusionPercentages;
 
-    public NetworkManager(NeuralNetwork neuralNetwork, ClassFullDatabase classFullDatabase,
+    public NetworkManager(NeuralNetwork neuralNetwork, Database database,
                           HeuristicCalculator heuristicCalculator) {
         this.neuralNetwork = neuralNetwork;
         this.LOGGER = LoggerFactory.getLogger(neuralNetwork.getName());
-        this.classFullDatabase = classFullDatabase;
+        this.database = database;
         this.heuristicCalculator = heuristicCalculator;
         checkVectorSizes();
         // TODO: general EVALUATOR!
         this.targetMaker = new SeparableTargetValues(neuralNetwork.getTransferFunction(),
-                classFullDatabase.getNumberOfClasses());
-        this.infiniteTrainingIterator = classFullDatabase.getInfiniteRandomTrainingIterator();
-        this.confusionMatrix = new int[classFullDatabase.getNumberOfClasses()][classFullDatabase.getNumberOfClasses()];
-        this.confusionPercentages = new double[classFullDatabase.getNumberOfClasses()][classFullDatabase.getNumberOfClasses()];
+                database.getNumberOfClasses());
+        this.infiniteTrainingIterator = database.getInfiniteRandomTrainingIterator();
+        this.confusionMatrix = new int[database.getNumberOfClasses()][database.getNumberOfClasses()];
+        this.confusionPercentages = new double[database.getNumberOfClasses()][database.getNumberOfClasses()];
     }
 
     public void supervisedTraining(int numOfIterations) {
@@ -54,16 +54,16 @@ public abstract class NetworkManager {
             LOGGER.warn("Neural network {} is already trained and can't be trained anymore, skipping");
             return;
         }
-        if (numOfIterations < classFullDatabase.getNumberOfClasses()) {
+        if (numOfIterations < database.getNumberOfClasses()) {
             LOGGER.warn("Count of iterations for training([{}]) is smaller than number of classes of division([{}]). " +
                             "Uneffective training possible: setting numOfIterations to numberOfClasses", numOfIterations,
-                    classFullDatabase.getNumberOfClasses());
-            numOfIterations = classFullDatabase.getNumberOfClasses();
+                    database.getNumberOfClasses());
+            numOfIterations = database.getNumberOfClasses();
         }
-        if (numOfIterations % classFullDatabase.getNumberOfClasses() != 0) {
+        if (numOfIterations % database.getNumberOfClasses() != 0) {
             LOGGER.warn("Count of iterations for training([{}]) is not dividable by count of classes of " +
-                    "division([{}]). Rounding up!", numOfIterations, classFullDatabase.getNumberOfClasses());
-            numOfIterations = (numOfIterations / classFullDatabase.getNumberOfClasses()) + classFullDatabase.getNumberOfClasses();
+                    "division([{}]). Rounding up!", numOfIterations, database.getNumberOfClasses());
+            numOfIterations = (numOfIterations / database.getNumberOfClasses()) + database.getNumberOfClasses();
             // integer division + numOfClasses -> rounding up!
         }
         timer.startTimer();
@@ -87,22 +87,22 @@ public abstract class NetworkManager {
         this.learningTimeBeforeTest = 0;
         this.wasAlreadyTested = true;
         LOGGER.info("Testing {} samples took {} seconds, {} samples/sec",
-                classFullDatabase.getTestSetSize(), timer.secondsSpent(), timer.samplesPerSec(classFullDatabase.getTestSetSize()));
+                database.getTestSetSize(), timer.secondsSpent(), timer.samplesPerSec(database.getTestSetSize()));
         if (heuristicCalculator != null) {
             neuralNetwork.setHeuristic(heuristicCalculator.calculateNewHeuristic(results));
         }
         LOGGER.info("Global Error: {}, Percentage Successs: {}", globalError, percentageSuccess);
 
         if(LOGGER.isDebugEnabled()) {
-            for (int i = 0; i < classFullDatabase.getNumberOfClasses(); i++) {
-                for (int j = 0; j < classFullDatabase.getNumberOfClasses(); j++) {
-                    confusionPercentages[i][j] = (confusionMatrix[i][j] * 100.0) / classFullDatabase.getSizeOfTestingDataset(i);
+            for (int i = 0; i < database.getNumberOfClasses(); i++) {
+                for (int j = 0; j < database.getNumberOfClasses(); j++) {
+                    confusionPercentages[i][j] = (confusionMatrix[i][j] * 100.0) / database.getSizeOfTestingDataset(i);
                 }
             }
             LOGGER.debug("Confusion Matrix:");
-            for (int i = 0; i < classFullDatabase.getNumberOfClasses(); i++) {
+            for (int i = 0; i < database.getNumberOfClasses(); i++) {
                 LOGGER.debug("{}: {}, {}", i, confusionMatrix[i], confusionPercentages[i]);
-                for (int j = 0; j < classFullDatabase.getNumberOfClasses(); j++) {
+                for (int j = 0; j < database.getNumberOfClasses(); j++) {
                     confusionMatrix[i][j] = 0;
                 }
             }

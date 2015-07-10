@@ -1,7 +1,7 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.softplus;
 
 import net.snurkabill.neuralnetworks.Tolerance;
-import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.transferfunction.SoftPlus;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.SoftPlus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
