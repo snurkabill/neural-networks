@@ -18,6 +18,7 @@ public abstract class FeedForwardNetwork extends NeuralNetwork implements FeedFo
     protected final int lastLayerIndex;
     protected final int[] topology;
     protected final double[][] neuronOutputValues;
+    protected final double[][] biases;
     protected final double[][][] weights;
 
     public FeedForwardNetwork(String name, List<Integer> topology, WeightsFactory wFactory,
@@ -36,8 +37,10 @@ public abstract class FeedForwardNetwork extends NeuralNetwork implements FeedFo
         this.sizeOfInputVector = this.topology[0];
         this.sizeOfOutputVector = this.topology[lastLayerIndex];
         this.neuronOutputValues = new double[this.topology.length][];
+        this.biases = new double[this.topology.length][];
         for (int i = 0; i < this.topology.length; i++) {
-            this.neuronOutputValues[i] = new double[this.topology[i] + 1];
+            this.neuronOutputValues[i] = new double[this.topology[i]];
+            this.biases[i] = new double[this.topology[i]];
         }
         for (int i = 0; i < this.topology.length; i++) {
             for (int j = 0; j < this.neuronOutputValues[i].length; j++) {
@@ -52,6 +55,7 @@ public abstract class FeedForwardNetwork extends NeuralNetwork implements FeedFo
             }
         }
         wFactory.setWeights(this.weights);
+        //wFactory.setWeights(this.biases);
         LOGGER.info("Created Feed forwardable neural network {}", topology.toString());
     }
 
@@ -68,6 +72,7 @@ public abstract class FeedForwardNetwork extends NeuralNetwork implements FeedFo
                 for (int k = 0; k < neuronOutputValues[i - 1].length; k++) {
                     sumOfInputs += neuronOutputValues[i - 1][k] * weights[i - 1][k][j];
                 }
+                sumOfInputs += biases[i][j];
                 neuronOutputValues[i][j] = transferFunction.calculateOutputValue(sumOfInputs);
             }
         }

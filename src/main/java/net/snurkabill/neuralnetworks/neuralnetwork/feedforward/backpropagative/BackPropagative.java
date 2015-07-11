@@ -84,6 +84,7 @@ public abstract class BackPropagative extends FeedForwardNetwork {
                     calcDeltaWeight(i - 1, j, k);
                     weights[i - 1][k][j] += deltaWeights[i - 1][k][j];
                 }
+                biases[i][j] += heuristic.learningRate * gradients[i][j];
             }
         }
     }
@@ -96,6 +97,7 @@ public abstract class BackPropagative extends FeedForwardNetwork {
                     weights[i - 1][k][j] = heuristic.l2RegularizationConstant
                             * (weights[i - 1][k][j] + deltaWeights[i - 1][k][j]);
                 }
+                biases[i][j] = heuristic.l2RegularizationConstant * (biases[i][j] + heuristic.learningRate * gradients[i][j]);
             }
         }
     }

@@ -120,8 +120,8 @@ public class MnistExampleFFNN {
         long seed = 0;
         MnistDatasetReader reader = getReader(FULL_MNIST_SIZE, false);
 
-        Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST", true);
-                /*.stochasticStandardNormalization(1.0);*/
+        Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST", true)
+                .stochasticStandardNormalization(1.0);
 
         List<Integer> topology = new ArrayList<>();
         topology.add(database.getSizeOfVector());
