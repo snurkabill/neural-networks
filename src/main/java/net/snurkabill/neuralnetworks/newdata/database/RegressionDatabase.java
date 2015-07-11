@@ -15,24 +15,11 @@ public class RegressionDatabase extends NewDatabase {
 
     public RegressionDatabase(NewDataItem[] trainingData, NewDataItem[] validationData, NewDataItem[] testingData,
                               String databaseName, long seed) {
-        super(trainingData.length, validationData.length, testingData.length, checkAndPropagate(), databaseName, seed);
+        super(trainingData.length, validationData.length, testingData.length, trainingData[0], databaseName, seed);
         this.trainingSet = trainingData;
         this.validationSet = validationData;
         this.testingSet = testingData;
         LOGGER.info("Database created.");
-    }
-
-    public static NewDataItem checkAndPropagate(NewDataItem trainingData, NewDataItem validationData,
-                                              NewDataItem testingData) {
-        if(trainingData.getDataVectorSize() != validationData.getDataVectorSize() ||
-                trainingData.getDataVectorSize() != testingData.getDataVectorSize()) {
-            throw new IllegalArgumentException("Data from datasets have different size of data vector");
-        }
-        if(trainingData.getTargetSize() != validationData.getTargetSize() ||
-                trainingData.getTargetSize() != testingData.getTargetSize()) {
-            throw new IllegalArgumentException("Data from datasets have different size of target vector");
-        }
-        return trainingData;
     }
 
     @Override
