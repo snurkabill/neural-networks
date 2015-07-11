@@ -125,9 +125,9 @@ public class MnistExampleFFNN {
 
         List<Integer> topology = new ArrayList<>();
         topology.add(database.getSizeOfVector());
-        /*for (int i = 0; i < hiddenLayers.length; i++) {
+        for (int i = 0; i < hiddenLayers.length; i++) {
             topology.add(hiddenLayers[i]);
-        }*/
+        }
         topology.add(database.getNumberOfClasses());
 
         double weightsScale = 0.1;
