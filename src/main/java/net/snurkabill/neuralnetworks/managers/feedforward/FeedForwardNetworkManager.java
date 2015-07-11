@@ -48,7 +48,9 @@ public class FeedForwardNetworkManager extends NetworkManager {
                 double[] item = testingIterator.next().data;
                 globalError += network.calcError(item, targetValues);
                 int pickedClass = network.getFirstHighestValueIndex();
-                confusionMatrix[_class][pickedClass]++;
+                if(pickedClass != -1) {
+                    confusionMatrix[_class][pickedClass]++;
+                }
                 if (pickedClass == _class) {
                     success++;
                     successValuesCounter[_class]++;

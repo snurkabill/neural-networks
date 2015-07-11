@@ -34,8 +34,6 @@ public class MnistExampleFFNN {
     public static final Logger LOGGER = LoggerFactory.getLogger("MnistExample FFNN");
     public static final String FILE_PATH = "src/main/resources/examples/mnist/data/";
     public static final int FULL_MNIST_SIZE = 60_000;
-    public static final int INPUT_SIZE = 784;
-    public static final int OUTPUT_SIZE = 10;
     public static final int[] hiddenLayers = {200};
 
     public static void basicBenchmark() throws IOException {
@@ -122,24 +120,25 @@ public class MnistExampleFFNN {
         long seed = 0;
         MnistDatasetReader reader = getReader(FULL_MNIST_SIZE, false);
 
+        Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST", true);
+                /*.stochasticStandardNormalization(1.0);*/
+
         List<Integer> topology = new ArrayList<>();
-        topology.add(INPUT_SIZE);
-        for (int i = 0; i < hiddenLayers.length; i++) {
+        topology.add(database.getSizeOfVector());
+        /*for (int i = 0; i < hiddenLayers.length; i++) {
             topology.add(hiddenLayers[i]);
-        }
-        topology.add(OUTPUT_SIZE);
+        }*/
+        topology.add(database.getNumberOfClasses());
 
         double weightsScale = 0.1;
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("ParametrizedTanh", topology,
                 new GaussianRndWeightsFactory(weightsScale, seed),
                 FeedForwardHeuristic.createDefaultHeuristic(), new ParametrizedHyperbolicTangens());
 
-        Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST", true);
-
         FeedForwardNetworkManager manager = new FeedForwardNetworkManager(network, database, null);
 
         LOGGER.info("Process started!");
-        int sizeOfTrainingBatch = 1000;
+        int sizeOfTrainingBatch = database.getTrainingSetSize();
         for (int i = 0; i < 10; i++) {
             manager.supervisedTraining(sizeOfTrainingBatch);
             manager.testNetwork();
