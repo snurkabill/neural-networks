@@ -67,6 +67,10 @@ public class ClassificationDatabase extends NewDatabase {
         return new ValidationSetEnumerator();
     }
 
+    public Enumeration<NewDataItem> createValidationClassEnumerator(int _class) {
+        return new ValidationClassEnumerator(_class);
+    }
+
     @Override
     public Enumeration<NewDataItem> createTestingSetEnumerator() {
         return new TestingSetEnumerator();
@@ -209,6 +213,24 @@ public class ClassificationDatabase extends NewDatabase {
         public NewDataItem nextElement() {
             index++;
             return testingSet[_class][index - 1];
+        }
+    }
+
+    public class ValidationClassEnumerator extends ClassEnumerator {
+
+        public ValidationClassEnumerator(int _class) {
+            super(_class);
+        }
+
+        @Override
+        public boolean hasMoreElements() {
+            return index < validationSet[_class].length;
+        }
+
+        @Override
+        public NewDataItem nextElement() {
+            index++;
+            return validationSet[_class][index - 1];
         }
     }
 

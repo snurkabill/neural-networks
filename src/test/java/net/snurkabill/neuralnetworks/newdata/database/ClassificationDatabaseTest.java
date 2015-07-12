@@ -179,6 +179,30 @@ public class ClassificationDatabaseTest {
     }
 
     @Test
+    public void validationSetEnumeratorOverClass() {
+        int[] trainSizes = new int[] {1, 2, 3};
+        int[] validationSizes = new int[] {4, 5, 6};
+        int[] testingSizes = new int[] {7, 8, 9};
+        NewDataItem[][] trainingSet = generator(3, trainSizes, 0);
+        NewDataItem[][] validationSet = generator(3, validationSizes, 10);
+        NewDataItem[][] testingSet = generator(3, testingSizes, 100);
+        ClassificationDatabase classificationDatabase = new ClassificationDatabase(trainingSet, validationSet, testingSet,
+                "name", 0);
+
+        int counter = 10; // starting element
+        for (int k = 0; k < testingSizes.length; k++) {
+            Enumeration<NewDataItem> enumerator = classificationDatabase.createValidationClassEnumerator(k);
+            int i = 0;
+            for (; enumerator.hasMoreElements(); i++) {
+                NewDataItem item = enumerator.nextElement();
+                assertEquals(counter, item.data[0], 0.000_000_1);
+                counter++;
+            }
+            assertEquals(testingSizes[k], i);
+        }
+    }
+
+    @Test
     public void trainingSetEnumeratorOverClass() {
         int[] trainSizes = new int[] {1, 2, 3};
         int[] validationSizes = new int[] {4, 5, 6};
