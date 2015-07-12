@@ -1,5 +1,6 @@
 package net.snurkabill.neuralnetworks.newdata.database;
 
+import net.snurkabill.neuralnetworks.math.function.transferfunction.TransferFunctionCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +15,8 @@ public class ClassificationDatabase extends NewDatabase {
     private final NewDataItem[][] testingSet;
 
     public ClassificationDatabase(NewDataItem[][] trainingSet, NewDataItem[][] validationSet,
-                                  NewDataItem[][] testingSet, String databaseName, long seed) {
+                                  NewDataItem[][] testingSet, TransferFunctionCalculator calculator,
+                                  String databaseName, long seed) {
         super(calculateSetSize(trainingSet), calculateSetSize(validationSet), calculateSetSize(testingSet),
                 trainingSet[0][0], databaseName, seed);
         if(trainingSet[0][0].getTargetSize() != trainingSet.length) {
@@ -24,7 +26,22 @@ public class ClassificationDatabase extends NewDatabase {
         this.trainingSet = trainingSet;
         this.validationSet = validationSet;
         this.testingSet = testingSet;
+        alternateTarget(this.trainingSet, calculator);
+        alternateTarget(this.validationSet, calculator);
+        alternateTarget(this.testingSet, calculator);
         LOGGER.info("Database created.");
+    }
+
+    private void alternateTarget(NewDataItem[][] set, TransferFunctionCalculator calculator) {
+        double lowLimit = calculator.getLowLimit();
+        double topLimit = calculator.getTopLimit();
+        for (int i = 0; i < set.length; i++) {
+            for (int j = 0; j < set[i].length; j++) {
+                for (int k = 0; k < this.getTargetSize(); k++) {
+                    set[i][j].target[k] = set[i][j].target[k] == 0.0 ? lowLimit: topLimit;
+                }
+            }
+        }
     }
 
     private static int calculateSetSize(NewDataItem[][] set) {
