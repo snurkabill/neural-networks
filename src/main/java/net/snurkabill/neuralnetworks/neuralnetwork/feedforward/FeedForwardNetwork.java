@@ -78,17 +78,20 @@ public abstract class FeedForwardNetwork extends NeuralNetwork implements FeedFo
         return this.transferFunction;
     }
 
-    @Deprecated // not recomended to use
     public int getFirstHighestValueIndex() {
-        double max = this.transferFunction.getLowLimit();
-        int bestIndex = -1;
+        boolean isOnlyValueTheBiggest = false;
+        int classIndex = Integer.MIN_VALUE;
+        double max = Double.NEGATIVE_INFINITY;
         for (int i = 0; i < sizeOfOutputVector; i++) {
-            if (neuronOutputValues[lastLayerIndex][i] > max) {
+            if (max == neuronOutputValues[lastLayerIndex][i]) {
+                isOnlyValueTheBiggest = false;
+            } else if (max < neuronOutputValues[lastLayerIndex][i]) {
                 max = neuronOutputValues[lastLayerIndex][i];
-                bestIndex = i;
+                classIndex = i;
+                isOnlyValueTheBiggest = true;
             }
         }
-        return bestIndex;
+        return isOnlyValueTheBiggest ? classIndex : Integer.MIN_VALUE;
     }
 
     @Deprecated // not recomended to use
