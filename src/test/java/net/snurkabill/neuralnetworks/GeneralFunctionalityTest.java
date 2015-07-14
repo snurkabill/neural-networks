@@ -43,7 +43,7 @@ public class GeneralFunctionalityTest {
                 NetworkManager.TrainingMode.STOCHASTIC);
         manager.trainNetwork(1000);
         manager.testNetwork();
-        assertEquals(71.0, manager.getTestResults().getComparableSuccess(), 0.0001);
+        assertEquals(65.5, manager.getTestResults().getComparableSuccess(), 0.0001);
     }
 
     @Test
@@ -66,7 +66,7 @@ public class GeneralFunctionalityTest {
                 NetworkManager.TrainingMode.STOCHASTIC);
         manager.trainNetwork(1000);
         manager.testNetwork();
-        assertEquals(62.0, manager.getTestResults().getComparableSuccess(), 0.0001);
+        assertEquals(61.0, manager.getTestResults().getComparableSuccess(), 0.0001);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class GeneralFunctionalityTest {
                 NetworkManager.TrainingMode.STOCHASTIC);
         manager.trainNetwork(1000);
         manager.testNetwork();
-        assertEquals(74.5, manager.getTestResults().getComparableSuccess(), 0.0001);
+        assertEquals(73, manager.getTestResults().getComparableSuccess(), 0.0001);
     }
 
     private NewDatabase createClassificationDatabase(int numOfElements, boolean binary, long seed,
