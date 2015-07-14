@@ -16,7 +16,7 @@ public class ConcurrentTrainer implements Callable<ConcurrentTrainer> {
 
     @Override
     public ConcurrentTrainer call() throws Exception {
-        manager.supervisedTraining(numberOfIterations);
+        manager.trainNetwork(numberOfIterations);
         return this;
     }
 }

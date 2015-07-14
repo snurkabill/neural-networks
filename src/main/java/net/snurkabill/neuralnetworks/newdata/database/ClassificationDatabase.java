@@ -26,9 +26,11 @@ public class ClassificationDatabase extends NewDatabase {
         this.trainingSet = trainingSet;
         this.validationSet = validationSet;
         this.testingSet = testingSet;
-        alternateTarget(this.trainingSet, calculator);
-        alternateTarget(this.validationSet, calculator);
-        alternateTarget(this.testingSet, calculator);
+        if(calculator != null) {
+            alternateTarget(this.trainingSet, calculator);
+            alternateTarget(this.validationSet, calculator);
+            alternateTarget(this.testingSet, calculator);
+        }
         LOGGER.info("Database created.");
     }
 
@@ -38,7 +40,7 @@ public class ClassificationDatabase extends NewDatabase {
         for (int i = 0; i < set.length; i++) {
             for (int j = 0; j < set[i].length; j++) {
                 for (int k = 0; k < this.getTargetSize(); k++) {
-                    set[i][j].target[k] = set[i][j].target[k] == 0.0 ? lowLimit: topLimit;
+                    set[i][j].target[k] = set[i][j].target[k] == 0.0 ? lowLimit : topLimit;
                 }
             }
         }

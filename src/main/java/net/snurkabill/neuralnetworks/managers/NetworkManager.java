@@ -1,69 +1,71 @@
 package net.snurkabill.neuralnetworks.managers;
 
 
-import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
 import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
-import net.snurkabill.neuralnetworks.neuralnetwork.deep.DeepBoltzmannMachine;
+import net.snurkabill.neuralnetworks.newdata.database.NewDataItem;
+import net.snurkabill.neuralnetworks.newdata.database.NewDatabase;
 import net.snurkabill.neuralnetworks.results.NetworkResults;
 import net.snurkabill.neuralnetworks.results.ResultsSummary;
-import net.snurkabill.neuralnetworks.target.SeparableTargetValues;
-import net.snurkabill.neuralnetworks.target.TargetValues;
 import net.snurkabill.neuralnetworks.utilities.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 public abstract class NetworkManager {
 
+    public enum TrainingMode {
+        STOCHASTIC,
+        SEQUENTIAL
+    }
+
+    public enum TestingMode {
+        VALIDATION,
+        TESTING
+    }
+
     protected final Logger LOGGER;
     protected final NeuralNetwork neuralNetwork;
-    protected final Database database;
-    protected final TargetValues targetMaker;
-    protected final Database.InfiniteRandomTrainingIterator infiniteTrainingIterator;
+    protected final NewDatabase database;
+    protected final Enumeration<NewDataItem> dataEnumerator;
     protected final List<NetworkResults> results = new ArrayList<>();
     private final Timer timer = new Timer();
     protected double globalError;
-    protected double percentageSuccess;
     protected int learnedVectorsBeforeTest;
     protected long learningTimeBeforeTest;
     private final HeuristicCalculator heuristicCalculator;
-    private boolean wasAlreadyTested;
-    protected final int[][] confusionMatrix;
-    protected final double[][] confusionPercentages;
+    protected final TrainingMode trainingMode;
 
-    public NetworkManager(NeuralNetwork neuralNetwork, Database database,
-                          HeuristicCalculator heuristicCalculator) {
+    public NetworkManager(NeuralNetwork neuralNetwork, NewDatabase database,
+                          HeuristicCalculator heuristicCalculator, TrainingMode trainingMode) {
         this.neuralNetwork = neuralNetwork;
         this.LOGGER = LoggerFactory.getLogger(neuralNetwork.getName());
         this.database = database;
         this.heuristicCalculator = heuristicCalculator;
-        checkVectorSizes();
-        // TODO: general EVALUATOR!
-        this.targetMaker = new SeparableTargetValues(neuralNetwork.getTransferFunction(),
-                database.getNumberOfClasses());
-        this.infiniteTrainingIterator = database.getInfiniteRandomTrainingIterator();
-        this.confusionMatrix = new int[database.getNumberOfClasses()][database.getNumberOfClasses()];
-        this.confusionPercentages = new double[database.getNumberOfClasses()][database.getNumberOfClasses()];
+        this.trainingMode = trainingMode;
+        if(trainingMode == TrainingMode.STOCHASTIC) {
+            this.dataEnumerator = database.createInfiniteRandomTrainingSetEnumerator();
+        } else if(trainingMode == TrainingMode.SEQUENTIAL) {
+            this.dataEnumerator = database.createInfiniteSimpleTrainingSetEnumerator();
+        } else {
+            throw new IllegalArgumentException("There is no other option yet");
+        }
     }
 
-    public void supervisedTraining(int numOfIterations) {
-        if ((neuralNetwork instanceof DeepBoltzmannMachine)) {
-            LOGGER.warn("Neural network {} is already trained and can't be trained anymore, skipping");
-            return;
+    public void trainNetwork(int numOfIterations) {
+        if (numOfIterations < database.getTargetSize()) {
+            LOGGER.warn("Count of iterations for training([{}]) is smaller than size of targetVector([{}]). " +
+                            "Ineffective training possible: setting numOfIterations to targetVector", numOfIterations,
+                    database.getTargetSize());
+            numOfIterations = database.getTargetSize();
         }
-        if (numOfIterations < database.getNumberOfClasses()) {
-            LOGGER.warn("Count of iterations for training([{}]) is smaller than number of classes of division([{}]). " +
-                            "Uneffective training possible: setting numOfIterations to numberOfClasses", numOfIterations,
-                    database.getNumberOfClasses());
-            numOfIterations = database.getNumberOfClasses();
-        }
-        if (numOfIterations % database.getNumberOfClasses() != 0) {
-            LOGGER.warn("Count of iterations for training([{}]) is not dividable by count of classes of " +
-                    "division([{}]). Rounding up!", numOfIterations, database.getNumberOfClasses());
-            numOfIterations = (numOfIterations / database.getNumberOfClasses()) + database.getNumberOfClasses();
+        if (numOfIterations % database.getTargetSize() != 0) {
+            LOGGER.warn("Count of iterations for training([{}]) is not dividable by size of targetVector ([{}]). " +
+                    "Rounding up!", numOfIterations, database.getTargetSize());
+            numOfIterations = (numOfIterations / database.getTargetSize()) + database.getTargetSize();
             // integer division + numOfClasses -> rounding up!
         }
         timer.startTimer();
@@ -75,47 +77,38 @@ public abstract class NetworkManager {
                 numOfIterations, timer.secondsSpent(), timer.samplesPerSec(numOfIterations));
     }
 
+    public void validateNetwork() {
+        analyzeNetwork(TestingMode.VALIDATION);
+    }
+
     public void testNetwork() {
-        if ((neuralNetwork instanceof DeepBoltzmannMachine) && wasAlreadyTested) {
-            this.results.add(results.get(0)); // hardly coded! .... I don't like this
-        }
+        analyzeNetwork(TestingMode.TESTING);
+    }
+
+    private void analyzeNetwork(TestingMode testingMode) {
         timer.startTimer();
-        test();
+        test(testingMode);
         timer.stopTimer();
         processResults();
         this.learnedVectorsBeforeTest = 0;
         this.learningTimeBeforeTest = 0;
-        this.wasAlreadyTested = true;
         LOGGER.info("Testing {} samples took {} seconds, {} samples/sec",
-                database.getTestSetSize(), timer.secondsSpent(), timer.samplesPerSec(database.getTestSetSize()));
+                database.getTestingSetSize(), timer.secondsSpent(), timer.samplesPerSec(database.getTestingSetSize()));
         if (heuristicCalculator != null) {
+            LOGGER.info("Recalculating heuristic");
             neuralNetwork.setHeuristic(heuristicCalculator.calculateNewHeuristic(results));
         }
-        LOGGER.info("Global Error: {}, Percentage Successs: {}", globalError, percentageSuccess);
-
-        if(LOGGER.isDebugEnabled()) {
-            for (int i = 0; i < database.getNumberOfClasses(); i++) {
-                for (int j = 0; j < database.getNumberOfClasses(); j++) {
-                    confusionPercentages[i][j] = (confusionMatrix[i][j] * 100.0) / database.getSizeOfTestingDataset(i);
-                }
-            }
-            LOGGER.debug("Confusion Matrix:");
-            for (int i = 0; i < database.getNumberOfClasses(); i++) {
-                LOGGER.debug("{}: {}, {}", i, confusionMatrix[i], confusionPercentages[i]);
-                for (int j = 0; j < database.getNumberOfClasses(); j++) {
-                    confusionMatrix[i][j] = 0;
-                }
-            }
-        }
+        LOGGER.info("Global Error: {}", globalError);
+        printMoreInfo();
     }
 
     protected abstract void train(int numOfIterations);
 
-    protected abstract void test();
+    protected abstract void test(TestingMode testingMode);
 
     protected abstract void processResults();
 
-    protected abstract void checkVectorSizes();
+    protected abstract void printMoreInfo();
 
     public NetworkResults getTestResults() {
         return this.results.get(this.results.size() - 1);

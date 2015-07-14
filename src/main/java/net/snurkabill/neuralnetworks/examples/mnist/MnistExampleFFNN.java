@@ -1,21 +1,23 @@
 package net.snurkabill.neuralnetworks.examples.mnist;
 
 import net.snurkabill.neuralnetworks.benchmark.SupervisedBenchmarker;
-import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.data.database.DataItem;
 import net.snurkabill.neuralnetworks.data.mnist.MnistDatasetReader;
 import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
 import net.snurkabill.neuralnetworks.heuristic.FeedForwardHeuristic;
 import net.snurkabill.neuralnetworks.managers.MasterNetworkManager;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
-import net.snurkabill.neuralnetworks.managers.boltzmannmodel.SupervisedRBMManager;
-import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.PartialProbabilisticAssociationVectorValidator;
-import net.snurkabill.neuralnetworks.managers.feedforward.FeedForwardNetworkManager;
+import net.snurkabill.neuralnetworks.managers.supervised.classification.FFClassificationNetworkManager;
+import net.snurkabill.neuralnetworks.managers.supervised.classification.RBMClassificationNetworkManager;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.ParametrizedHyperbolicTangens;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.SigmoidFunction;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.TransferFunctionCalculator;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.binaryvisible.BinaryToBinaryRBM;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.binaryvisible.BinaryToRectifiedRBM;
 import net.snurkabill.neuralnetworks.neuralnetwork.feedforward.backpropagative.impl.online.OnlineFeedForwardNetwork;
-import net.snurkabill.neuralnetworks.math.function.transferfunction.ParametrizedHyperbolicTangens;
+import net.snurkabill.neuralnetworks.newdata.database.ClassificationDatabase;
+import net.snurkabill.neuralnetworks.newdata.database.NewDatabase;
 import net.snurkabill.neuralnetworks.results.SupervisedNetworkResults;
 import net.snurkabill.neuralnetworks.weights.weightfactory.GaussianRndWeightsFactory;
 import net.snurkabill.neuralnetworks.weights.weightfactory.SmartGaussianRndWeightsFactory;
@@ -41,21 +43,28 @@ public class MnistExampleFFNN {
     public static void basicBenchmark() throws IOException {
         long seed = 0;
         MnistDatasetReader reader = getReader(FULL_MNIST_SIZE, true);
-        Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST", true);
+
+        TransferFunctionCalculator calculator1 = new ParametrizedHyperbolicTangens();
+        NewDatabase database = new ClassificationDatabase(reader.getTrainingData(), reader.getValidationData(),
+                reader.getTestingData(), calculator1, "MNIST", seed);
         List<Integer> topology = new ArrayList<>();
-        topology.add(database.getSizeOfVector());
+        topology.add(database.getVectorSize());
         for (int i = 0; i < hiddenLayers.length; i++) {
             topology.add(hiddenLayers[i]);
         }
-        topology.add(database.getNumberOfClasses());
+        topology.add(database.getTargetSize());
 
         double weightsScale = 1;
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
                 /*new GaussianRndWeightsFactory(weightsScale, seed)*/
-                new SmartGaussianRndWeightsFactory(new ParametrizedHyperbolicTangens(), seed),
-                FeedForwardHeuristic.createDefaultHeuristic(), new ParametrizedHyperbolicTangens());
-        NetworkManager manager = new FeedForwardNetworkManager(network, database, null);
+                new SmartGaussianRndWeightsFactory(calculator1, seed),
+                FeedForwardHeuristic.createDefaultHeuristic(), calculator1);
+        NetworkManager manager = new FFClassificationNetworkManager(network, database, null,
+                NetworkManager.TrainingMode.STOCHASTIC);
 
+        TransferFunctionCalculator calculator2 = new SigmoidFunction();
+        NewDatabase database2 = new ClassificationDatabase(reader.getTrainingData(), reader.getValidationData(),
+                reader.getTestingData(), calculator2, "MNIST", seed);
         BoltzmannMachineHeuristic heuristic = BoltzmannMachineHeuristic.createStartingHeuristicParams();
         heuristic.learningRate = 0.01;
         heuristic.constructiveDivergenceIndex = 1;
@@ -65,11 +74,11 @@ public class MnistExampleFFNN {
         heuristic.l2RegularizationConstant = 0.99999;
         RestrictedBoltzmannMachine machine =
                 new BinaryToBinaryRBM("RBM 1",
-                        (database.getSizeOfVector() + database.getNumberOfClasses()), 200,
+                        (database.getVectorSize() + database.getTargetSize()), 200,
                         new GaussianRndWeightsFactory(0.01, seed),
                         heuristic, seed);
-        NetworkManager manager_rbm = new SupervisedRBMManager(machine, database, seed, null,
-                new PartialProbabilisticAssociationVectorValidator(1, database.getNumberOfClasses()));
+        NetworkManager manager_rbm = new RBMClassificationNetworkManager(machine, database2, null,
+                NetworkManager.TrainingMode.STOCHASTIC);
 
         heuristic = BoltzmannMachineHeuristic.createStartingHeuristicParams();
         heuristic.learningRate = 0.01;
@@ -79,11 +88,11 @@ public class MnistExampleFFNN {
         heuristic.temperature = 1;
         machine =
                 new BinaryToRectifiedRBM("RBM 2",
-                        (database.getSizeOfVector() + database.getNumberOfClasses() ), 500,
+                        (database.getVectorSize() + database.getTargetSize()), 500,
                         new GaussianRndWeightsFactory(0.1, seed),
                         heuristic, seed);
-        NetworkManager manager_rbm2 = new SupervisedRBMManager(machine, database, seed, null,
-                new PartialProbabilisticAssociationVectorValidator(1, database.getNumberOfClasses()));
+        NetworkManager manager_rbm2 = new RBMClassificationNetworkManager(machine, database2, null,
+                NetworkManager.TrainingMode.STOCHASTIC);
 
         heuristic = BoltzmannMachineHeuristic.createStartingHeuristicParams();
         heuristic.learningRate = 0.01;
@@ -93,11 +102,11 @@ public class MnistExampleFFNN {
         heuristic.temperature = 0.8;
         machine =
                 new BinaryToBinaryRBM("RBM 3",
-                        (database.getSizeOfVector() + database.getNumberOfClasses() ), 200,
+                        (database.getVectorSize() + database.getTargetSize() ), 200,
                         new GaussianRndWeightsFactory(0.01, seed),
                         heuristic, seed);
-        NetworkManager manager_rbm3 = new SupervisedRBMManager(machine, database, seed, null,
-                new PartialProbabilisticAssociationVectorValidator(1, database.getNumberOfClasses()));
+        NetworkManager manager_rbm3 = new RBMClassificationNetworkManager(machine, database2, null,
+                NetworkManager.TrainingMode.STOCHASTIC);
 
         heuristic = BoltzmannMachineHeuristic.createStartingHeuristicParams();
         heuristic.learningRate = 0.01;
@@ -106,11 +115,11 @@ public class MnistExampleFFNN {
         heuristic.momentum = 0.5;
         heuristic.temperature = 0.8;
         machine = new BinaryToBinaryRBM("RBM 4",
-                        (database.getSizeOfVector() + database.getNumberOfClasses() ), 200,
+                        (database.getVectorSize() + database.getTargetSize()), 200,
                         new GaussianRndWeightsFactory(0.01, seed),
                         heuristic, seed);
-        NetworkManager manager_rbm4 = new SupervisedRBMManager(machine, database, seed, null,
-                new PartialProbabilisticAssociationVectorValidator(1, database.getNumberOfClasses()));
+        NetworkManager manager_rbm4 = new RBMClassificationNetworkManager(machine, database2, null,
+                NetworkManager.TrainingMode.STOCHASTIC);
 
         MasterNetworkManager superManager = new MasterNetworkManager("MNIST",
                 Arrays.asList(manager, manager_rbm/*, manager_rbm2, manager_rbm3, manager_rbm4*/), 2);
@@ -120,7 +129,7 @@ public class MnistExampleFFNN {
 
     public static void startExample() throws IOException {
         long seed = 0;
-        MnistDatasetReader reader = getReader(FULL_MNIST_SIZE, false);
+        MnistDatasetReader reader = getReader(FULL_MNIST_SIZE, true);
 
         List<Integer> topology = new ArrayList<>();
         topology.add(INPUT_SIZE);
@@ -129,23 +138,30 @@ public class MnistExampleFFNN {
         }
         topology.add(OUTPUT_SIZE);
 
-        double weightsScale = 0.1;
-        OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("ParametrizedTanh", topology,
-                new GaussianRndWeightsFactory(weightsScale, seed),
-                FeedForwardHeuristic.createDefaultHeuristic(), new ParametrizedHyperbolicTangens());
+        TransferFunctionCalculator calculator1 = new ParametrizedHyperbolicTangens();
+        NewDatabase database = new ClassificationDatabase(reader.getTrainingData(), reader.getValidationData(),
+                reader.getTestingData(), calculator1, "MNIST", seed);
 
-        Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST", true);
-
-        FeedForwardNetworkManager manager = new FeedForwardNetworkManager(network, database, null);
+        double weightsScale = 1;
+        OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
+                new SmartGaussianRndWeightsFactory(calculator1, seed),
+                FeedForwardHeuristic.createDefaultHeuristic(), calculator1);
+        NetworkManager manager = new FFClassificationNetworkManager(network, database, null,
+                NetworkManager.TrainingMode.STOCHASTIC);
 
         LOGGER.info("Process started!");
-        int sizeOfTrainingBatch = 1000;
+        int sizeOfTrainingBatch = database.getTrainingSetSize();
         for (int i = 0; i < 10; i++) {
-            manager.supervisedTraining(sizeOfTrainingBatch);
-            manager.testNetwork();
+            manager.trainNetwork(sizeOfTrainingBatch);
+            manager.validateNetwork();
             SupervisedNetworkResults results = (SupervisedNetworkResults) manager.getTestResults();
             LOGGER.info("Success rate is {} in {} iteration", results.getSuccessPercentage(), i);
         }
+
+        manager.testNetwork();
+        SupervisedNetworkResults results = (SupervisedNetworkResults) manager.getTestResults();
+        LOGGER.info("Success rate is {}", results.getSuccessPercentage());
+
     }
 
     public static void convertMap(Map<Integer, List<DataItem>> map) {

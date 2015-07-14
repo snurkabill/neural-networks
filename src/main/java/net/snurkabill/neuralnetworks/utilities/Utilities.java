@@ -57,7 +57,7 @@ public class Utilities {
             double diff = expectedValues[i] - realValues[i];
             error += diff * diff;
         }
-        return ERROR_MODIFIER * error;
+        return error;
     }
 
     public static Matrix buildMatrix(Map<Integer, List<DataItem>> data) {

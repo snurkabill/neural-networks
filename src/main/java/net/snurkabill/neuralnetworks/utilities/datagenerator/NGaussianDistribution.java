@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.utilities.datagenerator;
 
-import net.snurkabill.neuralnetworks.data.database.DataItem;
+import net.snurkabill.neuralnetworks.newdata.database.NewDataItem;
 
 import java.util.List;
 
@@ -16,11 +16,11 @@ public class NGaussianDistribution {
         return generators.size();
     }
 
-    public DataItem generateNextVector() {
+    public NewDataItem generateNextVector() {
         double[] item = new double[this.getNumOfDimensiion()];
         for (int i = 0; i < item.length; i++) {
             item[i] = generators.get(i).generateNext();
         }
-        return new DataItem(item);
+        return new NewDataItem(item);
     }
 }

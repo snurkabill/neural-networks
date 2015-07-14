@@ -1,15 +1,15 @@
 package net.snurkabill.neuralnetworks.examples.RBMProofOfConcept;
 
 import net.snurkabill.neuralnetworks.benchmark.SupervisedBenchmarker;
-import net.snurkabill.neuralnetworks.data.database.DataItem;
-import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
 import net.snurkabill.neuralnetworks.managers.MasterNetworkManager;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
-import net.snurkabill.neuralnetworks.managers.boltzmannmodel.UnsupervisedRBMManager;
-import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.ProbabilisticAssociationVectorValidator;
+import net.snurkabill.neuralnetworks.managers.unsupervised.UnsupervisedNetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.gaussianvisible.GaussianToBinaryRBM;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.gaussianvisible.GaussianToRectifiedRBM;
+import net.snurkabill.neuralnetworks.newdata.database.NewDataItem;
+import net.snurkabill.neuralnetworks.newdata.database.NewDatabase;
+import net.snurkabill.neuralnetworks.newdata.database.RegressionDatabase;
 import net.snurkabill.neuralnetworks.utilities.datagenerator.DataGenerator;
 import net.snurkabill.neuralnetworks.utilities.datagenerator.GaussianGenerator;
 import net.snurkabill.neuralnetworks.utilities.datagenerator.NGaussianDistribution;
@@ -17,7 +17,7 @@ import net.snurkabill.neuralnetworks.weights.weightfactory.GaussianRndWeightsFac
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Arrays;
 
 public class GaussianVisibleTest {
 
@@ -40,24 +40,16 @@ public class GaussianVisibleTest {
          * [-1; 1]
          * [-1; 1]
          */
+        NewDataItem[] trainingSet = new NewDataItem[100_000];
+        NewDataItem[] testingSet = new NewDataItem[100_000];
+        NewDataItem[] validationSet = new NewDataItem[100_000];
 
-        Map<Integer, List<?>> trainingSet = new HashMap<>();
-        Map<Integer, List<?>> testingSet = new HashMap<>();
-        List<List<DataItem>> data = new ArrayList<>();
-        List<List<DataItem>> data2 = new ArrayList<>();
-
-        data.add(new ArrayList<DataItem>());
-        data2.add(new ArrayList<DataItem>());
         for (int j = 0; j < 1_000_000; j++) {
-            data.get(0).add(dataGenerator.generateNext());
-            data2.get(0).add(dataGenerator.generateNext());
+            trainingSet[j] = dataGenerator.generateNext();
+            testingSet[j] = dataGenerator.generateNext();
+            validationSet[j] = dataGenerator.generateNext();
         }
-
-        for (int i = 0; i < data.size(); i++) {
-            trainingSet.put(i, data.get(i));
-            testingSet.put(i, data2.get(i));
-        }
-        Database database = new Database(0, trainingSet, testingSet, "testingDatabaseRBM", true);
+        NewDatabase database = new RegressionDatabase(trainingSet, validationSet, testingSet, "testingDatabaseRBM", 0);
 
         BoltzmannMachineHeuristic heuristics = BoltzmannMachineHeuristic.createStartingHeuristicParams();
         heuristics.batchSize = 1;
@@ -66,26 +58,26 @@ public class GaussianVisibleTest {
         heuristics.momentum = 0.3;
 
         GaussianToBinaryRBM rbm = new GaussianToRectifiedRBM(
-                "RBM-Rectified", database.getSizeOfVector(), 30,
+                "RBM-Rectified", database.getVectorSize(), 30,
                 new GaussianRndWeightsFactory(1, 0), heuristics, 0);
 
-        UnsupervisedRBMManager manager = new UnsupervisedRBMManager(rbm, database, 0, null,
-                new ProbabilisticAssociationVectorValidator(1));
+        UnsupervisedNetworkManager manager = new UnsupervisedNetworkManager(rbm, database, null,
+                NetworkManager.TrainingMode.STOCHASTIC);
 
         GaussianToBinaryRBM rbm2 = new GaussianToBinaryRBM(
-                "RBM-Binary", database.getSizeOfVector(), 30,
+                "RBM-Binary", database.getVectorSize(), 30,
                 new GaussianRndWeightsFactory(1, 0), heuristics, 0);
 
-        UnsupervisedRBMManager manager2 = new UnsupervisedRBMManager(rbm2, database, 0, null,
-                new ProbabilisticAssociationVectorValidator(1));
+        UnsupervisedNetworkManager manager2 = new UnsupervisedNetworkManager(rbm2, database, null,
+                NetworkManager.TrainingMode.STOCHASTIC);
 
         MasterNetworkManager master = new MasterNetworkManager("2D-gauss", Arrays.<NetworkManager>asList(manager, manager2), 2);
 
         SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(100, 10_000, master);
         benchmarker.benchmark();
         /*for (int i = 0; i < 100; i++) {
-            manager.supervisedTraining(10000);
-            manager.testNetwork();
+            manager.trainNetwork(10000);
+            manager.validateNetwork();
             LOGGER.info("Error: {}", manager.getTestResults().getComparableSuccess());
         }
         Database.InfiniteRandomTrainingIterator iterator = database.getInfiniteRandomTrainingIterator();

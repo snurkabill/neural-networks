@@ -2,17 +2,17 @@ package net.snurkabill.neuralnetworks.math.function.transferfunction;
 
 public interface TransferFunctionCalculator {
 
-    public double getTopLimit();
+    double getTopLimit();
 
-    public double getLowLimit();
+    double getLowLimit();
 
-    public double getPositiveArgumentRange();
+    double getPositiveArgumentRange();
 
-    public double getNegativeArgumentRange();
+    double getNegativeArgumentRange();
 
-    public double calculateOutputValue(double x);
+    double calculateOutputValue(double x);
 
-    public double calculateDerivative(double x);
+    double calculateDerivative(double x);
 
-    public String getName();
+    String getName();
 }

@@ -14,7 +14,7 @@ public class BasicRBMHeuristicCalculator implements HeuristicCalculator {
     public BasicHeuristic calculateNewHeuristic(List<NetworkResults> results) {
         NetworkResults lastOne = results.get(results.size() - 1);
         BoltzmannMachineHeuristic heuristic = BoltzmannMachineHeuristic.createStartingHeuristicParams();
-        System.out.println("Successs: " + lastOne.getComparableSuccess());
+        System.out.println("Success: " + lastOne.getComparableSuccess());
         if (lastOne.getComparableSuccess() > 30) {
             heuristic.constructiveDivergenceIndex = 1;
             heuristic.batchSize = 5;

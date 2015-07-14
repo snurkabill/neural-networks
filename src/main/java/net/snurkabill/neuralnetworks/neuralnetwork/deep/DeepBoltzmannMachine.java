@@ -10,6 +10,7 @@ import net.snurkabill.neuralnetworks.utilities.Utilities;
 
 import java.util.List;
 
+@Deprecated
 public class DeepBoltzmannMachine extends NeuralNetwork implements DeepNetwork, FeedForwardable {
 
     private final List<RestrictedBoltzmannMachine> machines;

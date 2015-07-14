@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.utilities.datagenerator;
 
-import net.snurkabill.neuralnetworks.data.database.DataItem;
+import net.snurkabill.neuralnetworks.newdata.database.NewDataItem;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public class DataGenerator {
         this.distributions = generators;
     }
 
-    public DataItem generateNext() {
+    public NewDataItem generateNext() {
         return distributions.get(AbstractGenerator.globalRandom.nextInt(distributions.size())).generateNextVector();
     }
 }

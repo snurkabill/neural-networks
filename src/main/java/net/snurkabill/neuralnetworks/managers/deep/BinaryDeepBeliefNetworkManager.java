@@ -1,15 +1,6 @@
 package net.snurkabill.neuralnetworks.managers.deep;
 
-import net.snurkabill.neuralnetworks.data.database.Database;
-import net.snurkabill.neuralnetworks.data.database.DataItem;
-import net.snurkabill.neuralnetworks.data.database.LabelledItem;
-import net.snurkabill.neuralnetworks.heuristic.calculators.HeuristicCalculator;
-import net.snurkabill.neuralnetworks.managers.NetworkManager;
-import net.snurkabill.neuralnetworks.neuralnetwork.NeuralNetwork;
-import net.snurkabill.neuralnetworks.results.SupervisedNetworkResults;
-import net.snurkabill.neuralnetworks.utilities.Utilities;
-
-import java.util.Iterator;
+/*
 
 public class BinaryDeepBeliefNetworkManager extends NetworkManager {
 
@@ -85,3 +76,4 @@ public class BinaryDeepBeliefNetworkManager extends NetworkManager {
         }
     }
 }
+*/

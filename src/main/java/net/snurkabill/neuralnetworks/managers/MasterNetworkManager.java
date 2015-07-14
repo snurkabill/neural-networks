@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks.managers;
 
-import net.snurkabill.neuralnetworks.managers.concurrent.ConcurrentTester;
+import net.snurkabill.neuralnetworks.managers.concurrent.ConcurrentValidator;
 import net.snurkabill.neuralnetworks.managers.concurrent.ConcurrentTrainer;
 import net.snurkabill.neuralnetworks.results.ResultsSummary;
 import net.snurkabill.neuralnetworks.utilities.Timer;
@@ -67,12 +67,12 @@ public class MasterNetworkManager {
         LOGGER.info("TESTING STARTED");
         timer.startTimer();
         this.executor = Executors.newFixedThreadPool(numberOfThreads);
-        List<Future<ConcurrentTester>> tasks = new ArrayList<>();
+        List<Future<ConcurrentValidator>> tasks = new ArrayList<>();
         for (NetworkManager manager : managers) {
-            tasks.add(executor.submit(new ConcurrentTester(manager)));
+            tasks.add(executor.submit(new ConcurrentValidator(manager)));
         }
         executor.shutdown();
-        for (Future<ConcurrentTester> task : tasks) {
+        for (Future<ConcurrentValidator> task : tasks) {
             try {
                 task.get();
             } catch (InterruptedException | ExecutionException e) {

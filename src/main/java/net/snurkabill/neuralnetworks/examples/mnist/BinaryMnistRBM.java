@@ -1,13 +1,13 @@
 package net.snurkabill.neuralnetworks.examples.mnist;
 
-import net.snurkabill.neuralnetworks.data.database.Database;
 import net.snurkabill.neuralnetworks.data.mnist.MnistDatasetReader;
 import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
-import net.snurkabill.neuralnetworks.managers.boltzmannmodel.UnsupervisedRBMManager;
-import net.snurkabill.neuralnetworks.managers.boltzmannmodel.validator.ProbabilisticAssociationVectorValidator;
+import net.snurkabill.neuralnetworks.managers.unsupervised.UnsupervisedNetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.binaryvisible.BinaryToBinaryRBM;
+import net.snurkabill.neuralnetworks.newdata.database.NewDatabase;
+import net.snurkabill.neuralnetworks.newdata.database.RegressionDatabase;
 import net.snurkabill.neuralnetworks.weights.weightfactory.GaussianRndWeightsFactory;
 
 import javax.swing.*;
@@ -28,7 +28,8 @@ public class BinaryMnistRBM extends Canvas {
         long seed = 0;
         double weightsScale = 0.01;
         MnistDatasetReader reader = MnistExampleFFNN.getReader(10000, true);
-        Database database = new Database(seed, reader.getTrainingData(), reader.getTestingData(), "MNIST", false);
+        NewDatabase database = new RegressionDatabase(reader.getRegressionTrainingData(),
+                reader.getRegressionValidationData(), reader.getRegressionTestingData(), "MNIST", seed);
 
         BoltzmannMachineHeuristic heuristic = BoltzmannMachineHeuristic.createStartingHeuristicParams();
         heuristic.learningRate = 0.01;
@@ -37,15 +38,14 @@ public class BinaryMnistRBM extends Canvas {
         heuristic.momentum = 0.3;
         heuristic.temperature = 1;
         machine = new BinaryToBinaryRBM("RBM 1",
-                (database.getSizeOfVector()), 200,
+                (database.getVectorSize()), 200,
                 new GaussianRndWeightsFactory(weightsScale, seed),
                 heuristic, seed);
-        manager_rbm = new UnsupervisedRBMManager(machine, database, seed, null,
-                new ProbabilisticAssociationVectorValidator(1));
+        manager_rbm = new UnsupervisedNetworkManager(machine, database, null, NetworkManager.TrainingMode.STOCHASTIC);
     }
 
     void learn() {
-        manager_rbm.supervisedTraining(1000);
+        manager_rbm.trainNetwork(1000);
     }
 
     public void update() {

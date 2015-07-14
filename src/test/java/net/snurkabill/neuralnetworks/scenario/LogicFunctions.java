@@ -1,56 +1,53 @@
 package net.snurkabill.neuralnetworks.scenario;
 
-import net.snurkabill.neuralnetworks.data.database.DataItem;
-
-import java.util.ArrayList;
-import java.util.List;
+import net.snurkabill.neuralnetworks.newdata.database.NewDataItem;
 
 public class LogicFunctions {
 
-    protected List<DataItem> createNotAnd() {
-        List<DataItem> list = new ArrayList<>();
-        list.add(new DataItem(new double[]{0.0, 1.0}));
-        list.add(new DataItem(new double[]{1.0, 0.0}));
-        list.add(new DataItem(new double[]{0.0, 0.0}));
-        return list;
+    protected NewDataItem[] createNotAnd() {
+        NewDataItem[] array = new NewDataItem[3];
+        array[0] = new NewDataItem(new double[]{0.0, 1.0}, new double[]{0, 1});
+        array[1] = new NewDataItem(new double[]{1.0, 0.0}, new double[]{0, 1});
+        array[2] = new NewDataItem(new double[]{0.0, 0.0}, new double[]{0, 1});
+        return array;
     }
 
-    protected List<DataItem> createAnd() {
-        List<DataItem> list = new ArrayList<>();
-        list.add(new DataItem(new double[]{1.0, 1.0}));
-        list.add(new DataItem(new double[]{1.0, 1.0}));
-        list.add(new DataItem(new double[]{1.0, 1.0}));
-        return list;
+    protected NewDataItem[] createAnd() {
+        NewDataItem[] array = new NewDataItem[3];
+        array[0] = new NewDataItem(new double[]{1.0, 1.0}, new double[]{1, 0});
+        array[1] = new NewDataItem(new double[]{1.0, 1.0}, new double[]{1, 0});
+        array[2] = new NewDataItem(new double[]{1.0, 1.0}, new double[]{1, 0});
+        return array;
     }
 
-    protected List<DataItem> createOr() {
-        List<DataItem> list = new ArrayList<>();
-        list.add(new DataItem(new double[]{1.0, 1.0}));
-        list.add(new DataItem(new double[]{0.0, 1.0}));
-        list.add(new DataItem(new double[]{1.0, 0.0}));
-        return list;
+    protected NewDataItem[] createOr() {
+        NewDataItem[] array = new NewDataItem[3];
+        array[0] = new NewDataItem(new double[]{1.0, 1.0}, new double[]{1, 0});
+        array[1] = new NewDataItem(new double[]{0.0, 1.0}, new double[]{1, 0});
+        array[2] = new NewDataItem(new double[]{1.0, 0.0}, new double[]{1, 0});
+        return array;
     }
 
-    protected List<DataItem> createNotOr() {
-        List<DataItem> list = new ArrayList<>();
-        list.add(new DataItem(new double[]{0.0, 0.0}));
-        list.add(new DataItem(new double[]{0.0, 0.0}));
-        list.add(new DataItem(new double[]{0.0, 0.0}));
-        return list;
+    protected NewDataItem[] createNotOr() {
+        NewDataItem[] array = new NewDataItem[3];
+        array[0] = new NewDataItem(new double[]{0.0, 0.0}, new double[]{0, 1});
+        array[1] = new NewDataItem(new double[]{0.0, 0.0}, new double[]{0, 1});
+        array[2] = new NewDataItem(new double[]{0.0, 0.0}, new double[]{0, 1});
+        return array;
     }
 
-    protected List<DataItem> createXor() {
-        List<DataItem> list = new ArrayList<>();
-        list.add(new DataItem(new double[]{0.0, 1.0}));
-        list.add(new DataItem(new double[]{1.0, 0.0}));
-        return list;
+    protected NewDataItem[] createXor() {
+        NewDataItem[] array = new NewDataItem[2];
+        array[0] = new NewDataItem(new double[]{0.0, 1.0}, new double[]{1, 0});
+        array[1] = new NewDataItem(new double[]{1.0, 0.0}, new double[]{1, 0});
+        return array;
     }
 
-    protected List<DataItem> createNotXor() {
-        List<DataItem> list = new ArrayList<>();
-        list.add(new DataItem(new double[]{1.0, 1.0}));
-        list.add(new DataItem(new double[]{0.0, 0.0}));
-        return list;
+    protected NewDataItem[] createNotXor() {
+        NewDataItem[] array = new NewDataItem[2];
+        array[0] = new NewDataItem(new double[]{0.0, 0.0}, new double[]{0, 1});
+        array[1] = new NewDataItem(new double[]{1.0, 1.0}, new double[]{0, 1});
+        return array;
     }
 
 }

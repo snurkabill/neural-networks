@@ -45,7 +45,7 @@ public class ClassificationDatabaseTest {
         NewDataItem[][] testingSet = generator(3, testingSizes, 100);
 
         ClassificationDatabase classificationDatabase = new ClassificationDatabase(trainingSet, validationSet, testingSet,
-                "name", 0);
+                null, "name", 0);
         for (int i = 0; i < 3; i++) {
             assertEquals(trainSizes[i], classificationDatabase.getSizeOfTrainSetClass(i));
             assertEquals(validationSizes[i], classificationDatabase.getSizeOfValidationSetClass(i));
@@ -63,7 +63,7 @@ public class ClassificationDatabaseTest {
         NewDataItem[][] testingSet = generator(3, testingSizes, 100);
 
         ClassificationDatabase classificationDatabase = new ClassificationDatabase(trainingSet, validationSet, testingSet,
-                "name", 0);
+                null, "name", 0);
         assertEquals(Arrays.stream(trainSizes).sum(), classificationDatabase.getTrainingSetSize());
         assertEquals(Arrays.stream(validationSizes).sum(), classificationDatabase.getValidationSetSize());
         assertEquals(Arrays.stream(testingSizes).sum(), classificationDatabase.getTestingSetSize());
@@ -79,7 +79,7 @@ public class ClassificationDatabaseTest {
         NewDataItem[][] testingSet = generator(3, testingSizes, 100);
 
         ClassificationDatabase classificationDatabase = new ClassificationDatabase(trainingSet, validationSet, testingSet,
-                "name", 0);
+                null, "name", 0);
         assertTrue(classificationDatabase.hasTarget());
     }
 
@@ -93,7 +93,7 @@ public class ClassificationDatabaseTest {
         NewDataItem[][] testingSet = generator(3, testingSizes, 100);
 
         ClassificationDatabase classificationDatabase = new ClassificationDatabase(trainingSet, validationSet, testingSet,
-                "name", 0);
+                null, "name", 0);
         assertEquals(3, classificationDatabase.getTargetSize());
     }
 
@@ -106,7 +106,7 @@ public class ClassificationDatabaseTest {
         NewDataItem[][] validationSet = generator(3, validationSizes, 10);
         NewDataItem[][] testingSet = generator(3, testingSizes, 100);
         ClassificationDatabase classificationDatabase = new ClassificationDatabase(trainingSet, validationSet, testingSet,
-                "name", 0);
+                null, "name", 0);
         assertEquals(VECTOR_SIZE, classificationDatabase.getVectorSize());
     }
 
@@ -119,7 +119,7 @@ public class ClassificationDatabaseTest {
         NewDataItem[][] validationSet = generator(3, validationSizes, 10);
         NewDataItem[][] testingSet = generator(3, testingSizes, 100);
         ClassificationDatabase classificationDatabase = new ClassificationDatabase(trainingSet, validationSet, testingSet,
-                "name", 0);
+                null, "name", 0);
         Enumeration<NewDataItem> enumerator = classificationDatabase.createValidationSetEnumerator();
 
         int counter = 10; // starting element
@@ -141,7 +141,7 @@ public class ClassificationDatabaseTest {
         NewDataItem[][] validationSet = generator(3, validationSizes, 10);
         NewDataItem[][] testingSet = generator(3, testingSizes, 100);
         ClassificationDatabase classificationDatabase = new ClassificationDatabase(trainingSet, validationSet, testingSet,
-                "name", 0);
+                null, "name", 0);
         Enumeration<NewDataItem> enumerator = classificationDatabase.createTestingSetEnumerator();
 
         int counter = 100; // starting element
@@ -163,7 +163,7 @@ public class ClassificationDatabaseTest {
         NewDataItem[][] validationSet = generator(3, validationSizes, 10);
         NewDataItem[][] testingSet = generator(3, testingSizes, 100);
         ClassificationDatabase classificationDatabase = new ClassificationDatabase(trainingSet, validationSet, testingSet,
-                "name", 0);
+                null, "name", 0);
 
         int counter = 100; // starting element
         for (int k = 0; k < testingSizes.length; k++) {
@@ -187,7 +187,7 @@ public class ClassificationDatabaseTest {
         NewDataItem[][] validationSet = generator(3, validationSizes, 10);
         NewDataItem[][] testingSet = generator(3, testingSizes, 100);
         ClassificationDatabase classificationDatabase = new ClassificationDatabase(trainingSet, validationSet, testingSet,
-                "name", 0);
+                null, "name", 0);
 
         int counter = 10; // starting element
         for (int k = 0; k < testingSizes.length; k++) {
@@ -198,7 +198,7 @@ public class ClassificationDatabaseTest {
                 assertEquals(counter, item.data[0], 0.000_000_1);
                 counter++;
             }
-            assertEquals(testingSizes[k], i);
+            assertEquals(validationSizes[k], i);
         }
     }
 
@@ -211,7 +211,7 @@ public class ClassificationDatabaseTest {
         NewDataItem[][] validationSet = generator(3, validationSizes, 10);
         NewDataItem[][] testingSet = generator(3, testingSizes, 100);
         ClassificationDatabase classificationDatabase = new ClassificationDatabase(trainingSet, validationSet, testingSet,
-                "name", 0);
+                null, "name", 0);
 
         int counter = 0; // starting element
         for (int k = 0; k < testingSizes.length; k++) {
@@ -236,7 +236,7 @@ public class ClassificationDatabaseTest {
         NewDataItem[][] testingSet = generator(3, testingSizes, 100);
 
         ClassificationDatabase classificationDatabase = new ClassificationDatabase(trainingSet, validationSet, testingSet,
-                "name", 0);
+                null, "name", 0);
         Enumeration<NewDataItem> enumerator = classificationDatabase.createInfiniteSimpleTrainingSetEnumerator();
         NewDataItem item = enumerator.nextElement();
         assertEquals(0, item.data[0], 0.000_000_1);
@@ -268,7 +268,7 @@ public class ClassificationDatabaseTest {
         NewDataItem[][] testingSet = generator(3, testingSizes, 100);
 
         ClassificationDatabase classificationDatabase = new ClassificationDatabase(trainingSet, validationSet, testingSet,
-                "name", 0);
+                null, "name", 0);
         Enumeration<NewDataItem> enumerator = classificationDatabase.createInfiniteRandomTrainingSetEnumerator();
         for (int i = 0; i < 1000; i++) {
             NewDataItem item = enumerator.nextElement();
