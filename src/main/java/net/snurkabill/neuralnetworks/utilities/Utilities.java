@@ -23,11 +23,7 @@ public class Utilities {
         return m / input.length;
     }
 
-    public static double stddev(final double[] input) {
-        return stddev(input, mean(input));
-    }
-
-    public static double stddev(final double[] input, double mean) {
+    public static double variance(final double[] input, double mean) {
         if(input.length == 0) {
             throw new IllegalArgumentException("There needs to be at least 1 element for calculating " +
                     "standard deviation");
@@ -36,7 +32,19 @@ public class Utilities {
         for (double anInput : input) {
             sum += (anInput - mean) * (anInput - mean);
         }
-        return Math.sqrt(sum / (input.length));
+        return sum / input.length;
+    }
+
+    public static double variance(final double[] input) {
+        return variance(input, mean(input));
+    }
+
+    public static double stddev(final double[] input) {
+        return stddev(input, mean(input));
+    }
+
+    public static double stddev(final double[] input, double mean) {
+        return Math.sqrt(variance(input, mean));
     }
 
     public static double sigmoid(double x) {
