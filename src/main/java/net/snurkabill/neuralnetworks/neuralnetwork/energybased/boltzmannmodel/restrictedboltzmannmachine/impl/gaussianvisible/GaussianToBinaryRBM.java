@@ -1,6 +1,9 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.gaussianvisible;
 
 import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.LinearFunction;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.SigmoidFunction;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.TransferFunctionCalculator;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 
@@ -27,7 +30,8 @@ public class GaussianToBinaryRBM extends RestrictedBoltzmannMachine {
     protected void calcHiddenNeurons() {
         for (int i = 0; i < sizeOfHiddenVector; i++) {
             hiddenNeurons[i] =
-                    (super.calcProbabilityOfPositiveOutput(calcHiddenPotential(i)) > random.nextDouble()) ? 1.0 : 0.0;
+                    calcProbabilityOfPositiveOutput(calcHiddenPotential(i));
+//                    (super.calcProbabilityOfPositiveOutput(calcHiddenPotential(i)) > random.nextDouble()) ? 1.0 : 0.0;
         }
     }
 
@@ -66,5 +70,10 @@ public class GaussianToBinaryRBM extends RestrictedBoltzmannMachine {
         }
         energy -= helpEnergy;
         return energy;
+    }
+
+    @Override
+    public TransferFunctionCalculator[] getTransferFunctions() {
+        return new TransferFunctionCalculator[] {new LinearFunction(), new SigmoidFunction()};
     }
 }

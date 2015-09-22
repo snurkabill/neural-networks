@@ -31,8 +31,4 @@ public abstract class BoltzmannMachine extends NeuralNetwork implements EnergyBa
         this.temperature = temperature;
     }
 
-    @Override
-    public TransferFunctionCalculator getTransferFunction() {
-        return this.probabilityCalculator;
-    }
 }

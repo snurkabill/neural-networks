@@ -62,12 +62,12 @@ public abstract class NetworkManager {
                     database.getTargetSize());
             numOfIterations = database.getTargetSize();
         }
-        if (numOfIterations % database.getTargetSize() != 0) {
+        /*if (numOfIterations % database.getTargetSize() != 0) {
             LOGGER.warn("Count of iterations for training([{}]) is not dividable by size of targetVector ([{}]). " +
                     "Rounding up!", numOfIterations, database.getTargetSize());
             numOfIterations = (numOfIterations / database.getTargetSize()) + database.getTargetSize();
             // integer division + numOfClasses -> rounding up!
-        }
+        }*/
         timer.startTimer();
         train(numOfIterations);
         timer.stopTimer();
@@ -96,7 +96,7 @@ public abstract class NetworkManager {
                 database.getTestingSetSize(), timer.secondsSpent(), timer.samplesPerSec(database.getTestingSetSize()));
         if (heuristicCalculator != null) {
             LOGGER.info("Recalculating heuristic");
-            neuralNetwork.setHeuristic(heuristicCalculator.calculateNewHeuristic(results));
+            neuralNetwork.setHeuristic(heuristicCalculator.calculateNewHeuristic(results, neuralNetwork.getHeuristic()));
         }
         LOGGER.info("Global Error: {}", globalError);
         printMoreInfo();

@@ -1,6 +1,6 @@
 package net.snurkabill.neuralnetworks;
 
-import net.snurkabill.neuralnetworks.examples.mnist.MnistExampleFFNN;
+import net.snurkabill.neuralnetworks.examples.mnist.BinaryMnistRBM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,15 +17,16 @@ public class App {
 
         //MnistExampleFFNN.mnistDBN();
 
-        //BinaryMnistRBM.start();
+        BinaryMnistRBM.start();
         //new RBMTest().test();
 
         //DeepBeliefNetworkConcept.errorFunctionOnRBMs();
         //DeepBeliefNetworkConcept.deepXor();
         //DeepBeliefNetworkConcept.deepBoltzmannMachine();
 
-        MnistExampleFFNN.startExample();
-
+//        MnistExampleFFNN.startExample();
+//        MnistExampleFFNN.basicBenchmark();
+        //MnistExampleFFNN.useRelu();
         //LinearVisibleTest.test();
     }
 }

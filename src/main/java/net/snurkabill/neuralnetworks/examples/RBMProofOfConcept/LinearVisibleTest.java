@@ -44,7 +44,7 @@ public class LinearVisibleTest {
 
         MasterNetworkManager superManager = new MasterNetworkManager("MNIST",
                 Arrays.asList(manager_rbm), 1);
-        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(5, 1000, superManager);
+        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(5, 1000, superManager, "linear visible");
         benchmarker.benchmark();
 
     }

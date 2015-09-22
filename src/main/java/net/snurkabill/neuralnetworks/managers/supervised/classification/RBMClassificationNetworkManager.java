@@ -43,7 +43,7 @@ public class RBMClassificationNetworkManager extends ClassificationNetworkManage
                 System.arraycopy(item.data, 0, tmpArray, 0, item.data.length);
                 System.arraycopy(item.data, 0, tmpArray2, 0, item.data.length);
                 for (int i = 0; i < database.getTargetSize(); i++) {
-                    tmpArray[targetIndex + i] = neuralNetwork.getTransferFunction().getLowLimit();
+                    tmpArray[targetIndex + i] = neuralNetwork.getTransferFunctions()[0].getLowLimit();
                     tmpArray2[targetIndex + i] = item.target[i];
                 }
                 globalError += neuralNetwork.calcError(tmpArray, tmpArray2);

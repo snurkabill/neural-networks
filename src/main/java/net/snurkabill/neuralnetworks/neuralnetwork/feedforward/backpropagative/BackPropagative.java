@@ -15,9 +15,10 @@ public abstract class BackPropagative extends FeedForwardNetwork {
     protected final double[][] gradients;
     protected final double[][][] deltaWeights;
 
-    public BackPropagative(String name, List<Integer> topology, WeightsFactory wFactory,
-                           FeedForwardHeuristic heuristic, TransferFunctionCalculator transferFunction) {
-        super(name, topology, wFactory, transferFunction);
+    public BackPropagative(String name, List<Integer> topology, List<TransferFunctionCalculator> layerTransferFunctions,
+                           WeightsFactory wFactory,
+                           FeedForwardHeuristic heuristic) {
+        super(name, topology, layerTransferFunctions, wFactory);
         this.gradients = new double[this.topology.length][];
         for (int i = 0; i < this.topology.length; i++) {
             this.gradients[i] = new double[this.topology[i] + 1];

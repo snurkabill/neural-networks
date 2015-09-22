@@ -11,10 +11,13 @@ public class SupervisedBenchmarker {
     private final int numOfRuns;
     private final int sizeOfTrainingBatch;
 
-    public SupervisedBenchmarker(int numOfRuns, int sizeOfTrainingBatch, MasterNetworkManager manager) {
+    private final String path;
+
+    public SupervisedBenchmarker(int numOfRuns, int sizeOfTrainingBatch, MasterNetworkManager manager, String path) {
         this.numOfRuns = numOfRuns;
         this.sizeOfTrainingBatch = sizeOfTrainingBatch;
         this.manager = manager;
+        this.path = path;
     }
 
     public void benchmark() {
@@ -27,14 +30,19 @@ public class SupervisedBenchmarker {
     }
 
     protected void makeReport() {
+        File dir = new File(path);
+        if (dir.exists()) {
+            dir.delete();
+        }
+        new File(path).mkdir();
         // TODO: move picking into contructor
-        ReportMaker.chart(new File("results_timeXsuccess.png"), manager.getResults(), manager.getNameOfProblem(),
+        ReportMaker.chart(new File(path + "/time_success.png"), manager.getResults(), manager.getNameOfProblem(),
                 ReportMaker.SortBy.BY_TIME, ReportMaker.Picking.PICK_SUCCESS);
-        ReportMaker.chart(new File("results_iterationsXsuccess.png"), manager.getResults(), manager.getNameOfProblem(),
+        ReportMaker.chart(new File(path + "/iterations_success.png"), manager.getResults(), manager.getNameOfProblem(),
                 ReportMaker.SortBy.BY_ITERATIONS, ReportMaker.Picking.PICK_SUCCESS);
-        ReportMaker.chart(new File("results_timeXerror.png"), manager.getResults(), manager.getNameOfProblem(),
+        ReportMaker.chart(new File(path + "/time_error.png"), manager.getResults(), manager.getNameOfProblem(),
                 ReportMaker.SortBy.BY_TIME, ReportMaker.Picking.PICK_ERROR);
-        ReportMaker.chart(new File("results_iterationsXerror.png"), manager.getResults(), manager.getNameOfProblem(),
+        ReportMaker.chart(new File(path + "/iterations_error.png"), manager.getResults(), manager.getNameOfProblem(),
                 ReportMaker.SortBy.BY_ITERATIONS, ReportMaker.Picking.PICK_ERROR);
     }
 }

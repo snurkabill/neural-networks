@@ -9,16 +9,17 @@ import java.util.List;
 
 public class OnlineFeedForwardNetwork extends BackPropagative {
 
-    public OnlineFeedForwardNetwork(String name, List<Integer> topology, WeightsFactory wFactory,
-                                    FeedForwardHeuristic heuristic, TransferFunctionCalculator transferFunction) {
-        super(name, topology, wFactory, heuristic, transferFunction);
+    public OnlineFeedForwardNetwork(String name, List<Integer> topology,
+                                    List<TransferFunctionCalculator> layerTransferFunctions,  WeightsFactory wFactory,
+                                    FeedForwardHeuristic heuristic) {
+        super(name, topology, layerTransferFunctions, wFactory, heuristic);
     }
 
     @Override
     protected void calcGradients(double[] targetValues) {
         for (int i = 0; i < topology[lastLayerIndex]; i++) {
             gradients[lastLayerIndex][i] = (targetValues[i] - neuronOutputValues[lastLayerIndex][i]) *
-                    transferFunction.calculateDerivative(neuronOutputValues[lastLayerIndex][i]);
+                    layerTransferFunctions[lastLayerIndex - 1].calculateDerivative(neuronOutputValues[lastLayerIndex][i]);
         }
         for (int i = numOfLayers - 2; i > 0; i--) {
             for (int j = 0; j < topology[i]; j++) {
@@ -26,7 +27,7 @@ public class OnlineFeedForwardNetwork extends BackPropagative {
                 for (int k = 0; k < topology[i + 1]; k++) {
                     sum += weights[i][j][k] * gradients[i + 1][k];
                 }
-                gradients[i][j] = sum * transferFunction.calculateDerivative(neuronOutputValues[i][j]);
+                gradients[i][j] = sum * layerTransferFunctions[i - 1].calculateDerivative(neuronOutputValues[i][j]);
             }
         }
     }
@@ -35,4 +36,5 @@ public class OnlineFeedForwardNetwork extends BackPropagative {
     protected boolean isBatchFull() {
         return true;
     }
+
 }

@@ -18,7 +18,8 @@ public class UnsupervisedNetworkManager extends NetworkManager {
     @Override
     protected void train(int numOfIterations) {
         for (int i = 0; i < numOfIterations; i++) {
-            neuralNetwork.trainNetwork(this.dataEnumerator.nextElement().data);
+            NewDataItem item = this.dataEnumerator.nextElement();
+            neuralNetwork.trainNetwork(item.data);
         }
     }
 

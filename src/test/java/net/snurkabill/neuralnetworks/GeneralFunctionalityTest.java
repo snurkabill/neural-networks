@@ -37,8 +37,9 @@ public class GeneralFunctionalityTest {
         List<Integer> topology = Arrays.asList(database.getVectorSize(), 200, database.getTargetSize());
         BasicHeuristic heuristic = new FeedForwardHeuristic().setLearningRate(0.01).setMomentum(0.1);
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
+                Arrays.asList(new ParametrizedHyperbolicTangens(), new ParametrizedHyperbolicTangens()),
                 new SmartGaussianRndWeightsFactory(new ParametrizedHyperbolicTangens(), seed),
-                (FeedForwardHeuristic) heuristic, new ParametrizedHyperbolicTangens());
+                (FeedForwardHeuristic) heuristic);
         NetworkManager manager = new FFClassificationNetworkManager(network, database, null,
                 NetworkManager.TrainingMode.STOCHASTIC);
         manager.trainNetwork(1000);

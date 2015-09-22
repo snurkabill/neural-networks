@@ -11,7 +11,7 @@ public abstract class FeedForwardNetwork extends NeuralNetwork implements FeedFo
 
     private static final double ERROR_MODIFIER = 0.5;
 
-    protected final TransferFunctionCalculator transferFunction;
+    protected final TransferFunctionCalculator[] layerTransferFunctions;
     protected final int sizeOfInputVector;
     protected final int sizeOfOutputVector;
     protected final int numOfLayers;
@@ -20,13 +20,19 @@ public abstract class FeedForwardNetwork extends NeuralNetwork implements FeedFo
     protected final double[][] neuronOutputValues;
     protected final double[][][] weights;
 
-    public FeedForwardNetwork(String name, List<Integer> topology, WeightsFactory wFactory,
-                              TransferFunctionCalculator transferFunction) {
+    public FeedForwardNetwork(String name, List<Integer> topology, List<TransferFunctionCalculator> layerTransferFunctions,
+                              WeightsFactory wFactory) {
         super(name);
-        if (topology.size() <= 1) {
+        if (topology.size() <= 2) {
             throw new IllegalArgumentException("Wrong topology of FFNN");
         }
-        this.transferFunction = transferFunction;
+        if(layerTransferFunctions.size() != topology.size() - 1) {
+            throw new IllegalArgumentException("Wrong topology or layerCalculator sizes");
+        }
+        this.layerTransferFunctions = new TransferFunctionCalculator[layerTransferFunctions.size()];
+        for (int i = 0; i < layerTransferFunctions.size(); i++) {
+            this.layerTransferFunctions[i] = layerTransferFunctions.get(i);
+        }
         this.numOfLayers = topology.size();
         this.topology = new int[numOfLayers];
         for (int i = 0; i < numOfLayers; i++) {
@@ -68,14 +74,14 @@ public abstract class FeedForwardNetwork extends NeuralNetwork implements FeedFo
                 for (int k = 0; k < neuronOutputValues[i - 1].length; k++) {
                     sumOfInputs += neuronOutputValues[i - 1][k] * weights[i - 1][k][j];
                 }
-                neuronOutputValues[i][j] = transferFunction.calculateOutputValue(sumOfInputs);
+                neuronOutputValues[i][j] = layerTransferFunctions[i - 1].calculateOutputValue(sumOfInputs);
             }
         }
     }
 
     @Override
-    public TransferFunctionCalculator getTransferFunction() {
-        return this.transferFunction;
+    public TransferFunctionCalculator[] getTransferFunctions() {
+        return this.layerTransferFunctions;
     }
 
     public int getFirstHighestValueIndex() {
@@ -96,7 +102,7 @@ public abstract class FeedForwardNetwork extends NeuralNetwork implements FeedFo
 
     @Deprecated // not recomended to use
     public int getLastHighestValueIndex() {
-        double max = this.transferFunction.getLowLimit();
+        double max = this.layerTransferFunctions[lastLayerIndex - 1].getLowLimit();
         int bestIndex = -1;
         for (int i = 0; i < sizeOfOutputVector; i++) {
             if (neuronOutputValues[lastLayerIndex][i] >= max) {
@@ -168,7 +174,9 @@ public abstract class FeedForwardNetwork extends NeuralNetwork implements FeedFo
             workingName.concat(String.valueOf(topology[i]) + ", ");
         }
         workingName.concat(" } ");
-        workingName.concat(this.transferFunction.getName() + " ");
+        for (int i = 0; i < this.layerTransferFunctions.length; i++) {
+            workingName.concat(", " + this.layerTransferFunctions[i].getName());
+        }
         return workingName;
     }
 }

@@ -1,6 +1,8 @@
 package net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.binaryvisible;
 
 import net.snurkabill.neuralnetworks.heuristic.BoltzmannMachineHeuristic;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.SigmoidFunction;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.TransferFunctionCalculator;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.weights.weightfactory.WeightsFactory;
 
@@ -63,6 +65,11 @@ public class BinaryToBinaryRBM extends RestrictedBoltzmannMachine {
         }
         energy -= helpEnergy;
         return energy;
+    }
+
+    @Override
+    public TransferFunctionCalculator[] getTransferFunctions() {
+        return new TransferFunctionCalculator[] {new SigmoidFunction(), new SigmoidFunction()};
     }
 
     @Override

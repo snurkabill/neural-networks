@@ -17,6 +17,12 @@ public abstract class NeuralNetwork {
         this.LOGGER = LoggerFactory.getLogger(name);
     }
 
+    public NeuralNetwork(NeuralNetwork other) {
+        this.name = other.getName() + "_cloned";
+        this.workingName = other.getWorkingName() + "_cloned";
+        this.LOGGER = LoggerFactory.getLogger(name);
+    }
+
     public String getName() {
         return name;
     }
@@ -43,7 +49,7 @@ public abstract class NeuralNetwork {
 
     public abstract void getOutputValues(double[] outputValues);
 
-    public abstract TransferFunctionCalculator getTransferFunction();
+    public abstract TransferFunctionCalculator[] getTransferFunctions();
 
     public abstract void trainNetwork(double[] targetValues);
 

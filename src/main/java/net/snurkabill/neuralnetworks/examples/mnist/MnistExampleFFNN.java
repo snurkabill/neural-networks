@@ -9,9 +9,7 @@ import net.snurkabill.neuralnetworks.managers.MasterNetworkManager;
 import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.managers.supervised.classification.FFClassificationNetworkManager;
 import net.snurkabill.neuralnetworks.managers.supervised.classification.RBMClassificationNetworkManager;
-import net.snurkabill.neuralnetworks.math.function.transferfunction.ParametrizedHyperbolicTangens;
-import net.snurkabill.neuralnetworks.math.function.transferfunction.SigmoidFunction;
-import net.snurkabill.neuralnetworks.math.function.transferfunction.TransferFunctionCalculator;
+import net.snurkabill.neuralnetworks.math.function.transferfunction.*;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.binaryvisible.BinaryToBinaryRBM;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.binaryvisible.BinaryToRectifiedRBM;
@@ -56,9 +54,10 @@ public class MnistExampleFFNN {
 
         double weightsScale = 1;
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
+                Arrays.asList(calculator1, calculator1),
                 /*new GaussianRndWeightsFactory(weightsScale, seed)*/
                 new SmartGaussianRndWeightsFactory(calculator1, seed),
-                FeedForwardHeuristic.createDefaultHeuristic(), calculator1);
+                FeedForwardHeuristic.createDefaultHeuristic());
         NetworkManager manager = new FFClassificationNetworkManager(network, database, null,
                 NetworkManager.TrainingMode.STOCHASTIC);
 
@@ -123,7 +122,7 @@ public class MnistExampleFFNN {
 
         MasterNetworkManager superManager = new MasterNetworkManager("MNIST",
                 Arrays.asList(manager, manager_rbm/*, manager_rbm2, manager_rbm3, manager_rbm4*/), 2);
-        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(5, 10000, superManager);
+        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(5, 10000, superManager, "basicMnistBenchmark");
         benchmarker.benchmark();
     }
 
@@ -144,8 +143,9 @@ public class MnistExampleFFNN {
 
         double weightsScale = 1;
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
+                Arrays.asList(calculator1, calculator1),
                 new SmartGaussianRndWeightsFactory(calculator1, seed),
-                FeedForwardHeuristic.createDefaultHeuristic(), calculator1);
+                FeedForwardHeuristic.createDefaultHeuristic());
         NetworkManager manager = new FFClassificationNetworkManager(network, database, null,
                 NetworkManager.TrainingMode.STOCHASTIC);
 
@@ -164,6 +164,44 @@ public class MnistExampleFFNN {
 
     }
 
+
+    public static void linearVsTanhOutput() {
+        long seed = 0;
+        MnistDatasetReader reader = getReader(FULL_MNIST_SIZE, true);
+
+        List<Integer> topology = new ArrayList<>();
+        topology.add(INPUT_SIZE);
+        for (int i = 0; i < hiddenLayers.length; i++) {
+            topology.add(hiddenLayers[i]);
+        }
+        topology.add(OUTPUT_SIZE);
+
+        TransferFunctionCalculator tanh = new ParametrizedHyperbolicTangens();
+        NewDatabase database = new ClassificationDatabase(reader.getTrainingData(), reader.getValidationData(),
+                reader.getTestingData(), tanh, "MNIST", seed);
+
+        OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("tanh", topology,
+                Arrays.asList(tanh, tanh),
+                new SmartGaussianRndWeightsFactory(tanh, seed),
+                FeedForwardHeuristic.createDefaultHeuristic());
+        NetworkManager manager = new FFClassificationNetworkManager(network, database, null,
+                NetworkManager.TrainingMode.STOCHASTIC);
+
+        TransferFunctionCalculator linear = new LinearFunction();
+        NewDatabase database2 = new ClassificationDatabase(reader.getTrainingData(), reader.getValidationData(),
+                reader.getTestingData(), linear, "MNIST", seed);
+
+        OnlineFeedForwardNetwork network2 = new OnlineFeedForwardNetwork("linear", topology,
+                Arrays.asList(tanh, linear),
+                new SmartGaussianRndWeightsFactory(linear, seed),
+                FeedForwardHeuristic.createDefaultHeuristic());
+        NetworkManager manager2 = new FFClassificationNetworkManager(network2, database2, null,
+                NetworkManager.TrainingMode.STOCHASTIC);
+
+        MasterNetworkManager master = new MasterNetworkManager("asdf", Arrays.asList(/*manager, */manager2), 1);
+
+    }
+
     public static void convertMap(Map<Integer, List<DataItem>> map) {
         LOGGER.info("Converting map");
         for (Map.Entry<Integer, List<DataItem>> entry : map.entrySet()) {
@@ -173,6 +211,37 @@ public class MnistExampleFFNN {
                 }
             }
         }
+    }
+
+    public static void useRelu() {
+        long seed = 0;
+        MnistDatasetReader reader = getReader(FULL_MNIST_SIZE, true);
+        List<Integer> topology = new ArrayList<>();
+        topology.add(INPUT_SIZE);
+        topology.add(200);
+        topology.add(50);
+        topology.add(OUTPUT_SIZE);
+        NewDatabase database = new ClassificationDatabase(reader.getTrainingData(), reader.getValidationData(),
+                reader.getTestingData(), new ParametrizedHyperbolicTangens(), "MNIST", seed);
+
+        OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("trans", topology,
+                Arrays.asList(new SoftPlus(), new SoftPlus(), new ParametrizedHyperbolicTangens()),
+                new GaussianRndWeightsFactory(0.1, seed),
+                FeedForwardHeuristic.littleStepsWithHugeMoment());
+        NetworkManager manager = new FFClassificationNetworkManager(network, database, null,
+                NetworkManager.TrainingMode.STOCHASTIC);
+
+        OnlineFeedForwardNetwork network2 = new OnlineFeedForwardNetwork("trans2", topology,
+                Arrays.asList(new ParametrizedHyperbolicTangens(), new ParametrizedHyperbolicTangens(), new ParametrizedHyperbolicTangens()),
+                new GaussianRndWeightsFactory(0.1, seed),
+                FeedForwardHeuristic.littleStepsWithHugeMoment());
+        NetworkManager manager2 = new FFClassificationNetworkManager(network2, database, null,
+                NetworkManager.TrainingMode.STOCHASTIC);
+
+        MasterNetworkManager master = new MasterNetworkManager("asdf", Arrays.asList(manager, manager2), 2);
+
+        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(100, 100, master, "softmaxVsHyperTan");
+        benchmarker.benchmark();
     }
 
     public static MnistDatasetReader getReader(int numOfElements, boolean binary) {

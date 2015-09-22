@@ -43,5 +43,4 @@ public class FFClassificationNetworkManager extends ClassificationNetworkManager
         globalError /= all;
     }
 
-
 }

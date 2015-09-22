@@ -41,8 +41,9 @@ public class FFNNProofOfConceptTest extends LogicFunctions {
         heuristic.learningRate = 0.01;
         heuristic.momentum = 0.1;
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
+                Arrays.asList(new ParametrizedHyperbolicTangens(), new ParametrizedHyperbolicTangens()),
                 new SmartGaussianRndWeightsFactory(new ParametrizedHyperbolicTangens(), seed),
-                heuristic, new ParametrizedHyperbolicTangens());
+                heuristic);
         NetworkManager manager = new FFClassificationNetworkManager(network, database, null,
                 NetworkManager.TrainingMode.STOCHASTIC);
         manager.trainNetwork(10000);
@@ -72,8 +73,9 @@ public class FFNNProofOfConceptTest extends LogicFunctions {
         heuristic.learningRate = 0.01;
         heuristic.momentum = 0.1;
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
+                Arrays.asList(new ParametrizedHyperbolicTangens(), new ParametrizedHyperbolicTangens()),
                 new SmartGaussianRndWeightsFactory(new ParametrizedHyperbolicTangens(), seed),
-                heuristic, new ParametrizedHyperbolicTangens());
+                heuristic);
         NetworkManager manager = new FFClassificationNetworkManager(network, database, null,
                 NetworkManager.TrainingMode.STOCHASTIC);
         manager.trainNetwork(10000);
@@ -103,8 +105,9 @@ public class FFNNProofOfConceptTest extends LogicFunctions {
         heuristic.learningRate = 0.01;
         heuristic.momentum = 0.1;
         OnlineFeedForwardNetwork network = new OnlineFeedForwardNetwork("SmartParametrizedTanh", topology,
+                Arrays.asList(new ParametrizedHyperbolicTangens(), new ParametrizedHyperbolicTangens()),
                 new SmartGaussianRndWeightsFactory(new ParametrizedHyperbolicTangens(), seed),
-                heuristic, new ParametrizedHyperbolicTangens());
+                heuristic);
         NetworkManager manager = new FFClassificationNetworkManager(network, database, null,
                 NetworkManager.TrainingMode.STOCHASTIC);
         manager.trainNetwork(10000);

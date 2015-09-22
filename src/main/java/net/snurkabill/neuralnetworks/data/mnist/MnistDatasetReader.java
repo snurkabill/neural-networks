@@ -170,7 +170,7 @@ public class MnistDatasetReader implements Enumeration<MnistItem> {
         NewDataItem[] items = new NewDataItem[size];
         int index = 0;
         for (int i = 0; i < NUM_OF_CLASSEA; i++) {
-            for (int j = 0; j < trainingSet.get(i).size(); j++) {
+            for (int j = 0; j < trainingSet.get(i).size(); j++, index++) {
                 items[index] = trainingSet.get(i).get(j);
             }
         }
@@ -185,7 +185,7 @@ public class MnistDatasetReader implements Enumeration<MnistItem> {
         NewDataItem[] items = new NewDataItem[size];
         int index = 0;
         for (int i = 0; i < NUM_OF_CLASSEA; i++) {
-            for (int j = 0; j < validationSet.get(i).size(); j++) {
+            for (int j = 0; j < validationSet.get(i).size(); j++, index++) {
                 items[index] = validationSet.get(i).get(j);
             }
         }
@@ -200,7 +200,7 @@ public class MnistDatasetReader implements Enumeration<MnistItem> {
         NewDataItem[] items = new NewDataItem[size];
         int index = 0;
         for (int i = 0; i < NUM_OF_CLASSEA; i++) {
-            for (int j = 0; j < testSet.get(i).size(); j++) {
+            for (int j = 0; j < testSet.get(i).size(); j++, index++) {
                 items[index] = testSet.get(i).get(j);
             }
         }

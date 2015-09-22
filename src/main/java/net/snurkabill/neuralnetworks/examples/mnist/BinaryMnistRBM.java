@@ -6,6 +6,7 @@ import net.snurkabill.neuralnetworks.managers.NetworkManager;
 import net.snurkabill.neuralnetworks.managers.unsupervised.UnsupervisedNetworkManager;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.RestrictedBoltzmannMachine;
 import net.snurkabill.neuralnetworks.neuralnetwork.energybased.boltzmannmodel.restrictedboltzmannmachine.impl.binaryvisible.BinaryToBinaryRBM;
+import net.snurkabill.neuralnetworks.newdata.database.NewDataItem;
 import net.snurkabill.neuralnetworks.newdata.database.NewDatabase;
 import net.snurkabill.neuralnetworks.newdata.database.RegressionDatabase;
 import net.snurkabill.neuralnetworks.weights.weightfactory.GaussianRndWeightsFactory;
@@ -14,6 +15,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.util.Enumeration;
 
 public class BinaryMnistRBM extends Canvas {
     static int border = 10; // 10px
@@ -27,9 +29,14 @@ public class BinaryMnistRBM extends Canvas {
 
         long seed = 0;
         double weightsScale = 0.01;
-        MnistDatasetReader reader = MnistExampleFFNN.getReader(10000, true);
+        MnistDatasetReader reader = MnistExampleFFNN.getReader(100, true);
         NewDatabase database = new RegressionDatabase(reader.getRegressionTrainingData(),
                 reader.getRegressionValidationData(), reader.getRegressionTestingData(), "MNIST", seed);
+
+        Enumeration<NewDataItem> enumeration = database.createInfiniteSimpleTrainingSetEnumerator();
+        for (int i = 0; enumeration.hasMoreElements(); i++) {
+            System.out.println(enumeration.nextElement().data);
+        }
 
         BoltzmannMachineHeuristic heuristic = BoltzmannMachineHeuristic.createStartingHeuristicParams();
         heuristic.learningRate = 0.01;

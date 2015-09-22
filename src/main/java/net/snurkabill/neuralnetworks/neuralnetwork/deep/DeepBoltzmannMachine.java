@@ -92,9 +92,10 @@ public class DeepBoltzmannMachine extends NeuralNetwork implements DeepNetwork, 
         System.arraycopy(output, 0, outputValues, 0, outputValues.length);
     }
 
+    @Deprecated
     @Override
-    public TransferFunctionCalculator getTransferFunction() {
-        return machines.get(0).getTransferFunction();
+    public TransferFunctionCalculator[] getTransferFunctions() {
+        return new TransferFunctionCalculator[0];
     }
 
     @Override

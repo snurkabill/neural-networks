@@ -73,7 +73,7 @@ public class GaussianVisibleTest {
 
         MasterNetworkManager master = new MasterNetworkManager("2D-gauss", Arrays.<NetworkManager>asList(manager, manager2), 2);
 
-        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(100, 10_000, master);
+        SupervisedBenchmarker benchmarker = new SupervisedBenchmarker(100, 10_000, master, "rbmGaussianVisible");
         benchmarker.benchmark();
         /*for (int i = 0; i < 100; i++) {
             manager.trainNetwork(10000);

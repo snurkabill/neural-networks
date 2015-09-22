@@ -15,8 +15,8 @@ public class BatchFeedForwardNetwork extends BackPropagative {
 
     public BatchFeedForwardNetwork(String name, List<Integer> topology, WeightsFactory wFactory,
                                    FeedForwardHeuristic heuristic,
-                                   TransferFunctionCalculator transferFunction, int sizeOfBatch) {
-        super(name, topology, wFactory, heuristic, transferFunction);
+                                   List<TransferFunctionCalculator> layerTransferFunctions, int sizeOfBatch) {
+        super(name, topology, layerTransferFunctions, wFactory, heuristic);
         this.sizeOfBatch = sizeOfBatch;
     }
 
@@ -24,16 +24,15 @@ public class BatchFeedForwardNetwork extends BackPropagative {
     protected void calcGradients(double[] targetValues) {
         for (int i = 0; i < topology[lastLayerIndex]; i++) {
             gradients[lastLayerIndex][i] += (targetValues[i] - neuronOutputValues[lastLayerIndex][i]) *
-                    transferFunction.calculateDerivative(neuronOutputValues[lastLayerIndex][i]);
+                    layerTransferFunctions[lastLayerIndex - 1].calculateDerivative(neuronOutputValues[lastLayerIndex][i]);
         }
-
         for (int i = numOfLayers - 2; i > 0; i--) {
             for (int j = 0; j < topology[i]; j++) {
                 double sum = 0.0;
                 for (int k = 0; k < topology[i + 1]; k++) {
                     sum += weights[i][j][k] * gradients[i + 1][k];
                 }
-                gradients[i][j] += sum * transferFunction.calculateDerivative(neuronOutputValues[i][j]);
+                gradients[i][j] += sum * layerTransferFunctions[i - 1].calculateDerivative(neuronOutputValues[i][j]);
             }
         }
         trainedBeforeLearning++;

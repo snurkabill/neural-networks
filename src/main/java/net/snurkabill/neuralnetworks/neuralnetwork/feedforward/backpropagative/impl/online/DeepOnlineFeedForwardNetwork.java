@@ -15,9 +15,10 @@ public class DeepOnlineFeedForwardNetwork extends OnlineFeedForwardNetwork {
     private final int binomialSamplingIterations;
 
     public DeepOnlineFeedForwardNetwork(String name, List<Integer> topology, WeightsFactory wFactory,
-                                        FeedForwardHeuristic heuristic, TransferFunctionCalculator transferFunction,
-                                        FeedForwardable inputTransformation, int binomialSamplingIterations) {
-        super(name, topology, wFactory, heuristic, transferFunction);
+                                        List<TransferFunctionCalculator> layerTransferFunctions,
+                                        FeedForwardHeuristic heuristic, FeedForwardable inputTransformation,
+                                        int binomialSamplingIterations) {
+        super(name, topology, layerTransferFunctions, wFactory, heuristic);
         this.inputTransformation = inputTransformation;
         this.binomialDistribution = new double[inputTransformation.getForwardedValues().length];
         this.binomialSamplingIterations = binomialSamplingIterations;

@@ -7,5 +7,7 @@ import java.util.List;
 
 public interface HeuristicCalculator {
 
-    public BasicHeuristic calculateNewHeuristic(List<NetworkResults> results);
+    BasicHeuristic calculateNewHeuristic(List<NetworkResults> results);
+
+    BasicHeuristic calculateNewHeuristic(List<NetworkResults> results, BasicHeuristic heuristic);
 }
